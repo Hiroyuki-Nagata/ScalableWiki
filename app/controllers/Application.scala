@@ -1,4 +1,4 @@
-package controllers
+package jp.gr.java_conf.hangedman.controllers
 
 import play.api._
 import play.api.mvc._
