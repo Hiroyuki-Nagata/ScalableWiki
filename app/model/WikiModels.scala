@@ -10,3 +10,4 @@ case class LoginInfo(id: String, userType: String, path: String)
 
 case class WikiPlugin()
 case class Weight()
+case class Menu()
