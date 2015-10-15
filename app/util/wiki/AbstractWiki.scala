@@ -1,4 +1,4 @@
-package jp.gr.java_conf.hangedman.util
+package jp.gr.java_conf.hangedman.util.wiki
 
 import java.net.URL
 import jp.gr.java_conf.hangedman.model._
