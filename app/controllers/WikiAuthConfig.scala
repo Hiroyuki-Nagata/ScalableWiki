@@ -19,8 +19,7 @@ trait WikiAuthConfig extends AuthConfig {
   override def sessionTimeoutInSeconds: Int = 3600 // 1H
 
   override def resolveUser(id: Id)(implicit context: ExecutionContext): Future[Option[User]] = {
-    val r = new NormalUser
-    val u = new User("001", "password", r)
+    val u = new User("001", "password", NormalUser)
     Future.successful(Some(u))
   }
   override def loginSucceeded(request: RequestHeader)(implicit context: ExecutionContext): Future[Result] = {
@@ -37,8 +36,8 @@ trait WikiAuthConfig extends AuthConfig {
   }
   override def authorize(user: User, authority: Authority)(implicit context: ExecutionContext): Future[Boolean] = Future.successful {
     (user.role, authority) match {
-      case (_: Administrator, _) => true // AdminならどんなActionでも全権限を開放
-      case (_: NormalUser, _: NormalUser) => true // ユーザがNormalUserで、ActionがNormalUserなら権限あり。もしActionがAdminだけなら権限なしになる。
+      case (Administrator, _) => true // AdminならどんなActionでも全権限を開放
+      case (NormalUser, NormalUser) => true // ユーザがNormalUserで、ActionがNormalUserなら権限あり。もしActionがAdminだけなら権限なしになる。
       case _ => false
     }
   }
