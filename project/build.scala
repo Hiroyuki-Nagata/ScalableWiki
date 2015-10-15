@@ -1,6 +1,7 @@
-//import play.Project._
 import sbt.Keys._
 import sbt._
+import com.heroku.sbt.HerokuPlugin
+import play.PlayScala
 
 object ScalableWiki extends Build {
 
@@ -48,13 +49,24 @@ object ScalableWiki extends Build {
     scalaVersion := ScalaVersion,
     resolvers += DefaultMavenRepository,
     resolvers += Classpaths.typesafeReleases,
-    libraryDependencies ++= LibraryDependencies
+    libraryDependencies ++= LibraryDependencies,
+    //
+    // If you use original name,
+    // $ sbt -DherokuAppName=myapp stage deployHeroku
+    //
+    HerokuPlugin.autoImport.herokuAppName in Compile := {
+      if (sys.props("herokuAppName") == null) { 
+        "scalable-wiki" 
+      } else { 
+        sys.props("herokuAppName")
+      }
+    }
   )
 
   lazy val project = Project(
     "ScalableWiki",
     file(".")
-  ).enablePlugins(play.PlayScala).settings(
+  ).enablePlugins(PlayScala, HerokuPlugin).settings(
     projectSettings: _*
   )
 }
