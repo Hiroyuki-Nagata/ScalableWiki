@@ -6,15 +6,19 @@ import jp.gr.java_conf.hangedman.model._
 import net.ceedubs.ficus._
 import net.ceedubs.ficus.Ficus.{ booleanValueReader, stringValueReader, optionValueReader, toFicusConfig }
 import org.joda.time.DateTime
+import scala.collection.mutable.ArrayBuffer
 
 class Wiki(setupfile: String) extends AbstractWiki {
 
-  lazy val config: Config = ConfigFactory.load()
+  val config: Config = ConfigFactory.load()
   // FIXME: process when config not found
-  lazy val pluginDir = config.as[Option[String]]("setup.plugin_dir")
-  lazy val frontPage = config.as[Option[String]]("setup.frontpage")
+  val pluginDir = config.as[Option[String]]("setup.plugin_dir")
+  val frontPage = config.as[Option[String]]("setup.frontpage")
   // FIXME: Timezone, post_max
-  lazy val storage = new DefaultStorage
+  val storage = new DefaultStorage
+
+  // FIXME: temporary impl
+  val users: ArrayBuffer[User] = ArrayBuffer[User]()
 
   def GetCanShowMax(): Option[WikiPageLevel] = { Some(PublishAll) }
   def GetChildWikiDepth(): Int = { 0 }
@@ -30,8 +34,12 @@ class Wiki(setupfile: String) extends AbstractWiki {
   def addMenu(name: String, href: String, weight: Weight, nofollow: Boolean): Unit = {}
   def addParagraphPlugin[T](name: String, cls: T, format: WikiFormat): Unit = {}
   def addPlugin[T](name: String, cls: T): Unit = {}
-  def addUser(user: User): Unit = {}
-  def addUser(id: String, pass: String, role: Role): Unit = {}
+  def addUser(user: User): Unit = {
+    users.append(user)
+  }
+  def addUser(id: String, pass: String, role: Role): Unit = {
+    users.append(User(id, pass, role))
+  }
   def addUserHandler[T](action: Action, cls: T): Unit = {}
   def addUserMenu(label: String, url: String, weight: Weight, desc: String): Unit = {}
   def callHandler(action: Action): String = { "" }
@@ -84,7 +92,8 @@ class Wiki(setupfile: String) extends AbstractWiki {
   def setPageLevel(pageName: String, level: WikiPageLevel): Unit = {}
   def setTitle(title: String, isEditing: Boolean): Unit = {}
   def unFreezePage(pageName: String): Unit = {}
-  def userIsExists(user: User): Boolean = { true }
-  def userIsExists(id: String): Boolean = { true }
+  def userIsExists(user: User): Boolean = {
+    users.exists(listed => listed == user)
+  }
 
 }
