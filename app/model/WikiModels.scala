@@ -9,6 +9,7 @@ case object NormalUser extends Role
 sealed abstract class WikiFormat
 case object HTML_FORMAT extends WikiFormat
 case object WIKI_FORMAT extends WikiFormat
+case object FSWiki extends WikiFormat
 
 sealed abstract class WikiPluginType
 case object Inline extends WikiPluginType

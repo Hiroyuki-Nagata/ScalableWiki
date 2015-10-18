@@ -7,7 +7,9 @@ class DefaultStorage {
   // A file saved page list
   val PAGE_LIST_FILE = "pagelist.cache"
 
-  def getPage() = {}
+  def getPage(page: String, path: String): String = {
+    ""
+  }
   def savePage() = {}
   private def CreatePageListFile() = {}
   private def GetBackupNumber() = {}
@@ -15,11 +17,15 @@ class DefaultStorage {
   def getPageList() = {}
   def getLastModified() = {}
   def getLastModified2() = {}
-  def pageExists() = {}
+  def pageExists(page: String, path: String): Boolean = {
+    true
+  }
   def backupType() = {}
   def deleteBackupFiles() = {}
   def getBackupList() = {}
-  def getBackup() = {}
+  def getBackup(pageName: String, version: Int = 0): Option[String] = {
+    Some("")
+  }
   def freezePage() = {}
   def unFreezePage() = {}
   def getFreezeList() = {}

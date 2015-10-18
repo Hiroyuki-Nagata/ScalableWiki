@@ -3,6 +3,8 @@ package jp.gr.java_conf.hangedman.util.wiki
 import java.net.URL
 import jp.gr.java_conf.hangedman.model._
 import org.joda.time.DateTime
+import play.api.mvc.Result
+import scala.concurrent.Future
 
 abstract class AbstractWiki {
 
@@ -242,11 +244,11 @@ abstract class AbstractWiki {
   /*
    * Redirect to the page specified by arguments
    */
-  def redirect(pageName: String, part: Int)
+  def redirect(pageName: String, part: Int): Future[Result]
   /*
    * Redirect to the page specified by URL
    */
-  def redirectURL(url: URL)
+  def redirectURL(url: URL): Future[Result]
   /*
    * Get value if key is specified, else set the value
    */
