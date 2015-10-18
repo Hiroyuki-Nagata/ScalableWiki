@@ -18,7 +18,8 @@ object ScalableWiki extends Build {
   lazy val LibraryDependencies = Seq(
     "jp.t2v" %% "play2-auth"      % "0.13.5",
     "jp.t2v" %% "play2-auth-test" % "0.13.5" % "test",
-    "com.typesafe" % "config" % "1.3.0"
+    "com.typesafe" % "config" % "1.3.0",
+    "net.ceedubs" %% "ficus" % "1.0.1"
   )
 
   lazy val projectSettings = Seq(

@@ -1,9 +1,20 @@
 package jp.gr.java_conf.hangedman.util.wiki
 
+import com.typesafe.config.Config
+import com.typesafe.config.ConfigFactory
 import jp.gr.java_conf.hangedman.model._
+import net.ceedubs.ficus._
+import net.ceedubs.ficus.Ficus.{ booleanValueReader, stringValueReader, optionValueReader, toFicusConfig }
 import org.joda.time.DateTime
 
 class Wiki(setupfile: String) extends AbstractWiki {
+
+  lazy val config: Config = ConfigFactory.load()
+  // FIXME: process when config not found
+  lazy val pluginDir = config.as[Option[String]]("setup.plugin_dir")
+  lazy val frontPage = config.as[Option[String]]("setup.frontpage")
+  // FIXME: Timezone, post_max
+  lazy val storage = new DefaultStorage
 
   def GetCanShowMax(): Option[WikiPageLevel] = { Some(PublishAll) }
   def GetChildWikiDepth(): Int = { 0 }
