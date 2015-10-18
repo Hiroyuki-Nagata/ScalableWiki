@@ -26,9 +26,5 @@ case class PluginInfo(className: String, tpe: WikiPlugin, format: WikiFormat)
 case class Weight()
 case class Menu()
 case class Action()
-
-abstract class WikiPlugin {
-}
-
-abstract class Parser {
-}
+case class WikiPlugin(name: String)
+case class Parser(name: String)

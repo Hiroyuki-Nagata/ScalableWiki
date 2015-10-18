@@ -116,7 +116,7 @@ abstract class AbstractWiki {
   /*
    * If wiki instance is parsing, return instance of Parser
    */
-  def getCurrentParser(): Parser
+  def getCurrentParser(): Option[Parser]
   /*
    * Report error from action handler
    */
