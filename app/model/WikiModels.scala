@@ -22,10 +22,10 @@ case object PublishUser extends WikiPageLevel
 case object PublishAdmin extends WikiPageLevel
 
 case class LoginInfo(id: String, userType: String, path: String)
-case class PluginInfo(className: String, tpe: WikiPlugin, format: WikiFormat)
+case class PluginInfo(className: String, tpe: WikiPluginType, format: WikiFormat)
 
 case class Weight()
 case class Menu()
 case class Action()
-case class WikiPlugin(name: String)
+case class WikiPlugin[T](cls: T, tpe: WikiPluginType, format: WikiFormat)
 case class Parser(name: String)

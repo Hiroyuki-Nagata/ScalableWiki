@@ -29,7 +29,7 @@ abstract class AbstractWiki {
   /*
    * Add editform plugin
    */
-  def addEditformPlugin(plugin: WikiPlugin, weight: Weight)
+  def addEditformPlugin[T](plugin: WikiPlugin[T], weight: Weight)
   /*
    * Get editform plugin's output
    */
@@ -49,11 +49,11 @@ abstract class AbstractWiki {
   /*
    * Install plugin
    */
-  def installPlugin(plugin: WikiPlugin)
+  def installPlugin[T](plugin: WikiPlugin[T])
   /*
    * Check installed plugin
    */
-  def isInstalled(plugin: WikiPlugin): Boolean
+  def isInstalled[T](plugin: WikiPlugin[T]): Boolean
   /*
    * Add menu, if you don't allow crowling set nofollow true 
    */
@@ -114,7 +114,7 @@ abstract class AbstractWiki {
   /*
    * Call inline plugin or paragragh plugin
    */
-  def processPlugin(plugin: WikiPlugin, parser: Parser)
+  def processPlugin[T](plugin: WikiPlugin[T], parser: Parser)
   /*
    * If wiki instance is parsing, return instance of Parser
    */
