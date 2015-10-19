@@ -1,5 +1,7 @@
 package jp.gr.java_conf.hangedman.util.wiki
 
+import jp.gr.java_conf.hangedman.model.WikiPageLevel
+
 class DefaultStorage {
 
   // A file saved last updated day of pages
@@ -29,8 +31,11 @@ class DefaultStorage {
   def freezePage() = {}
   def unFreezePage() = {}
   def getFreezeList() = {}
-  def isFreeze() = {}
-  def setPageLevel() = {}
+  def isFreeze(page: String, path: String): Boolean = {
+    false
+  }
+  def setPageLevel(pageName: String, level: WikiPageLevel) = {
+  }
   def getPageLevel() = {}
 
 }

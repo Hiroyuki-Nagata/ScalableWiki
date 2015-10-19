@@ -186,7 +186,7 @@ abstract class AbstractWiki {
   /*
    * Get the max level for current user's permission
    */
-  def GetCanShowMax(): Option[WikiPageLevel]
+  def getCanShowMax(): Option[WikiPageLevel]
   /*
    * Get the page can be referenced
    */
@@ -253,7 +253,7 @@ abstract class AbstractWiki {
    * Get value if key is specified, else set the value
    */
   def config(key: String, value: String)
-  def config(key: String): String
+  def config(key: String): Option[String]
   /*
    * Check the function for farm is enabled or not
    */
@@ -266,7 +266,7 @@ abstract class AbstractWiki {
    * Get current level of wiki;
    * Root => 0, child => 1...and so on.
    */
-  def GetChildWikiDepth(): Int
+  def getChildWikiDepth(): Int
   /*
    * Remove a child wiki
    */

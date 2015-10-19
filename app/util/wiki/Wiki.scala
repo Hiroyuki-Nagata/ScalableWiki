@@ -2,6 +2,7 @@ package jp.gr.java_conf.hangedman.util.wiki
 
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
+import com.typesafe.config.ConfigValueFactory
 import java.net.URL
 import jp.gr.java_conf.hangedman.model._
 import net.ceedubs.ficus._
@@ -25,11 +26,13 @@ class Wiki(setupfile: String) extends AbstractWiki with Controller {
 
   // FIXME: temporary impl
   val users: ArrayBuffer[User] = ArrayBuffer[User]()
+  val installedPlugin: ArrayBuffer[WikiPlugin] = ArrayBuffer[WikiPlugin]()
+
   var title: String = ""
   var isEdit: Boolean = false
 
-  def GetCanShowMax(): Option[WikiPageLevel] = { Some(PublishAll) }
-  def GetChildWikiDepth(): Int = { 0 }
+  def getCanShowMax(): Option[WikiPageLevel] = { Some(PublishAll) }
+  def getChildWikiDepth(): Int = { 0 }
   def addAdminHandler[T](action: Action, cls: T): Unit = {}
   def addAdminMenu(label: String, url: String, weight: Weight, desc: String): Unit = {}
   def addBlockPlugin[T](name: String, cls: T, format: WikiFormat): Unit = {}
@@ -55,8 +58,12 @@ class Wiki(setupfile: String) extends AbstractWiki with Controller {
   def canShow(pageName: String): Boolean = { true }
   def checkLogin(id: String, pass: String, path: String): Option[LoginInfo] = { None }
   def childWikiExists(wikiName: String): Boolean = { true }
-  def config(key: String): String = { "" }
-  def config(key: String, value: String): Unit = {}
+  def config(key: String): Option[String] = {
+    config.as[Option[String]](key)
+  }
+  def config(key: String, value: String): Unit = {
+    config.withValue(key, ConfigValueFactory.fromAnyRef(value))
+  }
   def convertFromFswiki(source: String, formatType: WikiFormat, isInline: Boolean = false): String = { "" }
   def convertToFswiki(source: String, formatType: WikiFormat, isInline: Boolean = false): String = { "" }
   def createChildWiki(siteName: String, adminId: String, password: String): Unit = {}
@@ -101,8 +108,20 @@ class Wiki(setupfile: String) extends AbstractWiki with Controller {
   }
   def getWikiList(): List[String] = { List("") }
   def installPlugin(plugin: WikiPlugin): Unit = {}
-  def isFreeze(pageName: String): Boolean = { true }
-  def isInstalled(plugin: WikiPlugin): Boolean = { true }
+  def isFreeze(pageName: String): Boolean = {
+
+    val pattern = new Regex("""(^.*?[^:]):([^:].*?$)""", "path", "page")
+
+    pageName match {
+      case pattern(path, page) =>
+        this.storage.isFreeze(page, path)
+      case _ =>
+        false
+    }
+  }
+  def isInstalled(plugin: WikiPlugin): Boolean = {
+    installedPlugin.exists(installed => installed == plugin)
+  }
   def pageExists(pageName: String): Boolean = {
 
     val pattern = new Regex("""(^.*?[^:]):([^:].*?$)""", "path", "page")
@@ -129,7 +148,9 @@ class Wiki(setupfile: String) extends AbstractWiki with Controller {
   def removeChildWiki(path: String): Unit = {}
   def savePage(pageName: String, content: String, updateTimestamp: Boolean): Unit = {}
   def searchChild(dir: String): List[String] = { List("") }
-  def setPageLevel(pageName: String, level: WikiPageLevel): Unit = {}
+  def setPageLevel(pageName: String, level: WikiPageLevel) = {
+    storage.setPageLevel(pageName, level)
+  }
   def setTitle(title: String, isEditing: Boolean = false) = {
     this.title = title
     this.isEdit = isEditing
@@ -142,5 +163,4 @@ class Wiki(setupfile: String) extends AbstractWiki with Controller {
   def userIsExists(user: User): Boolean = {
     users.exists(listed => listed == user)
   }
-
 }
