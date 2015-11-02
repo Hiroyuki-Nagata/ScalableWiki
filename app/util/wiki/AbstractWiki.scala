@@ -1,8 +1,10 @@
-package jp.gr.java_conf.hangedman.util
+package jp.gr.java_conf.hangedman.util.wiki
 
 import java.net.URL
 import jp.gr.java_conf.hangedman.model._
 import org.joda.time.DateTime
+import play.api.mvc.Result
+import scala.concurrent.Future
 
 abstract class AbstractWiki {
 
@@ -27,7 +29,7 @@ abstract class AbstractWiki {
   /*
    * Add editform plugin
    */
-  def addEditformPlugin(plugin: WikiPlugin, weight: Weight)
+  def addEditformPlugin[T](plugin: WikiPlugin[T], weight: Weight)
   /*
    * Get editform plugin's output
    */
@@ -47,11 +49,11 @@ abstract class AbstractWiki {
   /*
    * Install plugin
    */
-  def installPlugin(plugin: WikiPlugin)
+  def installPlugin[T](plugin: WikiPlugin[T])
   /*
    * Check installed plugin
    */
-  def isInstalled(plugin: WikiPlugin): Boolean
+  def isInstalled[T](plugin: WikiPlugin[T]): Boolean
   /*
    * Add menu, if you don't allow crowling set nofollow true 
    */
@@ -112,11 +114,11 @@ abstract class AbstractWiki {
   /*
    * Call inline plugin or paragragh plugin
    */
-  def processPlugin(plugin: WikiPlugin, parser: Parser)
+  def processPlugin[T](plugin: WikiPlugin[T], parser: Parser)
   /*
    * If wiki instance is parsing, return instance of Parser
    */
-  def getCurrentParser(): Parser
+  def getCurrentParser(): Option[Parser]
   /*
    * Report error from action handler
    */
@@ -184,7 +186,7 @@ abstract class AbstractWiki {
   /*
    * Get the max level for current user's permission
    */
-  def GetCanShowMax(): Option[WikiPageLevel]
+  def getCanShowMax(): Option[WikiPageLevel]
   /*
    * Get the page can be referenced
    */
@@ -238,20 +240,20 @@ abstract class AbstractWiki {
    * Get CGI object
    */
   @deprecated("I don't determine it should be used", "1.0.0")
-  def getCGI()
+  def getCGI(): DummyCGI
   /*
    * Redirect to the page specified by arguments
    */
-  def redirect(pageName: String, part: Int)
+  def redirect(pageName: String, part: Int): Future[Result]
   /*
    * Redirect to the page specified by URL
    */
-  def redirectURL(url: URL)
+  def redirectURL(url: URL): Future[Result]
   /*
    * Get value if key is specified, else set the value
    */
   def config(key: String, value: String)
-  def config(key: String): String
+  def config(key: String): Option[String]
   /*
    * Check the function for farm is enabled or not
    */
@@ -264,7 +266,7 @@ abstract class AbstractWiki {
    * Get current level of wiki;
    * Root => 0, child => 1...and so on.
    */
-  def GetChildWikiDepth(): Int
+  def getChildWikiDepth(): Int
   /*
    * Remove a child wiki
    */
