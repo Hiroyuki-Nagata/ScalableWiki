@@ -29,8 +29,10 @@ case class PluginInfo(className: String, tpe: WikiPluginType, format: WikiFormat
 case class Weight()
 case class Menu()
 case class Action()
-case class WikiPlugin[T](cls: T, tpe: WikiPluginType, format: WikiFormat)
 case class Parser(name: String)
+
+abstract class WikiPlugin(tpe: WikiPluginType, format: WikiFormat) {
+}
 
 class PathInfo() {
   def length(): Int = {
@@ -43,5 +45,11 @@ class DummyCGI {
     new PathInfo()
   }
   def removeSession(wiki: AbstractWiki) = {
+  }
+  def paramAction: Option[Action] = {
+    Some(Action())
+  }
+  def paramPage: String = {
+    "dummy"
   }
 }

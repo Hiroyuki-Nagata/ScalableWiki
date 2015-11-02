@@ -28,8 +28,8 @@ class Wiki(setupfile: String) extends AbstractWiki with Controller {
 
   // FIXME: temporary impl
   val users: ArrayBuffer[User] = ArrayBuffer[User]()
-  val installedPlugin: ArrayBuffer[WikiPlugin[_]] = ArrayBuffer[WikiPlugin[_]]()
-  val plugin: scala.collection.mutable.Map[String, WikiPlugin[_]] = scala.collection.mutable.Map()
+  val installedPlugin: ArrayBuffer[WikiPlugin] = ArrayBuffer[WikiPlugin]()
+  val plugin: scala.collection.mutable.Map[String, WikiPlugin] = scala.collection.mutable.Map()
 
   var title: String = ""
   var isEdit: Boolean = false
@@ -39,23 +39,26 @@ class Wiki(setupfile: String) extends AbstractWiki with Controller {
   def addAdminHandler[T](action: Action, cls: T) = {
   }
   def addAdminMenu(label: String, url: String, weight: Weight, desc: String): Unit = {}
-  def addBlockPlugin[T](name: String, cls: T, format: WikiFormat = HTML_FORMAT) = {
-    this.plugin += ((name, WikiPlugin[T](cls, Block, format)))
+  def addBlockPlugin(name: String, cls: WikiPlugin) = {
+    this.plugin += ((name, cls))
   }
-  def addEditformPlugin[T](plugin: WikiPlugin[T], weight: Weight): Unit = {}
-  def addFormatPlugin[T](name: String, cls: T): Unit = {}
+  def addEditformPlugin(plugin: WikiPlugin, weight: Weight): Unit = {}
+  def addFormatPlugin(name: String, cls: WikiPlugin): Unit = {}
   def addHandler[T](action: Action, cls: T): Unit = {}
   def addHeadInfo(info: String): Unit = {}
   def addHook[T](name: String, obj: T): Unit = {}
-  def addInlinePlugin[T](name: String, cls: T, format: WikiFormat = HTML_FORMAT) = {
-    this.plugin += ((name, WikiPlugin[T](cls, Inline, format)))
+  def addInlinePlugin(name: String, cls: WikiPlugin) = {
+    this.plugin += ((name, cls))
   }
   def addMenu(name: String, href: String, weight: Weight, nofollow: Boolean): Unit = {}
-  def addParagraphPlugin[T](name: String, cls: T, format: WikiFormat = HTML_FORMAT) = {
-    this.plugin += ((name, WikiPlugin[T](cls, Paragraph, format)))
+  def addParagraphPlugin(name: String, cls: WikiPlugin) = {
+    this.plugin += ((name, cls))
   }
-  def addPlugin[T](name: String, cls: T) = {
-    addInlinePlugin(name, cls, HTML_FORMAT)
+  def addPlugin(name: String, cls: WikiPlugin) = {
+    addInlinePlugin(name, cls)
+  }
+  def addPlugin(name: String, cls: String) = {
+
   }
   def addUser(user: User): Unit = {
     users.append(user)
@@ -132,7 +135,8 @@ class Wiki(setupfile: String) extends AbstractWiki with Controller {
     this.title
   }
   def getWikiList(): List[String] = { List("") }
-  def installPlugin[T](plugin: WikiPlugin[T]): Unit = {}
+  def installPlugin(plugin: WikiPlugin): Unit = {}
+  def installPlugin(pluginName: String): Unit = {}
   def isFreeze(pageName: String): Boolean = {
 
     val pattern = new Regex("""(^.*?[^:]):([^:].*?$)""", "path", "page")
@@ -144,7 +148,8 @@ class Wiki(setupfile: String) extends AbstractWiki with Controller {
         false
     }
   }
-  def isInstalled[T](plugin: WikiPlugin[T]): Boolean = {
+  def isInstalled(pluginName: String): Boolean = true
+  def isInstalled(plugin: WikiPlugin): Boolean = {
     installedPlugin.exists(installed => installed == plugin)
   }
   def pageExists(pageName: String): Boolean = {
@@ -162,7 +167,7 @@ class Wiki(setupfile: String) extends AbstractWiki with Controller {
   }
   def parseInlinePlugin(text: String): (String, Array[String], String) = { ("", Array(""), "") }
   def processBeforeExit(): Unit = {}
-  def processPlugin[T](plugin: WikiPlugin[T], parser: Parser) = {
+  def processPlugin(plugin: WikiPlugin, parser: Parser) = {
   }
   def processWiki(wikiformat: String): String = { "" }
   def redirect(pageName: String, part: Int = 0): Future[Result] = {
