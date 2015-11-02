@@ -240,7 +240,7 @@ abstract class AbstractWiki {
    * Get CGI object
    */
   @deprecated("I don't determine it should be used", "1.0.0")
-  def getCGI()
+  def getCGI(): DummyCGI
   /*
    * Redirect to the page specified by arguments
    */

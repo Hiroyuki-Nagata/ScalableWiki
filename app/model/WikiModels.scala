@@ -1,5 +1,7 @@
 package jp.gr.java_conf.hangedman.model
 
+import jp.gr.java_conf.hangedman.util.wiki.AbstractWiki
+
 case class User(id: String, pass: String, role: Role)
 
 sealed abstract class Role
@@ -29,3 +31,17 @@ case class Menu()
 case class Action()
 case class WikiPlugin[T](cls: T, tpe: WikiPluginType, format: WikiFormat)
 case class Parser(name: String)
+
+class PathInfo() {
+  def length(): Int = {
+    0
+  }
+}
+
+class DummyCGI {
+  def pathInfo(): PathInfo = {
+    new PathInfo()
+  }
+  def removeSession(wiki: AbstractWiki) = {
+  }
+}

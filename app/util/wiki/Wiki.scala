@@ -17,7 +17,9 @@ import scala.concurrent.Future
 
 class Wiki(setupfile: String) extends AbstractWiki with Controller {
 
-  val config: Config = ConfigFactory.load()
+  // load "application.conf"
+  val config: Config = ConfigFactory.load(setupfile)
+
   // FIXME: process when config not found
   val pluginDir = config.as[Option[String]]("setup.plugin_dir")
   val frontPage = config.as[Option[String]]("setup.frontpage")
@@ -34,7 +36,8 @@ class Wiki(setupfile: String) extends AbstractWiki with Controller {
 
   def getCanShowMax(): Option[WikiPageLevel] = { Some(PublishAll) }
   def getChildWikiDepth(): Int = { 0 }
-  def addAdminHandler[T](action: Action, cls: T): Unit = {}
+  def addAdminHandler[T](action: Action, cls: T) = {
+  }
   def addAdminMenu(label: String, url: String, weight: Weight, desc: String): Unit = {}
   def addBlockPlugin[T](name: String, cls: T, format: WikiFormat = HTML_FORMAT) = {
     this.plugin += ((name, WikiPlugin[T](cls, Block, format)))
@@ -57,7 +60,15 @@ class Wiki(setupfile: String) extends AbstractWiki with Controller {
   def addUser(user: User): Unit = {
     users.append(user)
   }
-  def addUser(id: String, pass: String, role: Role): Unit = {
+  def addUser(id: String, pass: String, role: Int) = {
+    role match {
+      case 0 =>
+        users.append(User(id, pass, Administrator))
+      case _ =>
+        users.append(User(id, pass, NormalUser))
+    }
+  }
+  def addUser(id: String, pass: String, role: Role) = {
     users.append(User(id, pass, role))
   }
   def addUserHandler[T](action: Action, cls: T): Unit = {}
@@ -89,7 +100,9 @@ class Wiki(setupfile: String) extends AbstractWiki with Controller {
   def getBackup(pageName: String, version: Int): Option[String] = {
     this.storage.getBackup(pageName, version)
   }
-  def getCGI(): Unit = {}
+  def getCGI(): DummyCGI = {
+    new DummyCGI
+  }
   def getCurrentParser(): Option[Parser] = { None }
   def getEditFormat(): WikiFormat = { HTML_FORMAT }
   def getEditformPlugin(): String = { "" }
