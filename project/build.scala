@@ -10,6 +10,25 @@ object ScalableWiki extends Build {
   val Version       = "0.0.1-SNAPSHOT" 
   val ScalaVersion  = "2.10.6"
 
+  lazy val tmplCommand =
+    Command.command("gen-tmpl") { (state: State) =>
+
+      import java.io.File
+
+      println("Generating template files...")
+      val tmplDir = new File("./public/tmpl/")
+      val fi: Seq[File] = (tmplDir ** "*.tmpl").get
+
+      fi foreach { x =>
+        val out = x.getPath.replace("./public/tmpl/", "./app/views/") + ".html"
+        println("Template file " + x.getPath + " => " + out)
+        val fo: File = new File(out)
+        fo.mkdirs
+        fo.createNewFile
+      }
+      state
+    }
+
   val originalJvmOptions = sys.process.javaVmArguments.filter(
     a => Seq("-Xmx", "-Xms", "-XX").exists(a.startsWith)
   )
@@ -52,6 +71,7 @@ object ScalableWiki extends Build {
     resolvers += DefaultMavenRepository,
     resolvers += Classpaths.typesafeReleases,
     libraryDependencies ++= LibraryDependencies,
+    commands += tmplCommand,
     //
     // If you use original name,
     // $ sbt -DherokuAppName=myapp stage deployHeroku
