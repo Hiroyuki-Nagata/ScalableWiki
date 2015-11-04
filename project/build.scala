@@ -28,11 +28,26 @@ object ScalableWiki extends Build {
         val out = x.getPath.replace("./public/tmpl/", "./app/views/") + ".html"
         println("Template file " + x.getPath + " => " + out)
         val fo: File = new File(out)
+        fo.getParentFile.mkdirs
         fo.createNewFile
         // load file contents
         printToFile(fo) { p =>
           scala.io.Source.fromFile(x).getLines.toList.foreach { line =>
-            p.println(line)
+
+            (line.contains("<!--TMPL_VAR NAME="), line.contains("<!--TMPL_IF NAME=")) match {
+              case (true, true) =>
+                val trimTmplVar = """<!--TMPL_VAR NAME=\"(.*?)\".*-->""".r.replaceAllIn(line, m => "@"+m.group(1))
+                val trimTmplIf  = """<!--TMPL_IF NAME=\"(.*?)\".*-->(.*?)<!--/TMPL_IF-->""".r.replaceAllIn(trimTmplVar, m => "@if ("+m.group(1)+".nonEmpty) { " + m.group(2) + " } ")
+                p.println(trimTmplIf)
+              case (true, false) =>
+                val trimTmplVar = """<!--TMPL_VAR NAME=\"(.*?)\".*-->""".r.replaceAllIn(line, m => "@"+m.group(1))
+                p.println(trimTmplVar)
+              case (false, true) =>
+                val trimTmplIf  = """<!--TMPL_IF NAME=\"(.*?)\".*-->(.*?)<!--/TMPL_IF-->""".r.replaceAllIn(line, m => "@if ("+m.group(1)+".nonEmpty) { " + m.group(2) + " } ")
+                p.println(trimTmplIf)
+              case (false, false) =>
+                p.println(line)
+            }
           }
         }
       }
