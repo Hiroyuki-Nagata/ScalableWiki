@@ -10,6 +10,11 @@ object ScalableWiki extends Build {
   val Version       = "0.0.1-SNAPSHOT" 
   val ScalaVersion  = "2.10.6"
 
+  def printToFile(f: java.io.File)(op: java.io.PrintWriter => Unit) {
+    val p = new java.io.PrintWriter(f)
+    try { op(p) } finally { p.close() }
+  }
+
   lazy val tmplCommand =
     Command.command("gen-tmpl") { (state: State) =>
 
@@ -23,8 +28,13 @@ object ScalableWiki extends Build {
         val out = x.getPath.replace("./public/tmpl/", "./app/views/") + ".html"
         println("Template file " + x.getPath + " => " + out)
         val fo: File = new File(out)
-        fo.mkdirs
         fo.createNewFile
+        // load file contents
+        printToFile(fo) { p =>
+          scala.io.Source.fromFile(x).getLines.toList.foreach { line =>
+            p.println(line)
+          }
+        }
       }
       state
     }
