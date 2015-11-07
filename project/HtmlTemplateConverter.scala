@@ -96,6 +96,36 @@ trait HtmlTemplateConverter {
     }
   }
 
+  @scala.annotation.tailrec
+  private def removeMultiLineUnlessStatement(lines: List[String]): List[String] = {
+
+    val p = """.*<!--TMPL_UNLESS NAME=\"(.*?)\".*-->.*""".r
+
+    lines.indexWhere(line => line.contains("<!--TMPL_UNLESS NAME")) match {
+
+      case index if (index != -1) =>
+        // Get $name, <!--TMPL_UNLESS NAME="$name"-->
+        val name = lines(index) match { case p(name) => s"$name" }
+        // Check after TMPL_UNLESS tag
+        val restOfLines: List[String] = lines.drop(index+1)
+        // Get end index of <!--/TMPL_UNLESS-->
+        val endOfUnless: Int = restOfLines.indexWhere(line => line.contains("<!--/TMPL_UNLESS-->"))
+
+        // Recursion ! Recursion !
+        removeMultiLineUnlessStatement(
+          lines.take(index) ++
+            List( tmplUnlessBeginToScala( lines(index) ) ) ++
+            restOfLines.take(endOfUnless) ++
+            List( restOfLines(endOfUnless).replace("""<!--/TMPL_UNLESS-->""", "}") ) ++
+            restOfLines.drop(endOfUnless + 1)
+        )
+
+      // This is end ! Closing !
+      case _ =>
+        lines
+    }
+  }
+
   val rewriteIfStatement = (statement: String, defaultElem: String) =>
   """@if \((.*?)\)""".r
     .replaceAllIn(statement, m => s"@if (${defaultElem}" + m.group(1) + ")")
@@ -106,21 +136,27 @@ trait HtmlTemplateConverter {
 
   val tmplIfToScala = (perlString: String) =>
   // for one line
-  """<!--TMPL_IF NAME=\"(.*?)\".*-->(.*?)<!--/TMPL_IF-->""".r
+  """<!--TMPL_IF.*NAME=\"(.*?)\".*-->(.*?)<!--/TMPL_IF-->""".r
     .replaceAllIn(perlString, m => "@if (" + m.group(1) + ".nonEmpty) { " + m.group(2) + " } ")
 
   val tmplIfBeginToScala = (perlString: String) =>
   // for multi lines
-  """<!--TMPL_IF NAME=\"(.*?)\".*-->""".r
+  """<!--TMPL_IF.*NAME=\"(.*?)\".*-->""".r
     .replaceAllIn(perlString, m => "@if (" + m.group(1) + ".nonEmpty) { ")
 
   val tmplUnlessToScala = (perlString: String) =>
-  """<!--TMPL_UNLESS NAME=\"(.*?)\".*-->(.*?)<!--/TMPL_UNLESS-->""".r
+  // for one line
+  """<!--TMPL_UNLESS.*NAME=\"(.*?)\".*-->(.*?)<!--/TMPL_UNLESS-->""".r
     .replaceAllIn(perlString, m => "@if (" + m.group(1) + ".isEmpty) { " + m.group(2) + " } ")
+
+  val tmplUnlessBeginToScala = (perlString: String) =>
+  // for multi lines
+  """<!--TMPL_UNLESS.*NAME=\"(.*?)\".*-->""".r
+    .replaceAllIn(perlString, m => "@if (" + m.group(1) + ".isEmpty) { ")
 
   val tmplIfElseToScala = tmplIfToScala.andThen(tmplUnlessToScala)
 
-  val tmplVarAndIfElseToScala = tmplVarToScala.andThen(tmplIfElseToScala)
+  val tmplVarAndIfElseToScala = tmplIfElseToScala.andThen(tmplVarToScala)
 
   val tmplLoopToScala = (perlList: List[String]) =>
   removeLoopStatement(perlList): List[String]
@@ -133,8 +169,8 @@ trait HtmlTemplateConverter {
   """<!--/TMPL_LOOP-->""".r
     .replaceAllIn(perlString, m => "} ")
 
-  val tmplIfMultiLineToScala = (perlList: List[String]) => 
-  removeMultiLineIfStatement(perlList): List[String]
+  val tmplIfElseMultiLineToScala = (perlList: List[String]) => 
+  (removeMultiLineIfStatement _ andThen removeMultiLineUnlessStatement _)(perlList): List[String]
 
-  val tmplMultiLinesToScala = tmplLoopToScala.andThen(tmplIfMultiLineToScala)
+  val tmplMultiLinesToScala = tmplLoopToScala.andThen(tmplIfElseMultiLineToScala)
 }
