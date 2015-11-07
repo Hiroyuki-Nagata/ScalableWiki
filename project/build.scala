@@ -3,7 +3,7 @@ import sbt._
 import com.heroku.sbt.HerokuPlugin
 import play.PlayScala
 
-object ScalableWiki extends Build {
+object ScalableWiki extends Build with HtmlTemplateConverter {
 
   val Organization  = "jp.gr.java_conf.hangedman"
   val Name          = "scalablewiki"
@@ -14,22 +14,6 @@ object ScalableWiki extends Build {
     val p = new java.io.PrintWriter(f)
     try { op(p) } finally { p.close() }
   }
-
-  val tmplVarToScala = (perlString: String) =>
-  """<!--TMPL_VAR NAME=\"(.*?)\".*-->""".r
-    .replaceAllIn(perlString, m => "@" + m.group(1))
-
-  val tmplIfToScala = (perlString: String) =>
-  """<!--TMPL_IF NAME=\"(.*?)\".*-->(.*?)<!--/TMPL_IF-->""".r
-    .replaceAllIn(perlString, m => "@if (" + m.group(1) + ".nonEmpty) { " + m.group(2) + " } ")
-
-  val tmplUnlessToScala = (perlString: String) =>
-  """<!--TMPL_UNLESS NAME=\"(.*?)\".*-->(.*?)<!--/TMPL_UNLESS-->""".r
-    .replaceAllIn(perlString, m => "@if (" + m.group(1) + ".isEmpty) { " + m.group(2) + " } ")
-
-  val tmplIfElseToScala = tmplIfToScala.andThen(tmplUnlessToScala)
-
-  val tmplVarAndIfElseToScala = tmplVarToScala.andThen(tmplIfElseToScala)
 
   lazy val tmplCommand =
     Command.command("gen-tmpl") { (state: State) =>
@@ -62,8 +46,11 @@ object ScalableWiki extends Build {
               case (false, false) =>
                 line
             }
-          }.foreach { line =>
-            p.println(line)
+          }.toList match {
+            case lines: List[String] =>
+              tmplMultiLinesToScala(lines).foreach {
+                line => p.println(line)
+              }
           }
         }
       }
