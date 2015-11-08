@@ -173,4 +173,26 @@ trait HtmlTemplateConverter {
   (removeMultiLineIfStatement _ andThen removeMultiLineUnlessStatement _)(perlList): List[String]
 
   val tmplMultiLinesToScala = tmplLoopToScala.andThen(tmplIfElseMultiLineToScala)
+
+  def getScalaTemplateArguments(formatted: List[String]): List[String] = {
+
+    val re = """.*(@[A-Z_]*?)[^A-Z_].*$"""
+
+    formatted.filter {
+      line => line.contains("@")
+    }.filterNot {
+      line => line.contains("@if")
+    }.map {
+      line => line.trim
+    }.map {
+      line => line.replaceAll(re, "$1")
+    }.distinct.filterNot {
+      line => line.equals("@")
+    }.map {
+      line => line.replace("@", "")
+    }.toList.mkString("@(", ": String)(", ": String)") match {
+      case imports: String => 
+        List(imports, "")
+    }
+  }
 }

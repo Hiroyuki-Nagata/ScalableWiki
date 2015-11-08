@@ -48,7 +48,10 @@ object ScalableWiki extends Build with HtmlTemplateConverter {
             }
           }.toList match {
             case lines: List[String] =>
-              tmplMultiLinesToScala(lines).foreach {
+              val formatted = tmplMultiLinesToScala(lines)
+              val arguments = getScalaTemplateArguments(formatted)
+
+              (arguments ++ formatted).foreach {
                 line => p.println(line)
               }
           }
