@@ -34,7 +34,7 @@ object ScalableWiki extends Build with HtmlTemplateConverter {
         printToFile(fo) { p =>
           scala.io.Source.fromFile(x).getLines.toList.map { line =>
 
-            (line.contains("TMPL_VAR NAME"),
+            (line.contains("TMPL_VAR"),
               (line.contains("TMPL_IF") || line.contains("TMPL_UNLESS"))
             ) match {
               case (true, true) =>
@@ -44,7 +44,7 @@ object ScalableWiki extends Build with HtmlTemplateConverter {
               case (false, true) =>
                 tmplIfElseToScala(line)
               case (false, false) =>
-                line
+                line.replaceAll("<!--TMPL_ELSE-->", "} else {")
             }
           }.toList match {
             case lines: List[String] =>
@@ -69,7 +69,8 @@ object ScalableWiki extends Build with HtmlTemplateConverter {
     "jp.t2v" %% "play2-auth"      % "0.13.5",
     "jp.t2v" %% "play2-auth-test" % "0.13.5" % "test",
     "com.typesafe" % "config" % "1.3.0",
-    "net.ceedubs" %% "ficus" % "1.0.1"
+    "net.ceedubs" %% "ficus" % "1.0.1",
+    "com.google.guava" % "guava" % "18.0"
   )
 
   lazy val projectSettings = Seq(

@@ -1,0 +1,53 @@
+@(SITE_TMPL_THEME: List[SiteTmplTheme], SELECT: String, NO_THEME: String, THEME: List[Theme], OUTER_CSS: String, USERCSS: String)
+
+<!--=========================================================================-->
+<!-- 管理画面（スタイル設定） -->
+<!--=========================================================================-->
+
+<h2>スタイル設定</h2>
+
+<h3>サイトテンプレート</h3>
+<p>
+  <select name="site_tmpl_theme">
+  @for(e <- SITE_TMPL_THEME) {
+    <option value="@e.VALUE"
+            @if(SELECT.nonEmpty) { selected } >
+      @e.VALUE
+    </option>
+  } 
+  </select>
+</p>
+
+<h3>テーマ</h3>
+<p>
+  <select name="theme">
+    <option value=""@if(NO_THEME.nonEmpty) {  selected } >
+      使用しない
+    </option>
+    @for(e <- THEME) {
+    <option value="@e.VALUE"
+            @if(SELECT.nonEmpty) { selected } >
+      @e.VALUE
+    </option>
+    } 
+  </select>
+</p>
+
+<h3>外部スタイルシート</h3>
+<p>
+  外部スタイルシートを使用する場合はURLを入力してください。テーマが選択されている場合はテーマが優先されます。
+</p>
+<p>
+  <input type="text" name="outer_css" size="80" value="@OUTER_CSS">
+</p>
+
+<h3>ユーザ定義スタイル</h3>
+<p>
+  <textarea name="usercss"
+            cols="60" rows="10">@USERCSS</textarea>
+</p>
+
+<p>
+  <input type="submit" name="SAVE" value="設定を保存">
+  <input type="reset" value="リセット">
+</p>

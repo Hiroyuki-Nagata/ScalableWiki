@@ -1,0 +1,25 @@
+@(SCRIPT_NAME: String, CONTENT: String, EXISTS_PAGE: String, SAGE: String, ACTION: String, LAST_MODIFIED: String, PAGE_NAME: String, OPTIONAL_PARAMS: List[OptionalParams])
+
+<!--=========================================================================-->
+<!-- ページの編集フォーム -->
+<!--=========================================================================-->
+<form class="update" method="post" action="@SCRIPT_NAME">
+  <textarea cols="80" rows="20" name="content" class="edit">@CONTENT</textarea>
+  <p>
+    @if(EXISTS_PAGE.nonEmpty) { 
+    <input type="checkbox" name="sage" value="1" id="sage"
+      @if(SAGE.nonEmpty) { checked } 
+    ><label for="sage">タイムスタンプを更新しない</label>
+    }
+    <input type="submit"   name="save"         value=" 保 存 ">
+    <input type="submit"   name="diff"         value="差分を確認">
+    <input type="submit"   name="preview"      value="プレビュー">
+    <input type="hidden"   name="action"       value="@ACTION">
+    <input type="hidden"   name="lastmodified" value="@LAST_MODIFIED">
+    <input type="hidden"   name="page"         value="@PAGE_NAME">
+    @for(e <- OPTIONAL_PARAMS) {
+      <input type="hidden" name ="@e.NAME"
+                           value="@e.VALUE">
+    } 
+  </p>
+</form>

@@ -1,0 +1,18 @@
+package models
+
+// Object OPTIONAL_PARAMS contains Set(VALUE, NAME)
+case class OptionalParams(VALUE: String, NAME: String)
+// Object SITE_TMPL_THEME contains Set(VALUE)
+case class SiteTmplTheme(VALUE: String)
+// Object THEME contains Set(VALUE)
+case class Theme(VALUE: String)
+// Object SITE_WIKI_FORMAT contains Set(VALUE)
+case class SiteWikiFormat(VALUE: String)
+// Object STATUS contains Set(VALUE, NAME)
+case class Status(VALUE: String, NAME: String)
+// Object CATEGORY contains Set(VALUE, NAME)
+case class Category(VALUE: String, NAME: String)
+// Object PRIORITY contains Set(VALUE, NAME)
+case class Priority(VALUE: String, NAME: String)
+// Object MENU contains Set(name)
+case class Menu(name: String)

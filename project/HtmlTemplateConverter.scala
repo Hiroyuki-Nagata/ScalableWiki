@@ -22,6 +22,8 @@
  */
 trait HtmlTemplateConverter {
 
+  lazy val gen = new GenerateCaseClasses
+
   @scala.annotation.tailrec
   private def removeLoopStatement(lines: List[String]): List[String] = {
 
@@ -38,17 +40,19 @@ trait HtmlTemplateConverter {
         val endOfLoop: Int = restOfLines.indexWhere(line => line.contains("<!--/TMPL_LOOP-->"))
         // Rewrite internal LOOP tag
         val internalLoop: List[String] = restOfLines.take(endOfLoop).zipWithIndex.map {
-          case(line: String, index: Int) =>
-            if (index < endOfLoop) {
-              line.contains("@if") match {
-                case false =>
-                  line.replace("@", "@e.")
-                case true =>
-                  rewriteIfStatement(line, "e.")
-              }
-            } else {
-              line
+
+          case(line: String, index: Int) if (index < endOfLoop) =>
+            line.contains("@if") match {
+              case false =>
+                line.replace("@", "@e.")
+              case true =>
+                rewriteIfStatement(line, "e.")
             }
+          case(line: String, _) if (index >= endOfLoop) =>
+            line
+        }.map {
+          // Rewrite; <!--TMPL_VAR ESCAPE="HTML" NAME="VALUE"-->
+          line => rewriteVarStatement(line, "e.")
         }
 
         // Recursion ! Recursion !
@@ -130,8 +134,12 @@ trait HtmlTemplateConverter {
   """@if \((.*?)\)""".r
     .replaceAllIn(statement, m => s"@if(${defaultElem}" + m.group(1) + ")")
 
+  val rewriteVarStatement = (statement: String, defaultElem: String) =>
+  """<!--TMPL_VAR(?:.*)NAME=\"(.*?)\".*-->""".r
+    .replaceAllIn(statement, m => "@" + defaultElem + m.group(1))
+
   val tmplVarToScala = (perlString: String) =>
-  """<!--TMPL_VAR NAME=\"(.*?)\".*-->""".r
+  """<!--TMPL_VAR(?:.*)NAME=\"(.*?)\".*-->""".r
     .replaceAllIn(perlString, m => "@" + m.group(1))
 
   val tmplIfToScala = (perlString: String) =>
@@ -212,9 +220,18 @@ trait HtmlTemplateConverter {
       line => line.equals("@") || line.isEmpty
     }.map {
       line => line.replace("@", "")
-    }.toList.mkString("@(", ": String, ", ": String)") match {
-      case imports: String => 
-        List(imports, "")
+    }.toList.distinct match {
+      case imports: List[String] =>
+        val classMap: HashMap[String, String] = gen.generateCaseClasses(forLoopMap)
+        val classSpecifiedImports = imports.map { imp => 
+          if (classMap.contains(imp)) {
+            imp + ": " + classMap(imp)
+          } else {
+            imp + ": String"
+          }
+        }
+
+        List(classSpecifiedImports.mkString("@(", ", ", ")"), "")
     }
   }
 }
