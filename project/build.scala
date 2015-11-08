@@ -22,6 +22,7 @@ object ScalableWiki extends Build with HtmlTemplateConverter {
       println("Generating template files...")
       val tmplDir = new File("./public/tmpl/")
       val fi: Seq[File] = (tmplDir ** "*.tmpl").get
+      val gen = new GenerateCaseClasses
 
       fi foreach { x =>
         // /public/tmpl/***.tmpl -> /app/views/***.scala.html
@@ -49,7 +50,7 @@ object ScalableWiki extends Build with HtmlTemplateConverter {
           }.toList match {
             case lines: List[String] =>
               val formatted = tmplMultiLinesToScala(lines)
-              val arguments = getScalaTemplateArguments(formatted)
+              val arguments = getScalaTemplateArguments(formatted)(gen)
 
               (arguments ++ formatted).foreach {
                 line => p.println(line)

@@ -22,8 +22,6 @@
  */
 trait HtmlTemplateConverter {
 
-  lazy val gen = new GenerateCaseClasses
-
   @scala.annotation.tailrec
   private def removeLoopStatement(lines: List[String]): List[String] = {
 
@@ -182,7 +180,7 @@ trait HtmlTemplateConverter {
 
   val tmplMultiLinesToScala = tmplLoopToScala.andThen(tmplIfElseMultiLineToScala)
 
-  def getScalaTemplateArguments(formatted: List[String]): List[String] = {
+  def getScalaTemplateArguments(formatted: List[String])(implicit gen: GenerateCaseClasses): List[String] = {
 
     val captureRegex = """.*?(@[A-Z_]*?)[^A-Z_].*$"""
     val trimRegex = """^(?:.*?)(@.*)$"""
