@@ -128,7 +128,7 @@ trait HtmlTemplateConverter {
 
   val rewriteIfStatement = (statement: String, defaultElem: String) =>
   """@if \((.*?)\)""".r
-    .replaceAllIn(statement, m => s"@if (${defaultElem}" + m.group(1) + ")")
+    .replaceAllIn(statement, m => s"@if(${defaultElem}" + m.group(1) + ")")
 
   val tmplVarToScala = (perlString: String) =>
   """<!--TMPL_VAR NAME=\"(.*?)\".*-->""".r
@@ -137,22 +137,22 @@ trait HtmlTemplateConverter {
   val tmplIfToScala = (perlString: String) =>
   // for one line
   """<!--TMPL_IF.*NAME=\"(.*?)\".*-->(.*?)<!--/TMPL_IF-->""".r
-    .replaceAllIn(perlString, m => "@if (" + m.group(1) + ".nonEmpty) { " + m.group(2) + " } ")
+    .replaceAllIn(perlString, m => "@if(" + m.group(1) + ".nonEmpty) { " + m.group(2) + " } ")
 
   val tmplIfBeginToScala = (perlString: String) =>
   // for multi lines
   """<!--TMPL_IF.*NAME=\"(.*?)\".*-->""".r
-    .replaceAllIn(perlString, m => "@if (" + m.group(1) + ".nonEmpty) { ")
+    .replaceAllIn(perlString, m => "@if(" + m.group(1) + ".nonEmpty) { ")
 
   val tmplUnlessToScala = (perlString: String) =>
   // for one line
   """<!--TMPL_UNLESS.*NAME=\"(.*?)\".*-->(.*?)<!--/TMPL_UNLESS-->""".r
-    .replaceAllIn(perlString, m => "@if (" + m.group(1) + ".isEmpty) { " + m.group(2) + " } ")
+    .replaceAllIn(perlString, m => "@if(" + m.group(1) + ".isEmpty) { " + m.group(2) + " } ")
 
   val tmplUnlessBeginToScala = (perlString: String) =>
   // for multi lines
   """<!--TMPL_UNLESS.*NAME=\"(.*?)\".*-->""".r
-    .replaceAllIn(perlString, m => "@if (" + m.group(1) + ".isEmpty) { ")
+    .replaceAllIn(perlString, m => "@if(" + m.group(1) + ".isEmpty) { ")
 
   val tmplIfElseToScala = tmplIfToScala.andThen(tmplUnlessToScala)
 
@@ -176,21 +176,43 @@ trait HtmlTemplateConverter {
 
   def getScalaTemplateArguments(formatted: List[String]): List[String] = {
 
-    val re = """.*(@[A-Z_]*?)[^A-Z_].*$"""
+    val captureRegex = """.*?(@[A-Z_]*?)[^A-Z_].*$"""
+    val trimRegex = """^(?:.*?)(@.*)$"""
+    val atIfRegex = """@if\(([A-Za-z0-9_]*?)(?:\.isEmpty|\.nonEmpty)\).*$"""
+    val atForRegex = """@for\(.* ([A-Za-z0-9_]*?)\).*$"""
+    val atERegex = """@e\.([A-Za-z0-9_]*?)(?:$|[^A-Za-z0-9_]+.*$)"""
+
+    import scala.collection.mutable.HashMap
+    import scala.collection.mutable.MultiMap
+    import scala.collection.mutable.Set
+    val forLoopMap = new HashMap[String, Set[String]] with MultiMap[String, String]
+    var forLoopKey = ""
 
     formatted.filter {
       line => line.contains("@")
-    }.filterNot {
-      line => line.contains("@if")
     }.map {
-      line => line.trim
+      _ match {
+        case atIf if (atIf.contains("@if")) =>
+          atIf.trim.replaceAll(trimRegex, "$1").replaceAll(atIfRegex, "$1")
+        case atFor if (atFor.contains("@for")) =>
+          forLoopKey = atFor.trim.replaceAll(trimRegex, "$1").replaceAll(atForRegex, "$1")
+          forLoopKey
+        case atE if (atE.contains("@e.")) =>
+          val forLoopValue = atE.trim.replaceAll(trimRegex, "$1").replaceAll(atERegex, "$1")
+          if (forLoopKey.nonEmpty) {
+            forLoopMap.addBinding(forLoopKey, forLoopValue)
+          }
+          ""
+        case line =>
+          line.trim.replaceAll(trimRegex, "$1")
+      }
     }.map {
-      line => line.replaceAll(re, "$1")
+      line => line.replaceAll(captureRegex, "$1")
     }.distinct.filterNot {
-      line => line.equals("@")
+      line => line.equals("@") || line.isEmpty
     }.map {
       line => line.replace("@", "")
-    }.toList.mkString("@(", ": String)(", ": String)") match {
+    }.toList.mkString("@(", ": String, ", ": String)") match {
       case imports: String => 
         List(imports, "")
     }

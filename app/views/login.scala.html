@@ -1,0 +1,23 @@
+@(URL: String, PAGE: String, ACCEPT_USER_REGISTER: String)
+
+<h2>IDとパスワードを入力してください</h2>
+<form action="@URL" method="POST">
+  <table>
+    <tr>
+      <th>ID</th>
+      <td><input type="text" name="id"></td>
+    </tr>
+    <tr>
+      <th>Pass</th>
+      <td><input type="password" name="pass"></td>
+    </tr>
+  </table><br>
+  <input type="submit" name="login"  value="ログイン">
+  <input type="hidden" name="action" value="LOGIN">
+  <input type="hidden" name="page" value="@PAGE">
+</form>
+@if(ACCEPT_USER_REGISTER.nonEmpty) { 
+  <p>
+    <a href="@URL?action=USERREGISTER">新しくユーザ情報を登録</a>
+  </p>
+}

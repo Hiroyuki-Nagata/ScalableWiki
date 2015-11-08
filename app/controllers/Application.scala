@@ -136,7 +136,9 @@ object Application extends Controller {
     // generate header
     //
 
+    // Ok(views.html.bbs(
+    //   "ScalableWiki"
+    // ))
     Ok(views.html.index("Your new application is ready."))
   }
-
 }

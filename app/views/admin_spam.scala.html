@@ -1,0 +1,43 @@
+@(RULE_MULTI_URL: String, RULE_NO_USERAGENT: String, SPAM_CONTENT: String, SPAM_IP: String)
+
+<!--=========================================================================-->
+<!-- 管理画面（スパム対策の設定） -->
+<!--=========================================================================-->
+
+<h2>スパム対策</h2>
+
+<h3>保存を拒否するルール</h3>
+<ul>
+	<li>
+		<label for="rule_multi_url">
+			<input type="checkbox" id="rule_multi_url" name="rules" value="RULE_MULTI_URL"
+			@if(RULE_MULTI_URL.nonEmpty) { checked } >
+			1行に5個以上のURLが含まれていた場合
+		</label>
+	</li>
+	<li>
+		<label for="rule_no_useragent">
+			<input type="checkbox" id="rule_no_useragent" name="rules" value="RULE_NO_USERAGENT"
+			@if(RULE_NO_USERAGENT.nonEmpty) { checked } >
+			ヘッダにUSER-AGENTが含まれていない場合
+		</label>
+	</li>
+</ul>
+
+
+<h3>保存を許可しない文字列</h3>
+<p>
+  <textarea name="spam" rows="10" cols="60">@SPAM_CONTENT</textarea><br>
+  １行に１キーワードずつ入力して下さい。保存時にここで指定したキーワードが含まれていた場合、保存処理が行われなくなります。
+</p>
+
+<h3>編集を拒否するIPアドレス</h3>
+<p>
+  <textarea name="spam_ip" rows="10" cols="60">@SPAM_IP</textarea><br>
+  １行に１つずつ入力して下さい。xxx.xxx.xxx.xxx-xxx.xxx.xxx.xxxのように指定すると範囲指定することが可能です。
+</p>
+
+<p>
+  <input type="submit" name="SAVE" value="設定を保存">
+  <input type="reset" value="リセット">
+</p>

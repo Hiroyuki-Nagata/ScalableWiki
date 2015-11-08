@@ -1,0 +1,57 @@
+@(NAME: String, CATEGORY: String, PRIORITY: String, STATUS: String)
+
+<!--========================================================================-->
+<!-- バグトラックの投稿フォーム -->
+<!--========================================================================-->
+<table>
+  <tr>
+    <th>投稿者</th>
+    <td><input type="text" name="name" value="@NAME"></td>
+  </tr>
+  <tr>
+    <th>サマリ</th>
+    <td><input type="text" name="subject" size="60"></td>
+  </tr>
+  <tr>
+    <th>カテゴリ</th>
+    <td>
+      <select name="category">
+      @for(e <- CATEGORY) {
+        <option value="<!--TMPL_VAR ESCAPE="HTML" NAME="VALUE"-->">
+            <!--TMPL_VAR ESCAPE="HTML" NAME="NAME"-->
+        </option>
+      } 
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <th>優先度</th>
+    <td>
+      <select name="priority">
+      @for(e <- PRIORITY) {
+        <option value="<!--TMPL_VAR ESCAPE="HTML" NAME="VALUE"-->">
+            <!--TMPL_VAR ESCAPE="HTML" NAME="NAME"-->
+        </option>
+      } 
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <th>状態</th>
+    <td>
+      <select name="status">
+      @for(e <- STATUS) {
+        <option value="<!--TMPL_VAR ESCAPE="HTML" NAME="VALUE"-->">
+            <!--TMPL_VAR ESCAPE="HTML" NAME="NAME"-->
+        </option>
+      } 
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <th>内容</th>
+    <td><textarea name="content" rows="8" cols="60"></textarea></td>
+  </tr>
+</table>
+<input type="submit" value=" 投 稿 ">
+<input type="reset" value="リセット">

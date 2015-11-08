@@ -1,3 +1,4 @@
+import java.io.File
 import sbt.Keys._
 import sbt._
 import com.heroku.sbt.HerokuPlugin
@@ -18,14 +19,13 @@ object ScalableWiki extends Build with HtmlTemplateConverter {
   lazy val tmplCommand =
     Command.command("gen-tmpl") { (state: State) =>
 
-      import java.io.File
-
       println("Generating template files...")
       val tmplDir = new File("./public/tmpl/")
       val fi: Seq[File] = (tmplDir ** "*.tmpl").get
 
       fi foreach { x =>
-        val out = x.getPath.replace("./public/tmpl/", "./app/views/") + ".html"
+        // /public/tmpl/***.tmpl -> /app/views/***.scala.html
+        val out = x.getPath.replace("./public/tmpl/", "./app/views/").replace(".tmpl", ".scala.html")
         println("Template file " + x.getPath + " => " + out)
         val fo: File = new File(out)
         fo.getParentFile.mkdirs
