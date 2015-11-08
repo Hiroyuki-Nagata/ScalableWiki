@@ -12,6 +12,7 @@ import jp.gr.java_conf.hangedman.model.PathInfo
 import net.ceedubs.ficus._
 import net.ceedubs.ficus.Ficus.{ booleanValueReader, stringValueReader, optionValueReader, toFicusConfig }
 import play.api._
+import play.api.libs.iteratee.Enumerator
 import play.api.mvc._
 import collection.JavaConversions._
 import scala.io.Source
@@ -37,7 +38,7 @@ object Application extends Controller {
     wiki.config(key, path)
   }
 
-  def index = Action {
+  def index = Action { request =>
 
     // use directory for session, use also for Farm
     wiki.config("session_dir", wiki.config("log_dir").getOrElse("./log"))
@@ -103,8 +104,8 @@ object Application extends Controller {
     // FIXME: +error handling
 
     // Response
-    val isHandyPhone = WikiUtil.handyphone
-    val isSmartPhone = WikiUtil.smartphone
+    val isHandyPhone: Boolean = WikiUtil.handyphone
+    val isSmartPhone: Boolean = WikiUtil.smartphone
 
     val templateName = (isHandyPhone, isSmartPhone) match {
       case (true, false) =>
@@ -135,10 +136,51 @@ object Application extends Controller {
     //
     // generate header
     //
+    val headerTmpl = views.html.header(List(models.Menu("test")))
+    // FIXME: Get Menu
 
-    // Ok(views.html.bbs(
-    //   "ScalableWiki"
-    // ))
-    Ok(views.html.index("Your new application is ready."))
+    //
+    // generate footer
+    //
+    val footerTmpl = views.html.footer(
+      (wiki.config("admin_mail_pub"), wiki.config("admin_name")) match {
+        case (Some(mail), Some(name)) =>
+          "true" // OUT_COPYRIGHT: true
+        case (_, _) =>
+          "" // false
+      },
+      wiki.config("admin_mail_pub").getOrElse("admin@mail.com"),
+      wiki.config("admin_name").getOrElse("admin"),
+      "0.0.1-SNAPSHOT", // this module version
+      "Scala", // lang name
+      scala.util.Properties.versionString, // scala version
+      "" // play version
+    )
+    // FIXME: Get Menu
+
+    //String content = Page.getContentOf(page);
+    //response().setContentType("text/html");
+
+    val contentType = if (isHandyPhone) {
+      "text/html;charset=Shift_JIS"
+    } else {
+      "text/html;charset=UTF-8"
+    }
+
+    // Output HTML
+    Result(
+      header = ResponseHeader(
+        200,
+        Map(
+          CONTENT_TYPE -> contentType,
+          PRAGMA -> "no-cache",
+          CACHE_CONTROL -> "no-cache"
+        )
+      ),
+      body = Enumerator(
+        headerTmpl.toString.getBytes,
+        footerTmpl.toString.getBytes
+      )
+    )
   }
 }

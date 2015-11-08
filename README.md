@@ -2,7 +2,7 @@
 
 * FreeStyleWiki clone
 
-** Convert Perl`s HTML::Template files to Scala play template file
+    * Convert Perl`s HTML::Template files to Scala play template file
 ```
  > sbt gen-tmpl
 ```
