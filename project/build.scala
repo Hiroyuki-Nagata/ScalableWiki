@@ -1,14 +1,64 @@
+import java.io.File
 import sbt.Keys._
 import sbt._
 import com.heroku.sbt.HerokuPlugin
 import play.PlayScala
 
-object ScalableWiki extends Build {
+object ScalableWiki extends Build with HtmlTemplateConverter {
 
   val Organization  = "jp.gr.java_conf.hangedman"
   val Name          = "scalablewiki"
   val Version       = "0.0.1-SNAPSHOT" 
   val ScalaVersion  = "2.10.6"
+
+  def printToFile(f: java.io.File)(op: java.io.PrintWriter => Unit) {
+    val p = new java.io.PrintWriter(f)
+    try { op(p) } finally { p.close() }
+  }
+
+  lazy val tmplCommand =
+    Command.command("gen-tmpl") { (state: State) =>
+
+      println("Generating template files...")
+      val tmplDir = new File("./public/tmpl/")
+      val fi: Seq[File] = (tmplDir ** "*.tmpl").get
+
+      fi foreach { x =>
+        // /public/tmpl/***.tmpl -> /app/views/***.scala.html
+        val out = x.getPath.replace("./public/tmpl/", "./app/views/").replace(".tmpl", ".scala.html")
+        println("Template file " + x.getPath + " => " + out)
+        val fo: File = new File(out)
+        fo.getParentFile.mkdirs
+        fo.createNewFile
+        // load file contents
+        printToFile(fo) { p =>
+          scala.io.Source.fromFile(x).getLines.toList.map { line =>
+
+            (line.contains("TMPL_VAR"),
+              (line.contains("TMPL_IF") || line.contains("TMPL_UNLESS"))
+            ) match {
+              case (true, true) =>
+                tmplVarAndIfElseToScala(line)
+              case (true, false) =>
+                tmplVarToScala(line)
+              case (false, true) =>
+                tmplIfElseToScala(line)
+              case (false, false) =>
+                line.replaceAll("<!--TMPL_ELSE-->", "} else {")
+            }
+          }.toList match {
+            case lines: List[String] =>
+              val formatted = tmplMultiLinesToScala(lines)
+              val arguments = getScalaTemplateArguments(formatted)
+
+              (arguments ++ formatted).foreach {
+                line => p.println(line)
+              }
+          }
+        }
+      }
+      state
+    }
 
   val originalJvmOptions = sys.process.javaVmArguments.filter(
     a => Seq("-Xmx", "-Xms", "-XX").exists(a.startsWith)
@@ -19,7 +69,8 @@ object ScalableWiki extends Build {
     "jp.t2v" %% "play2-auth"      % "0.13.5",
     "jp.t2v" %% "play2-auth-test" % "0.13.5" % "test",
     "com.typesafe" % "config" % "1.3.0",
-    "net.ceedubs" %% "ficus" % "1.0.1"
+    "net.ceedubs" %% "ficus" % "1.0.1",
+    "com.google.guava" % "guava" % "18.0"
   )
 
   lazy val projectSettings = Seq(
@@ -52,6 +103,7 @@ object ScalableWiki extends Build {
     resolvers += DefaultMavenRepository,
     resolvers += Classpaths.typesafeReleases,
     libraryDependencies ++= LibraryDependencies,
+    commands += tmplCommand,
     //
     // If you use original name,
     // $ sbt -DherokuAppName=myapp stage deployHeroku

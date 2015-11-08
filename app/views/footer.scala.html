@@ -1,0 +1,28 @@
+@(OUT_COPYRIGHT: String, ADMIN_MAIL: String, ADMIN_NAME: String, VERSION: String, PERL_VERSION: String, MOD_PERL: String)
+
+<!--========================================================================-->
+<!-- フッタ -->
+<!--========================================================================-->
+<div class="footer">
+  
+  <!-- 管理者の情報 -->
+  @if(OUT_COPYRIGHT.nonEmpty) { 
+    Copyright (C) 2002-2011
+    @if(ADMIN_MAIL.nonEmpty) { 
+      <a href="mailto:@ADMIN_MAIL">
+        @ADMIN_NAME
+      </a>
+    } else {
+      @ADMIN_NAME
+    }
+    <br>
+  }
+  
+  <!-- FSWikiのバージョン情報 -->
+  Powered by <a href="http://fswiki.sourceforge.jp/cgi-bin/wiki.cgi">FreeStyleWiki@VERSION</a>
+    with Perl@PERL_VERSION
+  @if(MOD_PERL.nonEmpty) { 
+    &amp; @MOD_PERL
+  }
+  
+</div>

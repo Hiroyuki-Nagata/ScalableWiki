@@ -3,6 +3,7 @@
 # ~~~~
 
 # Home page
+GET     /                           jp.gr.java_conf.hangedman.controllers.Application.index
 GET     /swiki                      jp.gr.java_conf.hangedman.controllers.Application.index
 
 # Map static resources from the /public folder to the /assets URL path

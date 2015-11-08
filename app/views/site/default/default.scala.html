@@ -1,0 +1,74 @@
+@(EDIT_MODE: String, CAN_SHOW: String, HEAD_INFO: String, THEME_CSS: String, HAVE_USER_CSS: String, USER_CSS: String, SITE_TITLE: String, MENU: String, TITLE: String, EXIST_PAGE_Menu: String, EXIST_PAGE_Header: String, CONTENT: String, EXIST_PAGE_Footer: String, FOOTER: String)
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    
+    @if(EDIT_MODE.nonEmpty) { 
+      <meta name="ROBOTS" content="NOINDEX, NOFOLLOW">
+    }
+    @if(CAN_SHOW.isEmpty) { 
+      <meta name="ROBOTS" content="NOARCHIVE">
+    }
+    
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="Content-Style-Type" content="text/css">
+    
+    @HEAD_INFO
+    
+    @if(THEME_CSS.nonEmpty) { 
+      <link rel="stylesheet" type="text/css" href="@THEME_CSS">
+    }
+    
+    @if(HAVE_USER_CSS.nonEmpty) { 
+      <style type="text/css">
+      <!--
+      @USER_CSS
+      -->
+      </style>
+    }
+    
+    <title>@SITE_TITLE</title>
+  </head>
+  <body>
+  
+  @MENU
+  <h1>@TITLE</h1>
+  
+  @if(EXIST_PAGE_Menu.nonEmpty) { 
+    <div class="main">
+  }
+  
+  @if(EDIT_MODE.isEmpty) { 
+    @if(EXIST_PAGE_Header.nonEmpty) { 
+      <div class="header">
+        <!--FSWIKI_INCLUDE PAGE="Header"-->
+      </div>
+    }
+  }
+  
+  <div class="day">
+    <div class="body">
+      <div class="section">
+        @CONTENT
+      </div>
+    </div>
+    @if(EDIT_MODE.isEmpty) { 
+      @if(EXIST_PAGE_Footer.nonEmpty) { 
+        <div class="comment">
+          <!--FSWIKI_INCLUDE PAGE="Footer"-->
+        </div>
+      }
+    }
+  </div>
+
+  @if(EXIST_PAGE_Menu.nonEmpty) { 
+    </div>
+    <div class="sidebar">
+      <!--FSWIKI_INCLUDE PAGE="Menu"-->
+    </div>
+  }
+  
+  @FOOTER
+
+</body></html>

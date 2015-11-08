@@ -29,7 +29,7 @@ abstract class AbstractWiki {
   /*
    * Add editform plugin
    */
-  def addEditformPlugin[T](plugin: WikiPlugin[T], weight: Weight)
+  def addEditformPlugin(plugin: WikiPlugin, weight: Weight)
   /*
    * Get editform plugin's output
    */
@@ -49,11 +49,13 @@ abstract class AbstractWiki {
   /*
    * Install plugin
    */
-  def installPlugin[T](plugin: WikiPlugin[T])
+  def installPlugin(plugin: WikiPlugin)
+  def installPlugin(pluginName: String)
   /*
    * Check installed plugin
    */
-  def isInstalled[T](plugin: WikiPlugin[T]): Boolean
+  def isInstalled(plugin: WikiPlugin): Boolean
+  def isInstalled(pluginName: String): Boolean
   /*
    * Add menu, if you don't allow crowling set nofollow true 
    */
@@ -86,19 +88,20 @@ abstract class AbstractWiki {
    * Add inline plugin
    */
   @deprecated("This function remains for compatibility for FreeStyleWiki 3.4", "1.0.0")
-  def addPlugin[T](name: String, cls: T)
+  def addPlugin(name: String, cls: WikiPlugin)
+  def addPlugin(name: String, cls: String)
   /*
    * Register a inline plugin, specify the format "WIKI" or "HTML"
    */
-  def addInlinePlugin[T](name: String, cls: T, format: WikiFormat)
+  def addInlinePlugin(name: String, cls: WikiPlugin)
   /*
    * Register a paragraph plugin, specify the format "WIKI" or "HTML"
    */
-  def addParagraphPlugin[T](name: String, cls: T, format: WikiFormat)
+  def addParagraphPlugin(name: String, cls: WikiPlugin)
   /*
    * Register a block plugin, specify the format "WIKI" or "HTML"
    */
-  def addBlockPlugin[T](name: String, cls: T, format: WikiFormat)
+  def addBlockPlugin(name: String, cls: WikiPlugin)
   /*
    * Get plugin info
    */
@@ -114,7 +117,7 @@ abstract class AbstractWiki {
   /*
    * Call inline plugin or paragragh plugin
    */
-  def processPlugin[T](plugin: WikiPlugin[T], parser: Parser)
+  def processPlugin(plugin: WikiPlugin, parser: Parser)
   /*
    * If wiki instance is parsing, return instance of Parser
    */
@@ -134,7 +137,7 @@ abstract class AbstractWiki {
   /*
    * Add format plugin
    */
-  def addFormatPlugin[T](name: String, cls: T)
+  def addFormatPlugin(name: String, cls: WikiPlugin)
   /*
    * Get list of format plugins
    */
