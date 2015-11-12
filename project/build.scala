@@ -23,6 +23,7 @@ object ScalableWiki extends Build with HtmlTemplateConverter {
       val tmplDir = new File("./public/tmpl/")
       val fi: Seq[File] = (tmplDir ** "*.tmpl").get
       val gen = new GenerateCaseClasses
+      val manyArgFileBuffer = scala.collection.mutable.ListBuffer.empty[String]
 
       fi foreach { x =>
         // /public/tmpl/***.tmpl -> /app/views/***.scala.html
@@ -52,12 +53,22 @@ object ScalableWiki extends Build with HtmlTemplateConverter {
               val formatted = tmplMultiLinesToScala(lines)
               val arguments = getScalaTemplateArguments(formatted)(gen)
 
-              (arguments ++ formatted).foreach {
+              (List(arguments.mkString("@(", ", ", ")"), "") ++ formatted).foreach {
                 line => p.println(line)
+              }
+
+              if (arguments.size > 20) {
+                manyArgFileBuffer += out
               }
           }
         }
       }
+
+      // If there are some sources have many arguments
+      manyArgFileBuffer.foreach { x =>
+        new ReduceArguments(x).reduce
+      }
+
       state
     }
 

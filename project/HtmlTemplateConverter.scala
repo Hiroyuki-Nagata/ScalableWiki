@@ -229,7 +229,8 @@ trait HtmlTemplateConverter {
           }
         }
 
-        List(classSpecifiedImports.mkString("@(", ", ", ")"), "")
+        println(s"This template file has ${classSpecifiedImports.size} arguments !")
+        classSpecifiedImports
     }
   }
 }
