@@ -14,12 +14,20 @@ class ReduceArguments(file: String) {
     // |......
     // |....
     // |..
-//    while (getCurrentImportsSize > 20) {
-      getCurrentFrequencyValues.head match {
-        case (leader, companions) =>
-          renameArguments(leader, companions)
-      }
-//    }
+    //while (getCurrentImportsSize > 20) {
+
+    getCurrentFrequencyValues.head match {
+      case (leader, companions) =>
+        println(s"--> $leader $companions")
+        renameArguments(leader, companions)
+    }
+    getCurrentFrequencyValues.head match {
+      case (leader, companions) =>
+        println(s"-->> $leader $companions")
+        renameArguments(leader, companions)
+    }
+
+    //}
   }
 
   def getCurrentFrequencyValues(): TreeMap[String, Map[String, String]] = {
@@ -44,6 +52,7 @@ class ReduceArguments(file: String) {
     TreeMap(
       scala.io.Source.fromFile(targetFile).getLines.toList.head.split(",").map { s =>
         val str = s.replace("@(", "").replace(")", "")
+        println(s"!!! $str")
         str.trim.split(":")(0)->str.trim.split(":")(1)
       }.toMap.toArray:_*
     )
@@ -53,7 +62,7 @@ class ReduceArguments(file: String) {
 
   def renameArguments(leader: String, companions: Map[String, String]) = {
     // leader: "FOO_" to "FOO."
-    val className: String = leader.replace("_", "")
+    val instanceName: String = leader.replace("_", "")
 
     import scala.collection.mutable.HashMap
     import scala.collection.mutable.MultiMap
@@ -64,43 +73,42 @@ class ReduceArguments(file: String) {
     val wmm = new HashMap[String, Set[String]] with MultiMap[String, String]
 
     companions.foreach { e =>
-      wmm.addBinding(className, e._1.replace(s"${className}_", ""))
+      wmm.addBinding(instanceName, e._1.replace(s"${instanceName}_", ""))
     }
 
     // Generate the case class
     gen.generateCaseClasses(wmm)
     // Collect already defined instances and their companions
     val currentCaseClasses: HashMap[String, Set[String]] = gen.getCurrentCaseClasses
+    val className: String = UPPER_UNDERSCORE.to(UPPER_CAMEL, instanceName)
 
     //
     // Fix the first import line
     //
     val imports: String = scala.io.Source.fromFile(targetFile).getLines.toList.head.replace("@(", "")
-    val replaceTargets: List[String] = imports.split(",").map {
+
+    val newImports: List[String] = imports.split(",").map {
       imports => imports.trim.split(":")(0)
-    }.toList
-    val replacedElem: List[String] = replaceTargets.map {
-      imports => imports.replaceAll(s"${className}_", s"${className}.")
-    }.toList
-    val newImports = className :: replacedElem.filterNot {
-      imports => imports.contains(s"${className}.")
+    }.toList.map {
+      imports => imports.replaceAll(s"${instanceName}_", s"${instanceName}.")
+    }.toList.filterNot {
+      imports => imports.contains(s"${instanceName}.")
     }.map {
       arg => if (currentCaseClasses.isDefinedAt(arg)) {
-        val objectName = arg.toLowerCase
-        println(s"${arg}: ${objectName}")
-        s"${arg}: ${objectName}"
+        val objectName = LOWER_UNDERSCORE.to(UPPER_CAMEL, arg)
+        s"${arg}: List[${objectName}]"
       } else {
         s"${arg}: String"
       }
-    }.toList.sorted
+    }.toList ::: List(s"${instanceName}: ${className}")
+
+    println(s"Arguments reduced template file has ${newImports.size} arguments !")
 
     //
     // Load lines for sources
     //
-
-    //
     val formatted: List[String] = scala.io.Source.fromFile(targetFile).getLines.toList.tail.map {
-      line => println(line); line
+      line => line.replaceAll(s"${instanceName}_", s"${instanceName}.")
     }
 
     // Revert the file, and write
@@ -109,7 +117,7 @@ class ReduceArguments(file: String) {
     f.createNewFile
 
     printToFile(f) { p =>
-      (List(newImports.mkString("@(", ", ", ")"), "") ++ formatted).foreach {
+      (List(newImports.sorted.mkString("@(", ", ", ")"), "") ++ formatted).foreach {
         line => p.println(line)
       }
     }
