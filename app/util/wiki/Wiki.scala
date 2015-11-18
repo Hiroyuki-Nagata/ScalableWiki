@@ -3,6 +3,7 @@ package jp.gr.java_conf.hangedman.util.wiki
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import com.typesafe.config.ConfigValueFactory
+import java.io.File
 import java.net.URL
 import jp.gr.java_conf.hangedman.model._
 import net.ceedubs.ficus._
@@ -17,8 +18,9 @@ import scala.concurrent.Future
 
 class Wiki(setupfile: String) extends AbstractWiki with Controller {
 
-  // load "application.conf"
-  val config: Config = ConfigFactory.load(setupfile)
+  // load "setup.conf"
+  val config: Config = ConfigFactory.parseFile(new File("conf/" + setupfile))
+  val defaultConf: Config = ConfigFactory.parseFile(new File("conf/config.dat"))
 
   // FIXME: process when config not found
   val pluginDir = config.as[Option[String]]("setup.plugin_dir")
@@ -82,7 +84,14 @@ class Wiki(setupfile: String) extends AbstractWiki with Controller {
   def checkLogin(id: String, pass: String, path: String): Option[LoginInfo] = { None }
   def childWikiExists(wikiName: String): Boolean = { true }
   def config(key: String): Option[String] = {
-    config.as[Option[String]](key)
+    (config.as[Option[String]](key), defaultConf.as[Option[String]](key)) match {
+      case (Some(l), None) =>
+        Some(l)
+      case (None, Some(r)) =>
+        Some(r)
+      case (_, _) =>
+        None
+    }
   }
   def config(key: String, value: String): Unit = {
     config.withValue(key, ConfigValueFactory.fromAnyRef(value))

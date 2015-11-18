@@ -219,15 +219,16 @@ object Application extends Controller {
       "text/html;charset=UTF-8"
     }
 
-    // Result HTML
+    // Set parameters in template
     val wikiHtml = siteTemplate(
       "true", // EDIT_MODE        
       "true", // CAN_SHOW         
       headerTmpl, // HEAD_INFO        
       "css", // THEME_CSS        
       "true", // HAVE_USER_CSS    
-      "css", // USER_CSS         
-      "Default Page", // SITE_TITLE       
+      "css", // USER_CSS
+      // SITE_TITLE
+      wiki.getTitle + " - " + wiki.config("site_title").getOrElse("[ScalableWiki]"),
       "Menu", // MENU             
       "Default Title", // TITLE            
       "Page Menu", // EXIST_PAGE_Menu  
