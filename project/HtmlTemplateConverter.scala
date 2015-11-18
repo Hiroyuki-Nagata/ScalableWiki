@@ -180,6 +180,15 @@ trait HtmlTemplateConverter {
 
   val tmplMultiLinesToScala = tmplLoopToScala.andThen(tmplIfElseMultiLineToScala)
 
+  def isHtmlTag(imp: String): Boolean = {
+    imp match {
+      case "HEAD_INFO" | "FOOTER" =>
+        true
+      case _ =>
+        false
+    }
+  }
+
   def getScalaTemplateArguments(formatted: List[String])(implicit gen: GenerateCaseClasses): List[String] = {
 
     val captureRegex = """.*?(@[A-Z_]*?)[^A-Z_].*$"""
@@ -224,6 +233,8 @@ trait HtmlTemplateConverter {
         val classSpecifiedImports = imports.map { imp => 
           if (classMap.contains(imp)) {
             imp + ": " + classMap(imp)
+          } else if (isHtmlTag(imp)) {
+            imp + ": Html"
           } else {
             imp + ": String"
           }
