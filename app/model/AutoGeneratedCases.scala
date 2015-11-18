@@ -1,7 +1,7 @@
 package models
 
-// Object MENU contains Set(name)
-case class Menu(name: String)
+// Object MENU contains Set(href, name)
+case class Menu(href: String, name: String)
 // Object OPTIONAL_PARAMS contains Set(VALUE, NAME)
 case class OptionalParams(VALUE: String, NAME: String)
 // Object STATUS contains Set(VALUE, NAME)
