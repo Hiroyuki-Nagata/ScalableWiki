@@ -9,7 +9,7 @@ scala:
 
 jdk:
   - oraclejdk7
-  - openjdk6
+  - openjdk7
 
 notifications:
   email: true

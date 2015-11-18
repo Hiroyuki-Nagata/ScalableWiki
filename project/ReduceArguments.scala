@@ -1,5 +1,6 @@
 import java.io.File
 import scala.collection.immutable.TreeMap
+import scala.collection.immutable.ListMap
 import scala.collection.mutable.HashMap
 import scala.collection.mutable.MultiMap
 import com.google.common.base.CaseFormat._
@@ -14,32 +15,27 @@ class ReduceArguments(file: String) {
     // |......
     // |....
     // |..
-    //while (getCurrentImportsSize > 20) {
-
-    getCurrentFrequencyValues.head match {
-      case (leader, companions) =>
-        println(s"--> $leader $companions")
-        renameArguments(leader, companions)
+    while (getCurrentImportsSize > 20) {
+      getCurrentFrequencyValues.head match {
+        case (leader, companions) =>
+          renameArguments(leader, companions)
+      }
     }
-    getCurrentFrequencyValues.head match {
-      case (leader, companions) =>
-        println(s"-->> $leader $companions")
-        renameArguments(leader, companions)
-    }
-
-    //}
   }
 
-  def getCurrentFrequencyValues(): TreeMap[String, Map[String, String]] = {
+  def getCurrentFrequencyValues(): ListMap[String, Map[String, String]] = {
 
     val args: TreeMap[String, String] = getCurrentImportsTreeMap
     val frequencyKeys: List[String] = getCurrentFrequencyKeys(args)
 
-    TreeMap(
+    ListMap(
       frequencyKeys.map {
-        frequency => frequency -> args.filterKeys(key => key.contains(frequency))
-      }.toMap.toArray:_* //.sortBy(_._2.size).reverse
+        frequency => frequency -> args.filterKeys(key => key.startsWith(frequency))
+      }.toSeq.sortBy(_._2.size).reverse:_*
     )
+    // See also:
+    // http://alvinalexander.com/scala/how-to-sort-map-in-scala-key-value-sortby-sortwith
+    //
   }
 
   def getCurrentFrequencyKeys(args: TreeMap[String, String]): List[String] = {
@@ -52,7 +48,6 @@ class ReduceArguments(file: String) {
     TreeMap(
       scala.io.Source.fromFile(targetFile).getLines.toList.head.split(",").map { s =>
         val str = s.replace("@(", "").replace(")", "")
-        println(s"!!! $str")
         str.trim.split(":")(0)->str.trim.split(":")(1)
       }.toMap.toArray:_*
     )
@@ -86,19 +81,33 @@ class ReduceArguments(file: String) {
     // Fix the first import line
     //
     val imports: String = scala.io.Source.fromFile(targetFile).getLines.toList.head.replace("@(", "")
+    lazy val sources: List[String] = scala.io.Source.fromFile(targetFile).getLines.toList
+    lazy val isListNeeded = (instanceName: String) =>
+    sources.exists(line => line.contains(instanceName) && line.contains("@for")): Boolean
 
     val newImports: List[String] = imports.split(",").map {
       imports => imports.trim.split(":")(0)
     }.toList.map {
-      imports => imports.replaceAll(s"${instanceName}_", s"${instanceName}.")
+      imports => if (imports.startsWith(instanceName)) {
+        imports.replaceFirst(s"${instanceName}_", s"${instanceName}.")
+      } else {
+        imports
+      }
     }.toList.filterNot {
       imports => imports.contains(s"${instanceName}.")
-    }.map {
-      arg => if (currentCaseClasses.isDefinedAt(arg)) {
-        val objectName = LOWER_UNDERSCORE.to(UPPER_CAMEL, arg)
-        s"${arg}: List[${objectName}]"
-      } else {
-        s"${arg}: String"
+    }.map { arg =>
+
+      currentCaseClasses.isDefinedAt(arg) match {
+        case true =>
+          val objectName = LOWER_UNDERSCORE.to(UPPER_CAMEL, arg)
+          if (isListNeeded(arg)) {
+            s"${arg}: List[${objectName}]"
+          } else {
+            s"${arg}: ${objectName}"
+          }
+
+        case false =>
+          s"${arg}: String"
       }
     }.toList ::: List(s"${instanceName}: ${className}")
 
@@ -108,7 +117,8 @@ class ReduceArguments(file: String) {
     // Load lines for sources
     //
     val formatted: List[String] = scala.io.Source.fromFile(targetFile).getLines.toList.tail.map {
-      line => line.replaceAll(s"${instanceName}_", s"${instanceName}.")
+      //line => line.replaceAll(s"${instanceName}_", s"${instanceName}.")
+      line => replaceSpecifiedInstanceName(line, currentCaseClasses)
     }
 
     // Revert the file, and write
@@ -132,8 +142,28 @@ class ReduceArguments(file: String) {
   """(.*?)_.*$""".r
     .replaceAllIn(name, m => m.group(1) + "_")
 
-  val replaceSpecifiedClassName = (line: String, className: String) =>
-  """(${className})_""".r
-    .replaceAllIn(line, m => m.group(1) + ".")
+  def replaceSpecifiedInstanceName
+    (line: String,
+      currentCaseClasses: scala.collection.mutable.HashMap[String, scala.collection.mutable.Set[String]]) = {
 
+    if (line.matches(""".*?(?!_)([A-Z0-9]*?)_.*""")) {
+
+      val instanceNames = """.*?(?!_)([A-Z0-9]*?)_.*""".r
+      val replaced = line match {
+        case instanceNames(instanceName) =>
+          if (currentCaseClasses.isDefinedAt(instanceName)) {
+            println(s"Captured and already defined--> $instanceName")
+            line.replaceAll(s"${instanceName}_", s"${instanceName}.")
+          } else {
+            line
+          }
+        case _ =>
+          line
+      }
+
+      replaced
+    } else {
+      line
+    }
+  }
 }
