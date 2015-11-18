@@ -136,7 +136,7 @@ object Application extends Controller {
     //
     // generate header
     //
-    val headerTmpl = views.html.header(List(models.Menu("test")))
+    val headerTmpl = views.html.header(List(models.Menu("http://www.google.com", "test")), "")
     // FIXME: Get Menu
 
     //
