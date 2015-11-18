@@ -107,13 +107,14 @@ object Application extends Controller {
     val isHandyPhone: Boolean = WikiUtil.handyphone
     val isSmartPhone: Boolean = WikiUtil.smartphone
 
-    val templateName = (isHandyPhone, isSmartPhone) match {
+    // process site template
+    val siteTemplate = (isHandyPhone, isSmartPhone) match {
       case (true, false) =>
-        "site_handyphone_tmpl"
+        views.html.site.default.default_handyphone
       case (false, true) =>
-        "site_smartphone_tmpl"
+        views.html.site.default.default_smartphone
       case (_, _) =>
-        "site_tmpl"
+        views.html.site.default.default
     }
 
     // detect this page is top or not
