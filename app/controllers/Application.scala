@@ -167,6 +167,9 @@ object Application extends Controller {
       "text/html;charset=UTF-8"
     }
 
+    // Result HTML
+    val wikiHtml = views.html.main(title, headerTmpl, footerTmpl)
+
     // Output HTML
     Result(
       header = ResponseHeader(
@@ -178,8 +181,7 @@ object Application extends Controller {
         )
       ),
       body = Enumerator(
-        headerTmpl.toString.getBytes,
-        footerTmpl.toString.getBytes
+        wikiHtml.toString.getBytes
       )
     )
   }
