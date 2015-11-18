@@ -22,6 +22,8 @@ object ScalableWiki extends Build with HtmlTemplateConverter {
       println("Generating template files...")
       val tmplDir = new File("./public/tmpl/")
       val fi: Seq[File] = (tmplDir ** "*.tmpl").get
+      val gen = new GenerateCaseClasses
+      val manyArgFileBuffer = scala.collection.mutable.ListBuffer.empty[String]
 
       fi foreach { x =>
         // /public/tmpl/***.tmpl -> /app/views/***.scala.html
@@ -49,14 +51,24 @@ object ScalableWiki extends Build with HtmlTemplateConverter {
           }.toList match {
             case lines: List[String] =>
               val formatted = tmplMultiLinesToScala(lines)
-              val arguments = getScalaTemplateArguments(formatted)
+              val arguments = getScalaTemplateArguments(formatted)(gen)
 
-              (arguments ++ formatted).foreach {
+              (List(arguments.mkString("@(", ", ", ")"), "") ++ formatted).foreach {
                 line => p.println(line)
+              }
+
+              if (arguments.size > 20) {
+                manyArgFileBuffer += out
               }
           }
         }
       }
+
+      // If there are some sources have many arguments
+      manyArgFileBuffer.foreach { x =>
+        new ReduceArguments(x).reduce
+      }
+
       state
     }
 
@@ -66,11 +78,12 @@ object ScalableWiki extends Build with HtmlTemplateConverter {
 
   // << groupId >> %%  << artifactId >> % << version >>
   lazy val LibraryDependencies = Seq(
+    "com.google.guava" % "guava" % "18.0",
+    "com.typesafe" % "config" % "1.3.0",
     "jp.t2v" %% "play2-auth"      % "0.13.5",
     "jp.t2v" %% "play2-auth-test" % "0.13.5" % "test",
-    "com.typesafe" % "config" % "1.3.0",
     "net.ceedubs" %% "ficus" % "1.0.1",
-    "com.google.guava" % "guava" % "18.0"
+    "org.scalatest" %% "scalatest" % "2.2.4" % "test"
   )
 
   lazy val projectSettings = Seq(
