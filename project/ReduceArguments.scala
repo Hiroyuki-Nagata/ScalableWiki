@@ -152,7 +152,6 @@ class ReduceArguments(file: String) {
       val replaced = line match {
         case instanceNames(instanceName) =>
           if (currentCaseClasses.isDefinedAt(instanceName)) {
-            println(s"Captured and already defined--> $instanceName")
             line.replaceAll(s"${instanceName}_", s"${instanceName}.")
           } else {
             line

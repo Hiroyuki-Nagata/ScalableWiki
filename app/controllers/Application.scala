@@ -15,6 +15,7 @@ import play.api._
 import play.api.libs.iteratee.Enumerator
 import play.api.mvc._
 import collection.JavaConversions._
+import play.twirl.api.Html
 import scala.io.Source
 
 object Application extends Controller {
@@ -107,13 +108,64 @@ object Application extends Controller {
     val isHandyPhone: Boolean = WikiUtil.handyphone
     val isSmartPhone: Boolean = WikiUtil.smartphone
 
-    val templateName = (isHandyPhone, isSmartPhone) match {
+    // process site template
+    def siteTemplate(
+      EDIT_MODE: String,
+      CAN_SHOW: String,
+      HEAD_INFO: Html,
+      THEME_CSS: String,
+      HAVE_USER_CSS: String,
+      USER_CSS: String,
+      SITE_TITLE: String,
+      MENU: String,
+      TITLE: String,
+      EXIST_PAGE_Menu: String,
+      EXIST_PAGE_Header: String,
+      CONTENT: String,
+      EXIST_PAGE_Footer: String,
+      FOOTER: Html
+    ) = (isHandyPhone, isSmartPhone) match {
       case (true, false) =>
-        "site_handyphone_tmpl"
+        views.html.site.default.default_handyphone(
+          SITE_TITLE,
+          MENU,
+          TITLE,
+          CONTENT,
+          FOOTER
+        )
       case (false, true) =>
-        "site_smartphone_tmpl"
+        views.html.site.default.default_smartphone(
+          EDIT_MODE,
+          CAN_SHOW,
+          HEAD_INFO,
+          THEME_CSS,
+          HAVE_USER_CSS,
+          USER_CSS,
+          SITE_TITLE,
+          MENU,
+          TITLE,
+          EXIST_PAGE_Header,
+          CONTENT,
+          EXIST_PAGE_Footer,
+          FOOTER
+        )
       case (_, _) =>
-        "site_tmpl"
+        views.html.site.default.default(
+          EDIT_MODE,
+          CAN_SHOW,
+          HEAD_INFO,
+          THEME_CSS,
+          HAVE_USER_CSS,
+          USER_CSS,
+          SITE_TITLE,
+          MENU,
+          TITLE,
+          EXIST_PAGE_Menu,
+          EXIST_PAGE_Header,
+          CONTENT,
+          EXIST_PAGE_Footer,
+          FOOTER
+        )
     }
 
     // detect this page is top or not
@@ -136,7 +188,7 @@ object Application extends Controller {
     //
     // generate header
     //
-    val headerTmpl = views.html.header(List(models.Menu("test")))
+    val headerTmpl = views.html.header(List(models.Menu("http://www.google.com", "test")), "")
     // FIXME: Get Menu
 
     //
@@ -167,6 +219,25 @@ object Application extends Controller {
       "text/html;charset=UTF-8"
     }
 
+    // Set parameters in template
+    val wikiHtml = siteTemplate(
+      "true", // EDIT_MODE        
+      "true", // CAN_SHOW         
+      headerTmpl, // HEAD_INFO        
+      "css", // THEME_CSS        
+      "true", // HAVE_USER_CSS    
+      "css", // USER_CSS
+      // SITE_TITLE
+      wiki.getTitle + " - " + wiki.config("site_title").getOrElse("[ScalableWiki]"),
+      "Menu", // MENU             
+      "Default Title", // TITLE            
+      "Page Menu", // EXIST_PAGE_Menu  
+      "Page Header", // EXIST_PAGE_Header
+      "Contents", // CONTENT          
+      "Page Footer", // EXIST_PAGE_Footer
+      footerTmpl // FOOTER           
+    )
+
     // Output HTML
     Result(
       header = ResponseHeader(
@@ -178,8 +249,7 @@ object Application extends Controller {
         )
       ),
       body = Enumerator(
-        headerTmpl.toString.getBytes,
-        footerTmpl.toString.getBytes
+        wikiHtml.toString.getBytes
       )
     )
   }

@@ -1,4 +1,4 @@
-@(MENU: List[Menu])
+@(MENU: List[Menu], nofollow: String)
 
 <!--========================================================================-->
 <!-- ヘッダ（メニューを表示） -->
@@ -6,7 +6,11 @@
 <div class="adminmenu">
   @for(e <- MENU) {
     <span class="adminmenu">
-      <a href="@e.name</a>
+      <a href="@e.href"
+      @if(nofollow.nonEmpty) {  rel="nofollow" } 
+      >
+      @e.name
+      </a>
     </span>
   } 
 </div>

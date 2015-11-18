@@ -59,6 +59,7 @@ class GenerateCaseClasses(initFile: Boolean = true) {
     val result = new HashMap[String, String]
 
     printToFile(output) { p =>
+
         mm.foreach {
           case(str, set) => 
             println(s"Object ${str} contains ${set}")

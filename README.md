@@ -6,3 +6,14 @@
 ```
  > sbt gen-tmpl
 ```
+
+* Correspondence table
+  
+| HTML::Template | Play Template       |
+|:--------------:|:-------------------:|
+| TMPL_VAR       | @value              |
+| TMPL_LOOP		 | @for (e <- value)   |
+| TMPL_INCLUDE	 | N/A                 |
+| TMPL_IF		 | @if(value.nonEmpty) |
+| TMPL_ELSE		 | } else {            |
+| TMPL_UNLESS	 | @if(value.isEmpty)  |
