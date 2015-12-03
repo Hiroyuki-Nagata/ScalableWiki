@@ -4,17 +4,12 @@ import sbt._
 import com.heroku.sbt.HerokuPlugin
 import play.PlayScala
 
-object ScalableWiki extends Build with HtmlTemplateConverter {
+object ScalableWiki extends Build with HtmlTemplateConverter with CommonTrait {
 
   val Organization  = "jp.gr.java_conf.hangedman"
   val Name          = "scalablewiki"
   val Version       = "0.0.1-SNAPSHOT" 
   val ScalaVersion  = "2.10.6"
-
-  def printToFile(f: java.io.File)(op: java.io.PrintWriter => Unit) {
-    val p = new java.io.PrintWriter(f)
-    try { op(p) } finally { p.close() }
-  }
 
   lazy val tmplCommand =
     Command.command("gen-tmpl") { (state: State) =>
@@ -72,6 +67,21 @@ object ScalableWiki extends Build with HtmlTemplateConverter {
       state
     }
 
+
+  lazy val genPluginCommand =
+    Command.command("gen-plugins") { (state: State) =>
+      println("Convert Perl plugin files...")
+      ConvertPlugins.convert
+      state
+    }
+
+  lazy val rmPluginCommand =
+    Command.command("rm-plugins") { (state: State) =>
+      println("Remove Perl plugin files...")
+      ConvertPlugins.remove
+      state
+    }
+
   val originalJvmOptions = sys.process.javaVmArguments.filter(
     a => Seq("-Xmx", "-Xms", "-XX").exists(a.startsWith)
   )
@@ -116,7 +126,7 @@ object ScalableWiki extends Build with HtmlTemplateConverter {
     resolvers += DefaultMavenRepository,
     resolvers += Classpaths.typesafeReleases,
     libraryDependencies ++= LibraryDependencies,
-    commands += tmplCommand,
+    commands ++= Seq(tmplCommand, genPluginCommand, rmPluginCommand),
     //
     // If you use original name,
     // $ sbt -DherokuAppName=myapp stage deployHeroku
