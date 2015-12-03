@@ -49,8 +49,8 @@ abstract class AbstractWiki {
   /*
    * Install plugin
    */
-  def installPlugin(plugin: WikiPlugin)
-  def installPlugin(pluginName: String)
+  def installPlugin(plugin: WikiPlugin): String
+  def installPlugin(pluginName: String): String
   /*
    * Check installed plugin
    */

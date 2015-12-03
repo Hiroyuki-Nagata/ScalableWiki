@@ -33,6 +33,7 @@ case class Action()
 case class Parser(name: String)
 
 abstract class WikiPlugin(tpe: WikiPluginType, format: WikiFormat) {
+  def install(): Either[String, Boolean]
 }
 
 class PathInfo() {

@@ -6,34 +6,45 @@ import com.typesafe.config.ConfigValueFactory
 import java.io.File
 import java.net.URL
 import jp.gr.java_conf.hangedman.model._
-import net.ceedubs.ficus._
 import net.ceedubs.ficus.Ficus.{ booleanValueReader, stringValueReader, optionValueReader, toFicusConfig }
+import net.ceedubs.ficus._
 import org.joda.time.DateTime
 import play.api.mvc.Controller
 import play.api.mvc.Result
 import play.api.mvc.Results
 import scala.collection.mutable.ArrayBuffer
-import scala.util.matching.Regex
+import scala.collection.mutable.HashMap
+import scala.collection.mutable.ListBuffer
 import scala.concurrent.Future
+import scala.util.matching.Regex
 
 class Wiki(setupfile: String = "setupfile") extends AbstractWiki with Controller {
 
   // load "setup.conf"
   val config: Config = ConfigFactory.parseFile(new File("conf/" + setupfile))
   val defaultConf: Config = ConfigFactory.parseFile(new File("conf/config.dat"))
+  val pluginDir: String = config.as[Option[String]]("setup.plugin_dir").getOrElse(".")
+  val frontPage: String = config.as[Option[String]]("setup.frontpage").getOrElse("FrontPage")
 
-  // FIXME: process when config not found
-  val pluginDir = config.as[Option[String]]("setup.plugin_dir")
-  val frontPage = config.as[Option[String]]("setup.frontpage")
+  // initialize instance variables
+  val handler = HashMap.empty[String, String]
+  val handlerPermission = HashMap.empty[String, String]
+  val plugin = HashMap.empty[String, WikiPlugin]
+  var title = ""
+  val menu = ArrayBuffer.empty[String]
+  //val CGI               = CGI2->new()
+  val hook = HashMap.empty[String, String]
+  val users = ListBuffer[User]()
+  val adminMenu = ListBuffer()
+  val editform = ListBuffer()
+  val edit = 0
+  val parseTimes = 0
+  val format = HashMap.empty[String, String]
+  val installedPlugin = ListBuffer[String]()
+  val headInfo = ListBuffer()
+
   // FIXME: Timezone, post_max
   val storage = new DefaultStorage
-
-  // FIXME: temporary impl
-  val users: ArrayBuffer[User] = ArrayBuffer[User]()
-  val installedPlugin: ArrayBuffer[WikiPlugin] = ArrayBuffer[WikiPlugin]()
-  val plugin: scala.collection.mutable.Map[String, WikiPlugin] = scala.collection.mutable.Map()
-
-  var title: String = ""
   var isEdit: Boolean = false
 
   def getCanShowMax(): Option[WikiPageLevel] = { Some(PublishAll) }
@@ -144,8 +155,36 @@ class Wiki(setupfile: String = "setupfile") extends AbstractWiki with Controller
     this.title
   }
   def getWikiList(): List[String] = { List("") }
-  def installPlugin(plugin: WikiPlugin): Unit = {}
-  def installPlugin(pluginName: String): Unit = {}
+  def installPlugin(plugin: WikiPlugin): String = {
+    ""
+  }
+  def installPlugin(pluginName: String): String = {
+    if (pluginName.matches("""[^\p{Alnum}]""")) {
+      "<div class=\"error\">" + xml.Utility.escape(s"${plugin}プラグインは不正なプラグインです。") + "</div>"
+    }
+    val module: String = s"plugin::${plugin}::Install"
+    import jp.gr.java_conf.hangedman.util.{ Eval, WikiUtil }
+
+    // Load plugin file, and call install dynamic
+    WikiUtil.getModuleFile(module) match {
+      case Some(file) if (file.exists) =>
+        val isSuccess: Either[String, Boolean] = Eval.fromFile[WikiPlugin](file).install
+        isSuccess match {
+          case Right(r) =>
+            installedPlugin += pluginName
+            ""
+          case Left(message) =>
+            "<div class=\"error\">" +
+              xml.Utility.escape(s"${plugin}プラグインがインストールできません。${message}") +
+              "</div>"
+        }
+
+      case _ =>
+        "<div class=\"error\">" +
+          xml.Utility.escape(s"${plugin}プラグインが存在しません。") +
+          "</div>"
+    }
+  }
   def isFreeze(pageName: String): Boolean = {
 
     val pattern = new Regex("""(^.*?[^:]):([^:].*?$)""", "path", "page")
