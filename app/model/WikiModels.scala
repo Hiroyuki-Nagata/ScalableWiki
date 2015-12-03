@@ -3,6 +3,7 @@ package jp.gr.java_conf.hangedman.model
 import jp.gr.java_conf.hangedman.util.wiki.AbstractWiki
 
 case class User(id: String, pass: String, role: Role)
+case class Users(users: List[User])
 
 sealed abstract class Role
 case object Administrator extends Role

@@ -16,7 +16,7 @@ import scala.collection.mutable.ArrayBuffer
 import scala.util.matching.Regex
 import scala.concurrent.Future
 
-class Wiki(setupfile: String) extends AbstractWiki with Controller {
+class Wiki(setupfile: String = "setupfile") extends AbstractWiki with Controller {
 
   // load "setup.conf"
   val config: Config = ConfigFactory.parseFile(new File("conf/" + setupfile))
