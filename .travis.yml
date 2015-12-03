@@ -9,7 +9,6 @@ scala:
 
 jdk:
   - oraclejdk8
-  - openjdk8
 
 notifications:
   email: true
