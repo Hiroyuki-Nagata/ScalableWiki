@@ -28,6 +28,9 @@ object ConvertPlugins extends CommonTrait {
       val fo: File = new File(out)
       fo.getParentFile.mkdirs
       fo.createNewFile
+      import com.google.common.io.Files
+      val className: String = Files.getNameWithoutExtension(x.getName)
+      val wikiPackage: String = "jp.gr.java_conf.hangedman.util.wiki"
 
       // load file contents
       printToFile(fo) { p =>
@@ -46,18 +49,25 @@ object ConvertPlugins extends CommonTrait {
                 .replace(";", "")
               )
             case line if (line.startsWith("sub") && line.contains("new")) =>
-              import com.google.common.io.Files
-              val className: String = Files.getNameWithoutExtension(x.getName)
               p.println(line.replace("sub", "class").replace("new", className))
             case line if (line.startsWith("sub")) =>
               if (line.contains("install")) {
                 p.println(
-                  line.replace("sub", "class")
-                    .replace("install", s"Install(wiki: WikiPlugin)")
+                  line.replace("sub", s"object ${className} {\n")
+                    .replace("install", s"def install(wiki: ${wikiPackage}.AbstractWiki)")
                 )
               } else {
                 p.println(line.replace("sub", "def"))
               }
+            case line if (line.contains("$wiki") && line.contains("shift")) =>
+              // do nothing
+            case line if (line.contains("$wiki->")) =>
+              p.println(
+                line.replace("$wiki->", "wiki.")
+                  .replace("add_paragraph_plugin", "addParagraphPlugin")
+              )
+            case "}" if (className == "Install") =>
+              p.println("}")
             case "}" =>
               // do nothing
             case "1;" =>

@@ -17,3 +17,6 @@ project/plugins/project/
 .worksheet
 .ensime
 .ensime_*
+
+# project specific
+app/plugin/
