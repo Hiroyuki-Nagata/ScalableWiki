@@ -6,10 +6,20 @@ trait PerlSyntaxToScala {
   val dollarOnly = """(.*:?)\$(.*:?)=(.*)""".r
   val hashDef = """(.*:?)my %(.*)$""".r
   val hashUse = """(.*)([a-zA-Z_]*)\{([a-zA-Z_]*)\}(.*)""".r
+  val printDef = """(.*:?)print (\".*\":?)(.*)$""".r
 
   val at = """(.*:?)my @(.*:?)=(.*)""".r
   val statement = """(.*)[ eq ][ ne ](.*)""".r
   val wiki = """(.*:?)\$wiki->(.*:?)(\(.*)""".r
+
+  val replacePrintDef = (perl: String) =>
+  perl match {
+    case printDef(head, message, tail) =>
+      val modified = message.replaceAll("\"\\.", "\" + ").replaceAll("\\.\"", " + \"")
+      s"${head}println(${modified})${tail}"
+    case _ =>
+      perl
+  }
 
   val replaceWiki = (perl: String) =>
   perl match {
@@ -77,6 +87,7 @@ trait PerlSyntaxToScala {
     .andThen(replaceUseHash)
     .andThen(replaceStatement)
     .andThen(replaceWiki)
+    .andThen(replacePrintDef)
 
   def perlSyntaxToScala(line: String): String = {
 
