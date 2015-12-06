@@ -32,6 +32,7 @@ object ConvertPlugins extends CommonTrait with PerlSyntaxToScala {
       val className: String = Files.getNameWithoutExtension(x.getName)
       val wikiPackage: String = "jp.gr.java_conf.hangedman.util.wiki"
       val ourPackageName: String = "jp.gr.java_conf.hangedman"
+      val pluginRegex = """(.*?)(\$wiki.*plugin:?)\((.*:?),(.*:?),(.*:?)\);.*$""".r
 
       // load file contents
       printToFile(fo) { p =>
@@ -82,7 +83,6 @@ object ConvertPlugins extends CommonTrait with PerlSyntaxToScala {
             case line if (line.contains("$wiki") && line.contains("shift")) =>
               // do nothing
             case line if (line.contains("wiki->")) =>
-              val pluginRegex = """(.*?)(\$wiki.*plugin:?)\((.*:?),(.*:?),(.*:?)\);.*$""".r
               def wikiPlugin(arg2: String): String = { 
                 val full: String = s"${ourPackageName}." + arg2.replaceAll("\"", "").replaceAll("::", ".")
                 full.split('.') match {
@@ -101,7 +101,7 @@ object ConvertPlugins extends CommonTrait with PerlSyntaxToScala {
                   case pluginRegex(head, func, arg1, arg2, arg3) if (func.contains("inline")) =>
                     s"""${head}wiki.addInlinePlugin   (${arg1}, ${wikiPlugin(arg2)})"""
                   case _ =>
-                    line
+                    perlSyntaxToScala(line)
                 }
               )
             case "}" if (className == "Install") =>
