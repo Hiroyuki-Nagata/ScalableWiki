@@ -1,22 +1,31 @@
 import com.google.common.base.CaseFormat._
 
-trait PerlSyntaxToScala {
+trait PerlSyntaxToScala extends CommonTrait {
 
   val dollarDef = """(.*:?)my \$(.*)""".r
   val dollarOnly = """(.*:?)\$(.*:?)=(.*)""".r
   val hashDef = """(.*:?)my %(.*)$""".r
   val hashUse = """(.*)([a-zA-Z_]*)\{([a-zA-Z_]*)\}(.*)""".r
   val printDef = """(.*:?)print (\".*\":?)(.*)$""".r
+  val singleQuoteDef = """(.*:?)'(.*:?)'(.*)""".r
 
   val at = """(.*:?)my @(.*:?)=(.*)""".r
   val statement = """(.*)[ eq ][ ne ](.*)""".r
   val wiki = """(.*:?)\$wiki->(.*:?)(\(.*)""".r
 
+  val replaceSingleQuoteDef = (perl: String) =>
+  perl match {
+    case singleQuoteDef(head, quoted, tail) =>
+      s"""${head}\"${quoted}\"${tail}"""
+    case _ =>
+      perl
+  }
+
   val replacePrintDef = (perl: String) =>
   perl match {
     case printDef(head, message, tail) =>
       val modified = message.replaceAll("\"\\.", "\" + ").replaceAll("\\.\"", " + \"")
-      s"${head}println(${modified})${tail}"
+      s"${head}print(${modified})${tail}"
     case _ =>
       perl
   }
@@ -24,8 +33,7 @@ trait PerlSyntaxToScala {
   val replaceWiki = (perl: String) =>
   perl match {
     case wiki(head, method, tail) =>
-      val sMethod = LOWER_UNDERSCORE.to(UPPER_CAMEL, method)
-      s"${head}wiki.${sMethod}${tail}"
+      s"${head}wiki.${toCamel(method)}${tail}"
     case _ =>
       perl
   }
@@ -88,6 +96,7 @@ trait PerlSyntaxToScala {
     .andThen(replaceStatement)
     .andThen(replaceWiki)
     .andThen(replacePrintDef)
+    .andThen(replaceSingleQuoteDef)
 
   def perlSyntaxToScala(line: String): String = {
 
@@ -97,5 +106,8 @@ trait PerlSyntaxToScala {
       .replaceAll("#", "//")
       .replaceAll(";", "")
       .replaceAll("return ", "")
+      .replaceAll("elsif", "else if")
+      .replaceAll("\"\\.", "\" + ")
+      .replaceAll("\\.\"", " + \"")
   }
 }
