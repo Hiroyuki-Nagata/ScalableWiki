@@ -9,9 +9,12 @@ import jp.gr.java_conf.hangedman.model.WikiPlugin
 import jp.gr.java_conf.hangedman.util.wiki.Wiki
 import jp.gr.java_conf.hangedman.util.WikiUtil
 import jp.gr.java_conf.hangedman.model.PathInfo
+import jp.gr.java_conf.hangedman.model.{ Users, User }
 import net.ceedubs.ficus._
 import net.ceedubs.ficus.Ficus.{ booleanValueReader, stringValueReader, optionValueReader, toFicusConfig }
 import play.api._
+import play.api.Play.current
+import play.api.cache.Cache
 import play.api.libs.iteratee.Enumerator
 import play.api.mvc._
 import collection.JavaConversions._
@@ -69,25 +72,14 @@ object Application extends Controller {
     cgi.removeSession(wiki)
 
     // load user information
-    ConfigFactory.parseFile(new File("conf/" + wiki.config("userdat_file").getOrElse("user.properties"))) match {
-      case config: Config =>
-        config.root.foreach {
-          case (id: String, config: ConfigValue) =>
-            println(s"Adding ${id} as wiki user...")
-
-            Option(config.render) match {
-              case Some(value) =>
-                if (value.split('\t').length == 2)
-                  wiki.addUser(id, value.split('\t')(0), value.split('\t')(1).toInt)
-                println(s"Add user ${id}...")
-              case None =>
-                println(s"User ${id} is invalid")
-            }
-          case _ =>
-            println("Other elements...")
+    Cache.getAs[Users]("wiki.users") match {
+      case Some(users: Users) =>
+        users.users.foreach { user =>
+          Logger.debug(s"Adding cached user => ${user}")
+          wiki.addUser(user)
         }
-      case _ =>
-        println("userdat_file not found")
+      case None =>
+      //
     }
 
     // install and initialize plugins

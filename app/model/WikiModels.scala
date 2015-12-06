@@ -3,6 +3,7 @@ package jp.gr.java_conf.hangedman.model
 import jp.gr.java_conf.hangedman.util.wiki.AbstractWiki
 
 case class User(id: String, pass: String, role: Role)
+case class Users(users: List[User])
 
 sealed abstract class Role
 case object Administrator extends Role
@@ -31,7 +32,8 @@ case class Menu()
 case class Action()
 case class Parser(name: String)
 
-abstract class WikiPlugin(tpe: WikiPluginType, format: WikiFormat) {
+abstract class WikiPlugin(className: String, tpe: WikiPluginType, format: WikiFormat) {
+  def install(): Either[String, Boolean]
 }
 
 class PathInfo() {
