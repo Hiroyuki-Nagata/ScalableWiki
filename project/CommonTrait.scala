@@ -1,6 +1,11 @@
+import com.google.common.base.CaseFormat._
 import java.io.File
 
 trait CommonTrait {
+
+  def toCamel(line: String): String = LOWER_UNDERSCORE.to(UPPER_CAMEL, line)
+
+  def toScalaFunc(line: String): String = line.replace("sub", "def").replace(" {", "() {")
 
   def printToFile(f: java.io.File)(op: java.io.PrintWriter => Unit) {
     val p = new java.io.PrintWriter(f)

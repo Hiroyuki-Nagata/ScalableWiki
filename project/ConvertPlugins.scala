@@ -1,6 +1,7 @@
 import java.io.File
 import sbt.Keys._
 import sbt._
+import com.google.common.base.CaseFormat._
 
 object ConvertPlugins extends CommonTrait with PerlSyntaxToScala {
 
@@ -34,10 +35,26 @@ object ConvertPlugins extends CommonTrait with PerlSyntaxToScala {
       val ourPackageName: String = "jp.gr.java_conf.hangedman"
       val pluginRegex = """(.*?)(\$wiki.*plugin:?)\((.*:?),(.*:?),(.*:?)\);.*$""".r
 
+      var isHereDoc = false
+      var beginClassParen = false
+
       // load file contents
       printToFile(fo) { p =>
         scala.io.Source.fromFile(x).getLines.toList.map { line =>
           line match {
+            /**
+              * Process heredoc lines
+              */
+            case line if (!isHereDoc && line.contains("<<\"EOD\"")) =>
+              isHereDoc = true
+              p.println("\"\"\"")
+            case line if (isHereDoc) =>
+              if (line.startsWith("EOD")) {
+                isHereDoc = false
+                p.println("\"\"\"")
+              } else {
+                p.println(line)
+              }
             /**
               * Process commented lines
               */
@@ -69,6 +86,7 @@ object ConvertPlugins extends CommonTrait with PerlSyntaxToScala {
               // do nothing
             case line if (line.startsWith("sub") && line.contains("new")) =>
               // replace class definition and define extends "WikiPlugin"
+              beginClassParen = true
               val pluginDef = "WikiPlugin(className: String, tpe: WikiPluginType, format: WikiFormat)"
               p.println(line.replace("sub", "class").replace("new", s"${className} extends ${pluginDef}"))
             case line if (line.startsWith("sub")) =>
@@ -78,7 +96,14 @@ object ConvertPlugins extends CommonTrait with PerlSyntaxToScala {
                     .replace("install", s"def install(wiki: ${wikiPackage}.AbstractWiki)")
                 )
               } else {
-                p.println(line.replace("sub", "def"))
+                // 'sub function {' => 'def function() {'
+                val modified: String = line.split(" ") match {
+                  case lines if (lines.size >= 2) =>
+                    toScalaFunc(line).replace(lines(1), toCamel(lines(1)))
+                  case _ =>
+                    toScalaFunc(line)
+                }
+                p.println(modified)
               }
             case line if (line.contains("$wiki") && line.contains("shift")) =>
               // do nothing
@@ -107,7 +132,12 @@ object ConvertPlugins extends CommonTrait with PerlSyntaxToScala {
             case "}" if (className == "Install") =>
               p.println("}")
             case "}" =>
-              // do nothing
+              if (beginClassParen) {
+                p.println("")
+                beginClassParen = false
+              } else {
+                p.println("}")
+              }
             case "1;" =>
               p.println("}")
             /**
