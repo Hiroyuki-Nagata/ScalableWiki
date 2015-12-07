@@ -8,10 +8,28 @@ trait PerlSyntaxToScala extends CommonTrait {
   val hashUse = """(.*)([a-zA-Z_]*)\{([a-zA-Z_]*)\}(.*)""".r
   val printDef = """(.*:?)print (\".*\":?)(.*)$""".r
   val singleQuoteDef = """(.*:?)'(.*:?)'(.*)""".r
+  //val xmlLiteralBegin = """(.*:?)qq\|(.*)""".r
 
   val at = """(.*:?)my @(.*:?)=(.*)""".r
   val statement = """(.*)[ eq ][ ne ](.*)""".r
+  val foreachDef = """(.*:?)foreach val (.*:?)\(@(.*:?)\)\{(.*)$""".r
   val wiki = """(.*:?)\$wiki->(.*:?)(\(.*)""".r
+
+  val replaceSimpleForeach = (perl: String) =>
+  perl match {
+    case foreachDef(head, element, collection, tail) =>
+      s"""${head}${collection}.foreach { ${element} => ${tail}"""
+    case _ =>
+      perl
+  }
+
+  // val replaceXmlLiteral = (perl: String) =>
+  // perl match {
+  //   case xmlLiteralBegin(head, tail) =>
+  //     s"""${head}${tail}"""
+  //   case _ =>
+  //     perl
+  // }
 
   val replaceSingleQuoteDef = (perl: String) =>
   perl match {
@@ -97,6 +115,7 @@ trait PerlSyntaxToScala extends CommonTrait {
     .andThen(replaceWiki)
     .andThen(replacePrintDef)
     .andThen(replaceSingleQuoteDef)
+    .andThen(replaceSimpleForeach)
 
   def perlSyntaxToScala(line: String): String = {
 
@@ -109,5 +128,7 @@ trait PerlSyntaxToScala extends CommonTrait {
       .replaceAll("elsif", "else if")
       .replaceAll("\"\\.", "\" + ")
       .replaceAll("\\.\"", " + \"")
+      .replaceAll("\\.=", "+=")
+      .replaceAll("""\(\$""", " (")
   }
 }
