@@ -13,12 +13,15 @@ trait PerlSyntaxToScala extends CommonTrait {
   val at = """(.*:?)my @(.*:?)=(.*)""".r
   val statement = """(.*)[ eq ][ ne ](.*)""".r
   val foreachDef = """(.*:?)foreach val (.*:?)\(@(.*:?)\)\{(.*)$""".r
+  val foreachLoop = """(.*:?)foreach\(@(.*:?)\)\{(.*)$""".r
   val wiki = """(.*:?)\$wiki->(.*:?)(\(.*)""".r
 
   val replaceSimpleForeach = (perl: String) =>
   perl match {
     case foreachDef(head, element, collection, tail) =>
       s"""${head}${collection}.foreach { ${element} => ${tail}"""
+    case foreachLoop(head, collection, tail) =>
+      s"""${head}${collection}.foreach { _ => ${tail}"""
     case _ =>
       perl
   }
@@ -129,6 +132,6 @@ trait PerlSyntaxToScala extends CommonTrait {
       .replaceAll("\"\\.", "\" + ")
       .replaceAll("\\.\"", " + \"")
       .replaceAll("\\.=", "+=")
-      .replaceAll("""\(\$""", " (")
+      .replaceAll("""\$""", "")
   }
 }
