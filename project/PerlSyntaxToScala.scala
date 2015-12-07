@@ -62,9 +62,9 @@ trait PerlSyntaxToScala extends CommonTrait {
   val replaceStatement = (perl: String) =>
   perl match {
     case statement(head, tail) if (perl.contains("eq"))=>
-      s"${head} == ${tail}"
+      perl.replaceAll(" eq ", " == ")
     case statement(head, tail) if (perl.contains("ne"))=>
-      s"${head} != ${tail}"
+      perl.replaceAll(" ne ", " != ")
     case _ =>
       perl
   }
@@ -133,5 +133,6 @@ trait PerlSyntaxToScala extends CommonTrait {
       .replaceAll("\\.\"", " + \"")
       .replaceAll("\\.=", "+=")
       .replaceAll("""\$""", "")
+      .replaceAll("self\\.", "this\\.")
   }
 }
