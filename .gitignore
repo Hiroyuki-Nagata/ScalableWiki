@@ -19,4 +19,26 @@ project/plugins/project/
 .ensime_*
 
 # project specific
-app/plugin/
+app/plugin/search
+app/plugin/info
+app/plugin/pdf
+app/plugin/attach
+app/plugin/editlog
+app/plugin/core
+app/plugin/recent
+#app/plugin/vote
+app/plugin/rss
+app/plugin/google
+app/plugin/amazon
+app/plugin/comment
+app/plugin/format
+app/plugin/loginstate
+app/plugin/rename
+app/plugin/admin
+app/plugin/bugtrack
+app/plugin/access
+app/plugin/bbs
+app/plugin/calendar
+app/plugin/footnote
+app/plugin/todo
+app/plugin/category

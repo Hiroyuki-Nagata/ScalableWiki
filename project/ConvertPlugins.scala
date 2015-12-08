@@ -81,6 +81,9 @@ object ConvertPlugins extends CommonTrait with PerlSyntaxToScala {
               p.println(s"package ${ourPackageName}.${fullPackageName}")
               p.println(s"")
               p.println(s"import ${ourPackageName}.${fullPackageName}._")
+              p.println(s"import ${ourPackageName}.util.WikiUtil")
+              p.println(s"import jp.gr.java_conf.hangedman.model._")
+              p.println(s"import java.io.File")
             /**
               * Process class defined lines
               */

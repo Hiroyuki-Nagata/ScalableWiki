@@ -57,7 +57,7 @@ abstract class AbstractWiki {
   def isInstalled(plugin: WikiPlugin): Boolean
   def isInstalled(pluginName: String): Boolean
   /*
-   * Add menu, if you don't allow crowling set nofollow true 
+   * Add menu, if you don't allow crowling set nofollow true
    */
   def addMenu(name: String, href: String, weight: Weight, nofollow: Boolean)
   /*
@@ -75,15 +75,15 @@ abstract class AbstractWiki {
   /*
    * Add action handler plugin
    */
-  def addHandler[T](action: Action, cls: T)
+  def addHandler[T](action: String, cls: T)
   /*
    * Add action handler plugin for logining user
    */
-  def addUserHandler[T](action: Action, cls: T)
+  def addUserHandler[T](action: String, cls: T)
   /*
    * Add action handler plugin for admin
    */
-  def addAdminHandler[T](action: Action, cls: T)
+  def addAdminHandler[T](action: String, cls: T)
   /*
    * Add inline plugin
    */
@@ -109,7 +109,7 @@ abstract class AbstractWiki {
   /*
    * Execute registerd ActionHandler
    */
-  def callHandler(action: Action): String
+  def callHandler(action: String): String
   /*
    * Convert wiki format string to HTML
    */
@@ -159,7 +159,7 @@ abstract class AbstractWiki {
    */
   def addHeadInfo(info: String)
   /*
-   * Freeze a page 
+   * Freeze a page
    */
   def freezePage(pageName: String)
   /*
@@ -201,7 +201,7 @@ abstract class AbstractWiki {
   /*
    * Utility method for generating any URL
    */
-  def createUrl(params: String*): String
+  def createUrl(params: scala.collection.immutable.HashMap[String, String]): String
   /*
    * Configure the title in action handler
    */
@@ -242,16 +242,15 @@ abstract class AbstractWiki {
   /*
    * Get CGI object
    */
-  @deprecated("I don't determine it should be used", "1.0.0")
   def getCGI(): DummyCGI
   /*
    * Redirect to the page specified by arguments
    */
-  def redirect(pageName: String, part: Int): Future[Result]
+  def redirect(pageName: String, part: Int): Result
   /*
    * Redirect to the page specified by URL
    */
-  def redirectURL(url: URL): Future[Result]
+  def redirectURL(url: URL): Result
   /*
    * Get value if key is specified, else set the value
    */

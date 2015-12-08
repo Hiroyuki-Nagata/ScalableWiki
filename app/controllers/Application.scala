@@ -19,6 +19,7 @@ import play.api.libs.iteratee.Enumerator
 import play.api.mvc._
 import collection.JavaConversions._
 import play.twirl.api.Html
+import scala.collection.immutable.HashMap
 import scala.io.Source
 
 object Application extends Controller {
@@ -48,7 +49,7 @@ object Application extends Controller {
     wiki.config("session_dir", wiki.config("log_dir").getOrElse("./log"))
 
     /*
-     * In a case, Swiki works as Farm 
+     * In a case, Swiki works as Farm
      */
     if (cgi.pathInfo.length > 0) {
       // blah, blah, blah
@@ -161,16 +162,15 @@ object Application extends Controller {
     }
 
     // detect this page is top or not
-    val top = if (cgi.paramPage == wiki.config("frontpage")) {
+    val top = if (cgi.paramPage() == wiki.config("frontpage")) {
       1
     } else {
       0
     }
 
     // determine page title
-    val title = if (cgi.paramAction.isEmpty && wiki.pageExists(cgi.paramPage) && wiki.isInstalled("search")) {
-
-      val href = wiki.createUrl("SEARCH", wiki.getTitle)
+    val title = if (cgi.paramAction.isEmpty && wiki.pageExists(cgi.paramPage()) && wiki.isInstalled("search")) {
+      val href = wiki.createUrl(HashMap("SEARCH" -> wiki.getTitle))
       val escapedTitle = WikiUtil.escapeHTML(wiki.getTitle)
       "<a href=\"%s\">%s</a>".format(href, escapedTitle)
     } else {
@@ -213,21 +213,21 @@ object Application extends Controller {
 
     // Set parameters in template
     val wikiHtml = siteTemplate(
-      "true", // EDIT_MODE        
-      "true", // CAN_SHOW         
-      headerTmpl, // HEAD_INFO        
-      "css", // THEME_CSS        
-      "true", // HAVE_USER_CSS    
+      "true", // EDIT_MODE
+      "true", // CAN_SHOW
+      headerTmpl, // HEAD_INFO
+      "css", // THEME_CSS
+      "true", // HAVE_USER_CSS
       "css", // USER_CSS
       // SITE_TITLE
       wiki.getTitle + " - " + wiki.config("site_title").getOrElse("[ScalableWiki]"),
-      "Menu", // MENU             
-      "Default Title", // TITLE            
-      "Page Menu", // EXIST_PAGE_Menu  
+      "Menu", // MENU
+      "Default Title", // TITLE
+      "Page Menu", // EXIST_PAGE_Menu
       "Page Header", // EXIST_PAGE_Header
-      "Contents", // CONTENT          
+      "Contents", // CONTENT
       "Page Footer", // EXIST_PAGE_Footer
-      footerTmpl // FOOTER           
+      footerTmpl // FOOTER
     )
 
     // Output HTML

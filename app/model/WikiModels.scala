@@ -29,11 +29,10 @@ case class PluginInfo(className: String, tpe: WikiPluginType, format: WikiFormat
 
 case class Weight()
 case class Menu()
-case class Action()
 case class Parser(name: String)
 
 abstract class WikiPlugin(className: String, tpe: WikiPluginType, format: WikiFormat) {
-  def install(): Either[String, Boolean]
+  def install(wiki: AbstractWiki): Either[String, Boolean]
 }
 
 class PathInfo() {
@@ -48,10 +47,13 @@ class DummyCGI {
   }
   def removeSession(wiki: AbstractWiki) = {
   }
-  def paramAction: Option[Action] = {
-    Some(Action())
+  def paramAction: Option[String] = {
+    Some("")
   }
-  def paramPage: String = {
+  def paramPage(page: String = "page"): String = {
+    "dummy"
+  }
+  def getParam(param: String): String = {
     "dummy"
   }
 }
