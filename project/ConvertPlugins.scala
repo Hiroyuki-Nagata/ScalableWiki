@@ -5,6 +5,23 @@ import com.google.common.base.CaseFormat._
 
 object ConvertPlugins extends CommonTrait with PerlSyntaxToScala {
 
+val installDef = """
+  //===========================================================
+  // installメソッド
+  //===========================================================
+  def install(wiki: AbstractWiki): Either[String, Boolean] = {
+    Try {
+      Install.install(wiki)
+    } match {
+      case Success(_) =>
+        Right(true)
+      case Failure(e) =>
+        Logger.error(e.getMessage, e)
+        Left(e.getMessage)
+    }
+  }
+""".stripMargin
+
   def clean() {
     val pluginDir = new File("./public/plugin/")
     val fi: Seq[File] = (pluginDir ** "*.pm").get
@@ -79,11 +96,15 @@ object ConvertPlugins extends CommonTrait with PerlSyntaxToScala {
                 .replace("package ", "")
                 .replace(s".${className};", "")
               p.println(s"package ${ourPackageName}.${fullPackageName}")
-              p.println(s"")
-              p.println(s"import ${ourPackageName}.${fullPackageName}._")
-              p.println(s"import ${ourPackageName}.util.WikiUtil")
-              p.println(s"import jp.gr.java_conf.hangedman.model._")
-              p.println(s"import java.io.File")
+              p.println(s"""|
+                            |import ${ourPackageName}.${fullPackageName}._
+                            |import ${ourPackageName}.util.WikiUtil
+                            |import jp.gr.java_conf.hangedman.model._
+                            |import jp.gr.java_conf.hangedman.util.wiki.AbstractWiki
+                            |import java.io.File
+                            |import play.Logger
+                            |import scala.util.{ Failure, Success, Try }
+                            |""".stripMargin)
             /**
               * Process class defined lines
               */
@@ -96,8 +117,15 @@ object ConvertPlugins extends CommonTrait with PerlSyntaxToScala {
             case line if (line.startsWith("sub") && line.contains("new")) =>
               // replace class definition and define extends "WikiPlugin"
               beginClassParen = true
-              val pluginDef = "WikiPlugin(className: String, tpe: WikiPluginType, format: WikiFormat)"
-              p.println(line.replace("sub", "class").replace("new", s"${className} extends ${pluginDef}"))
+              val pluginDef = "(className: String, tpe: WikiPluginType, format: WikiFormat)"
+              val pluginArg = "WikiPlugin(className, tpe, format)"
+              p.println(line
+                .replace("sub", "class")
+                .replace("new", s"${className}${pluginDef}\n    extends ${pluginArg}")
+              )
+              if (className != "Install" ) {
+                p.println(installDef)
+              }
             case line if (line.startsWith("sub")) =>
               if (line.contains("install")) {
                 p.println(

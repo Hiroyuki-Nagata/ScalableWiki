@@ -40,5 +40,5 @@ app/plugin/access
 app/plugin/bbs
 app/plugin/calendar
 app/plugin/footnote
-app/plugin/todo
+#app/plugin/todo
 app/plugin/category

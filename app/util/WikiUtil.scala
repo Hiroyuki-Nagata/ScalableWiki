@@ -59,7 +59,7 @@ object WikiUtil {
   def fileLock() = {}
   def fileUnlock() = {}
   def inlineError() = {}
-  def paragraphError(message: String, format: String): String = {
+  def paragraphError(message: String, format: String = "WIKI"): String = {
     "Error"
   }
   def getResponse() = {}

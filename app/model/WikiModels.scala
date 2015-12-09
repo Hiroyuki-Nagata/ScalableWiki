@@ -56,4 +56,7 @@ class DummyCGI {
   def getParam(param: String): String = {
     "dummy"
   }
+  def allParameters(): Array[String] = {
+    Array()
+  }
 }

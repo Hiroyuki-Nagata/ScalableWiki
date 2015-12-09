@@ -202,6 +202,7 @@ abstract class AbstractWiki {
    * Utility method for generating any URL
    */
   def createUrl(params: scala.collection.immutable.HashMap[String, String]): String
+  def createUrl(): String
   /*
    * Configure the title in action handler
    */
@@ -225,7 +226,7 @@ abstract class AbstractWiki {
   /*
    * Get page source
    */
-  def getPage(pageName: String, format: WikiFormat): String
+  def getPage(pageName: String, format: WikiFormat = WIKI_FORMAT): String
   /*
    * Get backuped source
    * @return None if it not exist
@@ -246,7 +247,7 @@ abstract class AbstractWiki {
   /*
    * Redirect to the page specified by arguments
    */
-  def redirect(pageName: String, part: Int): Result
+  def redirect(pageName: String, part: Int = 0): Result
   /*
    * Redirect to the page specified by URL
    */

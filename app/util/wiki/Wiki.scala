@@ -112,6 +112,7 @@ class Wiki(setupfile: String = "setupfile") extends AbstractWiki with Controller
   def createChildWiki(siteName: String, adminId: String, password: String): Unit = {}
   def createPageUrl(pageName: String): String = { "" }
   def createUrl(params: scala.collection.immutable.HashMap[String, String]): String = { "" }
+  def createUrl(): String = { "" }
   def doHook(name: String, arguments: String*): Unit = {}
   def error(message: String): String = {
     setTitle("エラー")
