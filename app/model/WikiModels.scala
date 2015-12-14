@@ -18,6 +18,7 @@ sealed abstract class WikiPluginType
 case object Inline extends WikiPluginType
 case object Paragraph extends WikiPluginType
 case object Block extends WikiPluginType
+case object EditForm extends WikiPluginType
 
 sealed abstract class WikiPageLevel
 case object PublishAll extends WikiPageLevel
@@ -27,7 +28,7 @@ case object PublishAdmin extends WikiPageLevel
 case class LoginInfo(id: String, userType: String, path: String)
 case class PluginInfo(className: String, tpe: WikiPluginType, format: WikiFormat)
 
-case class Weight()
+case class Weight(weight: Int)
 case class Menu()
 case class Parser(name: String)
 

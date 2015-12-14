@@ -218,7 +218,7 @@ abstract class AbstractWiki {
   /*
    * Get last modified time from data file
    */
-  def getLastModified(): DateTime
+  def getLastModified(page: String): DateTime
   /*
    * Get last modified time
    */

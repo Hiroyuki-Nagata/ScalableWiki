@@ -1,11 +1,11 @@
 ////////////////////////////////////////////////////////////
 //
-// 指定した書籍の書影をamazonから取得して表示し、amazonの書評ページへリンクをはります。
+// ページの名称を変更します。
 //
 ////////////////////////////////////////////////////////////
-package jp.gr.java_conf.hangedman.plugin.amazon
+package jp.gr.java_conf.hangedman.plugin.rename
 
-import jp.gr.java_conf.hangedman.plugin.amazon._
+import jp.gr.java_conf.hangedman.plugin.rename._
 import jp.gr.java_conf.hangedman.util.WikiUtil
 import jp.gr.java_conf.hangedman.model._
 import jp.gr.java_conf.hangedman.util.wiki.AbstractWiki
@@ -15,6 +15,7 @@ import scala.util.{ Failure, Success, Try }
 
 object Install {
   def install(wiki: jp.gr.java_conf.hangedman.util.wiki.AbstractWiki) {
-    wiki.addInlinePlugin("amazon", new Amazon("amazonb", Inline, WIKI_FORMAT))
+    wiki.addEditformPlugin(new RenameForm("rename", EditForm, WIKI_FORMAT), Weight(10))
+    wiki.addHandler("RENAME", new RenameHandler("RENAME", EditForm, WIKI_FORMAT))
   }
 }
