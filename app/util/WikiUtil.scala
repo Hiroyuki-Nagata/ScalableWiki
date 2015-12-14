@@ -3,6 +3,7 @@ package jp.gr.java_conf.hangedman.util
 import java.io.File
 import java.net.URLDecoder
 import java.net.URLEncoder
+import jp.gr.java_conf.hangedman.util.wiki.AbstractWiki
 import play.Logger
 import scala.collection.immutable.HashMap
 import scala.util.Failure
@@ -62,7 +63,9 @@ object WikiUtil {
   def paragraphError(message: String, format: String = "WIKI"): String = {
     "Error"
   }
-  def getResponse() = {}
+  def getResponse(wiki: AbstractWiki, image: String) = {
+    ""
+  }
   def getModuleFile(module: String): Option[File] = {
     Try {
       new File(module)
