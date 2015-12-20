@@ -5,22 +5,45 @@ import com.google.common.base.CaseFormat._
 
 object ConvertPlugins extends CommonTrait with PerlSyntaxToScala {
 
-  def remove() {
+val installDef = """
+  //===========================================================
+  // installメソッド
+  //===========================================================
+  def install(wiki: AbstractWiki): Either[String, Boolean] = {
+    Try {
+      Install.install(wiki)
+    } match {
+      case Success(_) =>
+        Right(true)
+      case Failure(e) =>
+        Logger.error(e.getMessage, e)
+        Left(e.getMessage)
+    }
+  }
+""".stripMargin
+
+  def clean() {
     val pluginDir = new File("./public/plugin/")
     val fi: Seq[File] = (pluginDir ** "*.pm").get
 
     fi foreach { x =>
       // /public/plugin/{name}/***.pm -> /app/plugin/{name}/***.scala
       val out = x.getPath.replace("./public/plugin/", "./app/plugin/").replace(".pm", ".scala")
-      println("Plugin file " + x.getPath + " => " + out)
+      println("Clean plugin file => " + out)
       val fo: File = new File(out)
       if (fo.exists) fo.delete
     }
   }
 
-  def convert() {
+  def convert(args: Seq[String]) {
     val pluginDir = new File("./public/plugin/")
-    val fi: Seq[File] = (pluginDir ** "*.pm").get
+
+    val fi: Seq[File] = (pluginDir ** "*.pm").get.collect {
+      case file: File if (args.isEmpty) =>
+        file
+      case file: File if (args.exists(x => file.getPath.contains(x))) =>
+        file
+    }
 
     fi foreach { x =>
       // /public/plugin/{name}/***.pm -> /app/plugin/{name}/***.scala
@@ -73,8 +96,15 @@ object ConvertPlugins extends CommonTrait with PerlSyntaxToScala {
                 .replace("package ", "")
                 .replace(s".${className};", "")
               p.println(s"package ${ourPackageName}.${fullPackageName}")
-              p.println(s"")
-              p.println(s"import ${ourPackageName}.${fullPackageName}._")
+              p.println(s"""|
+                            |import ${ourPackageName}.${fullPackageName}._
+                            |import ${ourPackageName}.util.WikiUtil
+                            |import jp.gr.java_conf.hangedman.model._
+                            |import jp.gr.java_conf.hangedman.util.wiki.AbstractWiki
+                            |import java.io.File
+                            |import play.Logger
+                            |import scala.util.{ Failure, Success, Try }
+                            |""".stripMargin)
             /**
               * Process class defined lines
               */
@@ -87,8 +117,15 @@ object ConvertPlugins extends CommonTrait with PerlSyntaxToScala {
             case line if (line.startsWith("sub") && line.contains("new")) =>
               // replace class definition and define extends "WikiPlugin"
               beginClassParen = true
-              val pluginDef = "WikiPlugin(className: String, tpe: WikiPluginType, format: WikiFormat)"
-              p.println(line.replace("sub", "class").replace("new", s"${className} extends ${pluginDef}"))
+              val pluginDef = "(className: String, tpe: WikiPluginType, format: WikiFormat)"
+              val pluginArg = "WikiPlugin(className, tpe, format)"
+              p.println(line
+                .replace("sub", "class")
+                .replace("new", s"${className}${pluginDef}\n    extends ${pluginArg}")
+              )
+              if (className != "Install" ) {
+                p.println(installDef)
+              }
             case line if (line.startsWith("sub")) =>
               if (line.contains("install")) {
                 p.println(
@@ -108,14 +145,12 @@ object ConvertPlugins extends CommonTrait with PerlSyntaxToScala {
             case line if (line.contains("$wiki") && line.contains("shift")) =>
               // do nothing
             case line if (line.contains("wiki->")) =>
-              def wikiPlugin(arg2: String): String = { 
+              def wikiPlugin(arg2: String): String = {
                 val full: String = s"${ourPackageName}." + arg2.replaceAll("\"", "").replaceAll("::", ".")
                 full.split('.') match {
                   case pack if (pack.size < 2) =>
-                    println("pack =>" + pack.head)
                     full
                   case pack if (pack.size >= 2) =>
-                    println("pack =>" + pack.last)
                     pack.last
                 }
               }

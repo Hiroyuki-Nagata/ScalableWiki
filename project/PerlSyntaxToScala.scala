@@ -8,10 +8,56 @@ trait PerlSyntaxToScala extends CommonTrait {
   val hashUse = """(.*)([a-zA-Z_]*)\{([a-zA-Z_]*)\}(.*)""".r
   val printDef = """(.*:?)print (\".*\":?)(.*)$""".r
   val singleQuoteDef = """(.*:?)'(.*:?)'(.*)""".r
+  //val xmlLiteralBegin = """(.*:?)qq\|(.*)""".r
 
   val at = """(.*:?)my @(.*:?)=(.*)""".r
   val statement = """(.*)[ eq ][ ne ](.*)""".r
+
+  val foreachDef = """(.*:?)foreach val (.*:?)\(@(.*:?)\).*\{(.*)$""".r
+  val foreachLoop = """(.*:?)\s?foreach\s?\(@(.*:?)\)\s?\{(.*)$""".r
   val wiki = """(.*:?)\$wiki->(.*:?)(\(.*)""".r
+
+  // if(-e cachefile)
+  val fileExist = """(.*:?)if\s?\(-e (.*:?)\)(.*)$""".r
+
+  // Util::save_config_hash(undef,cachefile,hash)
+  val utilFunction = """(.*:?)Util::([a-zA-Z_].*:?)\((.*:?)\)(.*)$""".r
+
+  val replaceUtilFunction = (perl: String) =>
+  perl match {
+    case utilFunction(head, func, args, tail) =>
+      val camelFunc = toCamel(func)
+      s"${head}WikiUtil.${camelFunc}(${args})${tail}"
+    case _ =>
+      perl
+  }
+
+  val replaceFileExist = (perl: String) =>
+  perl match {
+    case fileExist(head, file, tail) =>
+      val spac = List("").padTo(head.length,' ').mkString
+      s"${head}if (new File(${file}).exists)${tail}"
+    case _ =>
+      perl
+  }
+
+  val replaceSimpleForeach = (perl: String) =>
+  perl match {
+    case foreachDef(head, element, collection, tail) =>
+      s"""${head}${collection}.foreach { ${element} => ${tail}"""
+    case foreachLoop(head, collection, tail) =>
+      s"""${head}${collection}.foreach { _ => ${tail}"""
+    case _ =>
+      perl
+  }
+
+  // val replaceXmlLiteral = (perl: String) =>
+  // perl match {
+  //   case xmlLiteralBegin(head, tail) =>
+  //     s"""${head}${tail}"""
+  //   case _ =>
+  //     perl
+  // }
 
   val replaceSingleQuoteDef = (perl: String) =>
   perl match {
@@ -41,9 +87,9 @@ trait PerlSyntaxToScala extends CommonTrait {
   val replaceStatement = (perl: String) =>
   perl match {
     case statement(head, tail) if (perl.contains("eq"))=>
-      s"${head} == ${tail}"
+      perl.replaceAll(" eq ", " == ")
     case statement(head, tail) if (perl.contains("ne"))=>
-      s"${head} != ${tail}"
+      perl.replaceAll(" ne ", " != ")
     case _ =>
       perl
   }
@@ -97,6 +143,9 @@ trait PerlSyntaxToScala extends CommonTrait {
     .andThen(replaceWiki)
     .andThen(replacePrintDef)
     .andThen(replaceSingleQuoteDef)
+    .andThen(replaceSimpleForeach)
+    .andThen(replaceFileExist)
+    .andThen(replaceUtilFunction)
 
   def perlSyntaxToScala(line: String): String = {
 
@@ -109,5 +158,9 @@ trait PerlSyntaxToScala extends CommonTrait {
       .replaceAll("elsif", "else if")
       .replaceAll("\"\\.", "\" + ")
       .replaceAll("\\.\"", " + \"")
+      .replaceAll("\\.=", "+=")
+      .replaceAll("""\$""", "")
+      .replaceAll("self\\.", "this\\.")
+      .replaceAll("&", "")
   }
 }

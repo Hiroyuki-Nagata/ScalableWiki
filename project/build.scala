@@ -8,11 +8,11 @@ object ScalableWiki extends Build with HtmlTemplateConverter with CommonTrait {
 
   val Organization  = "jp.gr.java_conf.hangedman"
   val Name          = "scalablewiki"
-  val Version       = "0.0.1-SNAPSHOT" 
+  val Version       = "0.0.1-SNAPSHOT"
   val ScalaVersion  = "2.10.6"
 
   lazy val tmplCommand =
-    Command.command("gen-tmpl") { (state: State) =>
+    Command.command("gen-tmpl") { (state) =>
 
       println("Generating template files...")
       val tmplDir = new File("./public/tmpl/")
@@ -69,16 +69,16 @@ object ScalableWiki extends Build with HtmlTemplateConverter with CommonTrait {
 
 
   lazy val genPluginCommand =
-    Command.command("gen-plugins") { (state: State) =>
-      println("Convert Perl plugin files...")
-      ConvertPlugins.convert
+    Command.args("gen-plugins", "<plugin-name>") { (state, args) =>
+      println("Convert Perl plugin files..." + args.mkString(", "))
+      ConvertPlugins.convert(args)
       state
     }
 
-  lazy val rmPluginCommand =
-    Command.command("rm-plugins") { (state: State) =>
-      println("Remove Perl plugin files...")
-      ConvertPlugins.remove
+  lazy val cleanPluginCommand =
+    Command.command("clean-plugins") { (state) =>
+      println("Clean Perl plugin files...")
+      ConvertPlugins.clean
       state
     }
 
@@ -106,8 +106,8 @@ object ScalableWiki extends Build with HtmlTemplateConverter with CommonTrait {
         "-language:implicitConversions" ::
         Nil
     ),
-    watchSources ~= { 
-      _.filterNot(f => f.getName.endsWith(".swp") || f.getName.endsWith(".swo") || f.isDirectory) 
+    watchSources ~= {
+      _.filterNot(f => f.getName.endsWith(".swp") || f.getName.endsWith(".swo") || f.isDirectory)
     },
     javaOptions ++= originalJvmOptions,
     ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
@@ -126,15 +126,15 @@ object ScalableWiki extends Build with HtmlTemplateConverter with CommonTrait {
     resolvers += DefaultMavenRepository,
     resolvers += Classpaths.typesafeReleases,
     libraryDependencies ++= LibraryDependencies,
-    commands ++= Seq(tmplCommand, genPluginCommand, rmPluginCommand),
+    commands ++= Seq(tmplCommand, genPluginCommand, cleanPluginCommand),
     //
     // If you use original name,
     // $ sbt -DherokuAppName=myapp stage deployHeroku
     //
     HerokuPlugin.autoImport.herokuAppName in Compile := {
-      if (sys.props("herokuAppName") == null) { 
-        "scalable-wiki" 
-      } else { 
+      if (sys.props("herokuAppName") == null) {
+        "scalable-wiki"
+      } else {
         sys.props("herokuAppName")
       }
     }

@@ -18,6 +18,7 @@ sealed abstract class WikiPluginType
 case object Inline extends WikiPluginType
 case object Paragraph extends WikiPluginType
 case object Block extends WikiPluginType
+case object EditForm extends WikiPluginType
 
 sealed abstract class WikiPageLevel
 case object PublishAll extends WikiPageLevel
@@ -27,13 +28,12 @@ case object PublishAdmin extends WikiPageLevel
 case class LoginInfo(id: String, userType: String, path: String)
 case class PluginInfo(className: String, tpe: WikiPluginType, format: WikiFormat)
 
-case class Weight()
+case class Weight(weight: Int)
 case class Menu()
-case class Action()
 case class Parser(name: String)
 
 abstract class WikiPlugin(className: String, tpe: WikiPluginType, format: WikiFormat) {
-  def install(): Either[String, Boolean]
+  def install(wiki: AbstractWiki): Either[String, Boolean]
 }
 
 class PathInfo() {
@@ -48,10 +48,16 @@ class DummyCGI {
   }
   def removeSession(wiki: AbstractWiki) = {
   }
-  def paramAction: Option[Action] = {
-    Some(Action())
+  def paramAction: Option[String] = {
+    Some("")
   }
-  def paramPage: String = {
+  def paramPage(page: String = "page"): String = {
     "dummy"
+  }
+  def getParam(param: String): String = {
+    "dummy"
+  }
+  def allParameters(): Array[String] = {
+    Array()
   }
 }

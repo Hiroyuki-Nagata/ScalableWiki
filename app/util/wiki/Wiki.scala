@@ -49,7 +49,7 @@ class Wiki(setupfile: String = "setupfile") extends AbstractWiki with Controller
 
   def getCanShowMax(): Option[WikiPageLevel] = { Some(PublishAll) }
   def getChildWikiDepth(): Int = { 0 }
-  def addAdminHandler[T](action: Action, cls: T) = {
+  def addAdminHandler[T](action: String, cls: T) = {
   }
   def addAdminMenu(label: String, url: String, weight: Weight, desc: String): Unit = {}
   def addBlockPlugin(name: String, cls: WikiPlugin) = {
@@ -57,7 +57,7 @@ class Wiki(setupfile: String = "setupfile") extends AbstractWiki with Controller
   }
   def addEditformPlugin(plugin: WikiPlugin, weight: Weight): Unit = {}
   def addFormatPlugin(name: String, cls: WikiPlugin): Unit = {}
-  def addHandler[T](action: Action, cls: T): Unit = {}
+  def addHandler[T](action: String, cls: T): Unit = {}
   def addHeadInfo(info: String): Unit = {}
   def addHook[T](name: String, obj: T): Unit = {}
   def addInlinePlugin(name: String, cls: WikiPlugin) = {
@@ -87,9 +87,9 @@ class Wiki(setupfile: String = "setupfile") extends AbstractWiki with Controller
   def addUser(id: String, pass: String, role: Role) = {
     users.append(User(id, pass, role))
   }
-  def addUserHandler[T](action: Action, cls: T): Unit = {}
+  def addUserHandler[T](action: String, cls: T): Unit = {}
   def addUserMenu(label: String, url: String, weight: Weight, desc: String): Unit = {}
-  def callHandler(action: Action): String = { "" }
+  def callHandler(action: String): String = { "" }
   def canModifyPage(pageName: String): Boolean = { true }
   def canShow(pageName: String): Boolean = { true }
   def checkLogin(id: String, pass: String, path: String): Option[LoginInfo] = { None }
@@ -111,7 +111,8 @@ class Wiki(setupfile: String = "setupfile") extends AbstractWiki with Controller
   def convertToFswiki(source: String, formatType: WikiFormat, isInline: Boolean = false): String = { "" }
   def createChildWiki(siteName: String, adminId: String, password: String): Unit = {}
   def createPageUrl(pageName: String): String = { "" }
-  def createUrl(params: String*): String = { "" }
+  def createUrl(params: scala.collection.immutable.HashMap[String, String]): String = { "" }
+  def createUrl(): String = { "" }
   def doHook(name: String, arguments: String*): Unit = {}
   def error(message: String): String = {
     setTitle("エラー")
@@ -131,7 +132,7 @@ class Wiki(setupfile: String = "setupfile") extends AbstractWiki with Controller
   def getEditformPlugin(): String = { "" }
   def getFormatNames(): List[String] = { List("") }
   def getFreezeList(): List[String] = { List("") }
-  def getLastModified(): org.joda.time.DateTime = { new DateTime }
+  def getLastModified(page: String): org.joda.time.DateTime = { new DateTime }
   def getLastModifiedLogically(): org.joda.time.DateTime = { new DateTime }
   def getLoginInfo(): Option[LoginInfo] = { None }
   def getPage(pageName: String, format: WikiFormat): String = {
@@ -168,7 +169,7 @@ class Wiki(setupfile: String = "setupfile") extends AbstractWiki with Controller
     // Load plugin file, and call install dynamic
     WikiUtil.getModuleFile(module) match {
       case Some(file) if (file.exists) =>
-        val isSuccess: Either[String, Boolean] = Eval.fromFile[WikiPlugin](file).install
+        val isSuccess: Either[String, Boolean] = Eval.fromFile[WikiPlugin](file).install(this)
         isSuccess match {
           case Right(r) =>
             installedPlugin += pluginName
@@ -218,11 +219,11 @@ class Wiki(setupfile: String = "setupfile") extends AbstractWiki with Controller
   def processPlugin(plugin: WikiPlugin, parser: Parser) = {
   }
   def processWiki(wikiformat: String): String = { "" }
-  def redirect(pageName: String, part: Int = 0): Future[Result] = {
-    Future.successful(Redirect("http://www.google.com"))
+  def redirect(pageName: String, part: Int = 0): Result = {
+    Redirect("http://www.google.com")
   }
-  def redirectURL(url: URL): Future[Result] = {
-    Future.successful(Redirect("http://www.google.com"))
+  def redirectURL(url: URL): Result = {
+    Redirect("http://www.google.com")
   }
   def removeChildWiki(path: String): Unit = {}
   def savePage(pageName: String, content: String, updateTimestamp: Boolean): Unit = {}
