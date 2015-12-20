@@ -1,6 +1,7 @@
 package jp.gr.java_conf.hangedman.model
 
 import jp.gr.java_conf.hangedman.util.wiki.AbstractWiki
+import scala.collection.mutable.HashMap
 
 case class User(id: String, pass: String, role: Role)
 case class Users(users: List[User])
@@ -13,19 +14,21 @@ sealed abstract class WikiFormat
 case object HTML_FORMAT extends WikiFormat
 case object WIKI_FORMAT extends WikiFormat
 case object FSWiki extends WikiFormat
+case object NO_FORMAT extends WikiFormat
 
 sealed abstract class WikiPluginType
 case object Inline extends WikiPluginType
 case object Paragraph extends WikiPluginType
 case object Block extends WikiPluginType
 case object EditForm extends WikiPluginType
+case object NonSpecify extends WikiPluginType
 
 sealed abstract class WikiPageLevel
 case object PublishAll extends WikiPageLevel
 case object PublishUser extends WikiPageLevel
 case object PublishAdmin extends WikiPageLevel
 
-case class LoginInfo(id: String, userType: String, path: String)
+case class LoginInfo(id: String, userType: String, path: String) extends HashMap[String, String]
 case class PluginInfo(className: String, tpe: WikiPluginType, format: WikiFormat)
 
 case class Weight(weight: Int)

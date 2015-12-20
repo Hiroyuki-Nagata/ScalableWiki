@@ -83,5 +83,7 @@ object WikiUtil {
   private def die() = {}
   private def exit() = {}
   def restoreDie() = {}
-
+  def rmtree(file: File): Boolean = {
+    org.apache.commons.io.FileUtils.deleteQuietly(file)
+  }
 }
