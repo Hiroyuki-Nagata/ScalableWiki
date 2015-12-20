@@ -59,7 +59,9 @@ object WikiUtil {
   def privatemakeQuotedText() = {}
   def fileLock() = {}
   def fileUnlock() = {}
-  def inlineError() = {}
+  def inlineError(message: String, format: String = "WIKI"): String = {
+    "Error"
+  }
   def paragraphError(message: String, format: String = "WIKI"): String = {
     "Error"
   }
