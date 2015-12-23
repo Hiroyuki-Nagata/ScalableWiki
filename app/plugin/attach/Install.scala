@@ -32,8 +32,16 @@ object Install {
     //wiki.addHook[AttachRename]("rename", AttachRename)
     /**
      * wiki.addInlinePlugin("ref", Ref)
-     * wiki.addParagraphPlugin("ref_image", RefImage)
-     * wiki.addParagraphPlugin("ref_text", RefText)
+     */
+    wiki.addParagraphPlugin(
+      "ref_image",
+      new RefImage("ref_image", Paragraph, WIKI_FORMAT)
+    )
+    wiki.addParagraphPlugin(
+      "ref_text",
+      new RefText("ref_text", Paragraph, WIKI_FORMAT)
+    )
+    /**
      *
      * wiki.addParagraphPlugin("files", Files)
      * wiki.addParagraphPlugin("attach", Attach)
