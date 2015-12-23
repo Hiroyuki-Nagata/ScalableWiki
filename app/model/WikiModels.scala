@@ -2,6 +2,7 @@ package jp.gr.java_conf.hangedman.model
 
 import jp.gr.java_conf.hangedman.util.wiki.AbstractWiki
 import scala.collection.mutable.HashMap
+import scala.util.{ Try, Success, Failure }
 
 case class User(id: String, pass: String, role: Role)
 case class Users(users: List[User])
@@ -36,7 +37,28 @@ case class Menu()
 case class Parser(name: String)
 
 abstract class WikiPlugin(className: String, tpe: WikiPluginType, format: WikiFormat) {
+
+  import java.nio.file.StandardCopyOption.REPLACE_EXISTING
+  import java.nio.file.Paths.get
+
   def install(wiki: AbstractWiki): Either[String, Boolean]
+
+  implicit def toPath(filename: String) = get(filename)
+
+  def copy(from: String, to: String): Either[String, Boolean] = {
+    Try {
+      java.nio.file.Files.copy(from, to, REPLACE_EXISTING)
+    } match {
+      case Success(_) =>
+        Right(true)
+      case Failure(e) =>
+        Left(e.getStackTraceString)
+    }
+  }
+
+  def glob(wildcard: String): List[String] = {
+    List("", "", "")
+  }
 }
 
 class PathInfo() {

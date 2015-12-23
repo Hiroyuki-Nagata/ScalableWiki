@@ -28,8 +28,14 @@ object Install {
       "ATTACH",
       new AttachHandler("ATTACH", NonSpecify, NO_FORMAT)
     )
-    //wiki.addHook[AttachDelete]("delete", AttachDelete)
-    //wiki.addHook[AttachRename]("rename", AttachRename)
+    wiki.addHook[AttachDelete](
+      "delete",
+      new AttachDelete("delete", NonSpecify, NO_FORMAT)
+    )
+    wiki.addHook[AttachRename](
+      "rename",
+      new AttachRename("rename", NonSpecify, NO_FORMAT)
+    )
     /**
      * wiki.addInlinePlugin("ref", Ref)
      */
