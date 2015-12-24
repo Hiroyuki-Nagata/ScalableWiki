@@ -36,9 +36,10 @@ object Install {
       "rename",
       new AttachRename("rename", NonSpecify, NO_FORMAT)
     )
-    /**
-     * wiki.addInlinePlugin("ref", Ref)
-     */
+    wiki.addInlinePlugin(
+      "ref",
+      new Ref("ref", Inline, WIKI_FORMAT)
+    )
     wiki.addParagraphPlugin(
       "ref_image",
       new RefImage("ref_image", Paragraph, WIKI_FORMAT)
@@ -47,11 +48,23 @@ object Install {
       "ref_text",
       new RefText("ref_text", Paragraph, WIKI_FORMAT)
     )
+    wiki.addParagraphPlugin(
+      "files",
+      new Files("files", Paragraph, WIKI_FORMAT)
+    )
+    wiki.addParagraphPlugin(
+      "attach",
+      new Attach("attach", Paragraph, WIKI_FORMAT)
+    )
+    wiki.addEditformPlugin(new AttachForm(
+      "attach_form", EditForm, WIKI_FORMAT
+    ), Weight(50))
+
     /**
      *
-     * wiki.addParagraphPlugin("files", Files)
-     * wiki.addParagraphPlugin("attach", Attach)
-     * wiki.addEditformPlugin("plugin::attach::AttachForm", 50)
+     *
+     *
+     *
      *
      * wiki.addAdminMenu("mimeタイプ", wiki.createUrl({ action => "ADMINMIME" }), 990,
      * "MIMEタイプの追加、削除を行います。")
