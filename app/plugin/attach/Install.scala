@@ -11,6 +11,7 @@ import jp.gr.java_conf.hangedman.model._
 import jp.gr.java_conf.hangedman.util.wiki.AbstractWiki
 import java.io.File
 import play.Logger
+import scala.collection.immutable.HashMap
 import scala.util.{ Failure, Success, Try }
 
 object Install {
@@ -60,16 +61,15 @@ object Install {
       "attach_form", EditForm, WIKI_FORMAT
     ), Weight(50))
 
-    /**
-     *
-     *
-     *
-     *
-     *
-     * wiki.addAdminMenu("mimeタイプ", wiki.createUrl({ action => "ADMINMIME" }), 990,
-     * "MIMEタイプの追加、削除を行います。")
-     *
-     * wiki.addAdminHandler("ADMINMIME", "plugin::attach::AdminMIMEHandler")
-     */
+    wiki.addAdminMenu(
+      "mimeタイプ",
+      wiki.createUrl(HashMap("action" -> "ADMINMIME")),
+      Weight(990), "MIMEタイプの追加、削除を行います。"
+    )
+
+    wiki.addAdminHandler[AdminMIMEHandler](
+      "ADMINMIME",
+      new AdminMIMEHandler("ADMINMIME", NonSpecify, NO_FORMAT)
+    )
   }
 }

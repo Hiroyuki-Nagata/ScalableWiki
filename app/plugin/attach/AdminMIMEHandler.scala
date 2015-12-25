@@ -69,13 +69,15 @@ class AdminMIMEHandler(className: String, tpe: WikiPluginType, format: WikiForma
 
     val mime = WikiUtil.loadConfigHash(wiki.config("mime_file").getOrElse("./mime_file"))
 
-    // foreach val key (sort(keys(%mime))){
-    //   buf += "<tr>\n" +
-    //   "  <td><input type=\"checkbox\" name=\"extention\" value=\"" + WikiUtil.escapehtml(key) + "\"></td>\n" +
-    //   "  <td>" + WikiUtil.escapehtml(key) + "</td>\n" +
-    //   "  <td>" + WikiUtil.escapehtml(mime.{key}) + "</td>\n" +
-    //   "</tr>\n"
-    // }
+    mime.foreach {
+      case (key, value) =>
+        buf.append("<tr>\n" +
+          "  <td><input type=\"checkbox\" name=\"extention\" value=\"" +
+          WikiUtil.escapeHTML(key) + "\"></td>\n" +
+          "  <td>" + WikiUtil.escapeHTML(key) + "</td>\n" +
+          "  <td>" + WikiUtil.escapeHTML(value) + "</td>\n" +
+          "</tr>\n")
+    }
     buf.append("</table>\n" +
       "<input type=\"submit\" name=\"DELETE\" value=\"選択項目を削除\">\n" +
       "<input type=\"hidden\" name=\"action\" value=\"ADMINMIME\">\n" +
@@ -111,22 +113,19 @@ class AdminMIMEHandler(className: String, tpe: WikiPluginType, format: WikiForma
   def delete(wiki: AbstractWiki): Either[String, play.api.mvc.Result] = {
     val cgi = wiki.getCGI
 
-    //val ext_list: Array[String] = cgi.getParam("extention")
+    val extList: Array[String] = cgi.getParam("extention").split(',')
     val hash = WikiUtil.loadConfigHash(wiki.config("mime_file").getOrElse("./mime_file"))
-    val result = hash
 
-    // foreach val key (keys(%hash)){
-    //   val flag = 0
-    //   ext_list.foreach { ext  =>
-    //     if(ext == key){
-    //       flag = 1
-    //       last
-    //     }
-    //   }
-    //   if(flag==0){
-    //     result.("key") = hash.{key}
-    //   }
-    // }
+    val result: HashMap[String, String] = hash.map {
+      case (key, value) =>
+        if (!extList.exists(ext => ext == key)) {
+          "key" -> value
+        } else {
+          "" -> ""
+        }
+    }.filterNot {
+      case (key, value) => key == "" || value == ""
+    }
 
     WikiUtil.saveConfigHash(wiki.config("mime_file").getOrElse("./mime_file"), result)
     Right(wiki.redirectURL(wiki.createUrl(HashMap { "action" -> "ADMINMIME" })))

@@ -11,6 +11,7 @@ import jp.gr.java_conf.hangedman.model._
 import jp.gr.java_conf.hangedman.util.wiki.AbstractWiki
 import java.io.File
 import play.Logger
+import scala.collection.immutable.HashMap
 import scala.util.{ Failure, Success, Try }
 
 //===========================================================
@@ -217,51 +218,53 @@ class AttachHandler(className: String, tpe: WikiPluginType, format: WikiFormat)
    * }
    * )
    * }
-   *
-   * //===========================================================
-   * // 添付ファイルのログ
-   * //===========================================================
-   * def writeLog(){
-   * val mode = shift
-   * val page = shift
-   * val file = shift
-   * if(wiki.config('log_dir') == "" || wiki.config("attach_log_file") == ""){
-   * return
-   * }
-   * val ip  = ENV{"REMOTE_ADDR"}
-   * val ref = ENV{"HTTP_REFERER"}
-   * val ua  = ENV{"HTTP_USER_AGENT"}
-   * if(ip  == ""){ ip  = "-" }
-   * if(ref == ""){ ref = "-" }
-   * if(ua  == ""){ ua  = "-" }
-   * my (sec, min, hour, mday, mon, year) = localtime(time())
-   * val date = sprintf("%04d/%02d/%02d %02d:%02d:%02d",year+1900,mon+1,mday,hour,min,sec)
-   *
-   * val logfile = wiki.config('log_dir') + "/" + wiki.config("attach_log_file")
-   * WikiUtil.fileLock(logfile)
-   * open(LOG,">>logfile") or die !
-   * binmode(LOG)
-   * print LOG mode + " " + Util::url_encode(page) + " " + WikiUtil.urlEncode(file) + " " +
-   * date + " " + ip + " " + ref + " " + ua + "\n"
-   * close(LOG)
-   * WikiUtil.fileUnlock(logfile)
-   * }
-   *
-   * //===========================================================
-   * // MIMEタイプを取得します
-   * //===========================================================
-   * def getMimeType(): String = {
-   * val file = shift
-   * val type = lc(substr(file,rindex(file," + ")+1))
-   *
-   * val hash  = WikiUtil.loadConfigHash(wiki,wiki.config("mime_file"))
-   * val ctype = hash.{type}
-   *
-   * if(ctype == "" ){
-   * ctype = "application/octet-stream"
-   * }
-   *
-   * ctype
-   * }
    */
+  //===========================================================
+  // 添付ファイルのログ
+  //===========================================================
+  def writeLog(wiki: AbstractWiki, mode: String, page: String, file: String) {
+
+    if (!wiki.config("log_dir").isDefined || !wiki.config("attach_log_file").isDefined) {
+      return
+    }
+    /**
+     * val ip  = ENV{"REMOTE_ADDR"}
+     * val ref = ENV{"HTTP_REFERER"}
+     * val ua  = ENV{"HTTP_USER_AGENT"}
+     * if(ip  == ""){ ip  = "-" }
+     * if(ref == ""){ ref = "-" }
+     * if(ua  == ""){ ua  = "-" }
+     * my (sec, min, hour, mday, mon, year) = localtime(time())
+     * val date = sprintf("%04d/%02d/%02d %02d:%02d:%02d",year+1900,mon+1,mday,hour,min,sec)
+     *
+     * val logfile = wiki.config('log_dir') + "/" + wiki.config("attach_log_file")
+     * WikiUtil.fileLock(logfile)
+     * open(LOG,">>logfile") or die !
+     * binmode(LOG)
+     * print LOG mode + " " + Util::url_encode(page) + " " + WikiUtil.urlEncode(file) + " " +
+     * date + " " + ip + " " + ref + " " + ua + "\n"
+     * close(LOG)
+     * WikiUtil.fileUnlock(logfile)
+     */
+  }
+
+  //===========================================================
+  // MIMEタイプを取得します
+  //===========================================================
+  def getMimeType(wiki: AbstractWiki, file: String): String = {
+
+    // FIXME
+    val typeName = "" //lc(substr(file,rindex(file," + ")+1))
+    val hash: HashMap[String, String] = WikiUtil.loadConfigHash(
+      wiki.config("mime_file").getOrElse("./mime_file")
+    )
+    val ctype = hash.get(typeName) match {
+      case Some(ctype) =>
+        ctype
+      case None =>
+        "application/octet-stream"
+    }
+
+    ctype
+  }
 }
