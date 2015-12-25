@@ -10,7 +10,9 @@ import jp.gr.java_conf.hangedman.model._
 import net.ceedubs.ficus.Ficus.{ booleanValueReader, stringValueReader, optionValueReader, toFicusConfig }
 import net.ceedubs.ficus._
 import org.joda.time.DateTime
+import play.api.mvc.AnyContent
 import play.api.mvc.Controller
+import play.api.mvc.Request
 import play.api.mvc.Result
 import play.api.mvc.Results
 import scala.collection.mutable.ArrayBuffer
@@ -19,7 +21,8 @@ import scala.collection.mutable.ListBuffer
 import scala.concurrent.Future
 import scala.util.matching.Regex
 
-class Wiki(setupfile: String = "setupfile") extends AbstractWiki with Controller {
+class Wiki(setupfile: String = "setupfile", request: Request[AnyContent])
+    extends AbstractWiki with Controller {
 
   // load "setup.conf"
   val config: Config = ConfigFactory.parseFile(new File("conf/" + setupfile))
