@@ -9,19 +9,19 @@ class WikiSpec extends Specification {
 
   "Wiki" should {
 
+    val request = FakeRequest(GET, "/")
+
     "class Wiki can create instance" in {
-      val wiki: Wiki = new Wiki()
+      val wiki: Wiki = new Wiki("setup.conf", request)
       true
     }
 
     "installPlugin return error when plugin name using \\W words (non alphabet or number)" in {
-      val wiki: Wiki = new Wiki()
+      val wiki: Wiki = new Wiki("setup.conf", request)
       wiki.installPlugin("==>").contains("error") equals (true)
       wiki.installPlugin("<*>").contains("error") equals (true)
       wiki.installPlugin("hoge==>").contains("error") equals (true)
     }
-
-    // "/swiki also must return HTML" in {
-    // }
   }
 }
+

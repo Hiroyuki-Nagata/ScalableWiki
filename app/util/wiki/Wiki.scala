@@ -21,7 +21,7 @@ import scala.collection.mutable.ListBuffer
 import scala.concurrent.Future
 import scala.util.matching.Regex
 
-class Wiki(setupfile: String = "setupfile", request: Request[AnyContent])
+class Wiki(setupfile: String = "setup.conf", request: Request[AnyContent])
     extends AbstractWiki with Controller {
 
   // load "setup.conf"
