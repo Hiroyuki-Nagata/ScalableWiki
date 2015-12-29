@@ -252,6 +252,7 @@ abstract class AbstractWiki {
    * Redirect to the page specified by URL
    */
   def redirectURL(url: URL): Result
+  def redirectURL(url: String): Result
   /*
    * Get value if key is specified, else set the value
    */

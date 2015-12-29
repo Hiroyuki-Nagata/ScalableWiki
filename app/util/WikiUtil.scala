@@ -4,6 +4,7 @@ import java.io.File
 import java.net.URLDecoder
 import java.net.URLEncoder
 import jp.gr.java_conf.hangedman.util.wiki.AbstractWiki
+import org.joda.time.DateTime
 import play.Logger
 import scala.collection.immutable.HashMap
 import scala.util.Failure
@@ -13,6 +14,13 @@ import scala.util.Try
 object WikiUtil {
 
   def overrideDie() = {}
+
+  /**
+   * 引数で渡された文字列をURLエンコードして返します。
+   * {{{
+   * val str = WikiUtil.urlEncode(str)
+   * }}}
+   */
   def urlEncode(rawString: String, enc: String = "utf-8"): String = {
     Try {
       URLEncoder.encode(rawString, enc)
@@ -24,6 +32,12 @@ object WikiUtil {
         ""
     }
   }
+  /**
+   * 引数で渡された文字列をURLデコードして返します。
+   * {{{
+   * val str = WikiUtil.urlDecode(str)
+   * }}}
+   */
   def urlDecode(encString: String, enc: String = "utf-8"): String = {
     Try {
       URLDecoder.decode(encString, enc)
@@ -35,37 +49,193 @@ object WikiUtil {
         ""
     }
   }
-  def cookiePath() = {}
-  def makeFilename(dir: String, encodedUrl: String, name: String): String = {
+  /**
+   * Cookieのpathに指定する文字列を取得します。
+   * {{{
+   * val path = WikiUtil.cookiePath(wiki)
+   * }}}
+   */
+  def cookiePath(wiki: AbstractWiki): String = {
     ""
   }
-  def escapeHTML(html: String): String = { "" }
-  def formatDate() = {}
-  def trim() = {}
-  def deleteTag() = {}
-  def checkNumeric() = {}
+  /**
+   * ディレクトリ、ファイル名、拡張子を結合してファイル名を生成します。
+   * {{{
+   * val filename = WikiUtil.makeFilename(ディレクトリ名,ファイル名,拡張子)
+   * }}}
+   */
+  def makeFilename(dir: String, file: String, ext: String): String = {
+    s"${dir}/${file}/.${ext}"
+  }
+  /**
+   * 引数で渡された文字列のHTMLタグをエスケープして返します。
+   * {{{
+   * str = WikiUtil.escapeHTML(str)
+   * }}}
+   */
+  def escapeHTML(html: String): String = scala.xml.Utility.escape(html)
+  /**
+   * 日付を&quot;yyyy年mm月dd日 hh時mi分ss秒&quot;形式にフォーマットします。
+   * {{{
+   * val date = WikiUtil.formatDate(time())
+   * }}}
+   */
+  def formatDate(dt: DateTime): String = {
+    dt.toString("yyyy年MM月dd日 HH時mm分ss秒")
+  }
+  /**
+   * 文字列の両端の空白を切り落とします。
+   * {{{
+   * val text = WikiUtil.trim(text)
+   * }}}
+   * @deprecated
+   */
+  def trim(text: String): String = text.trim
+  /**
+   * タグを削除して文字列のみを取得します。
+   * {{{
+   * val html: String = "<B>文字列</B>"
+   * // &lt;B&gt;と&lt;/B&gt;を削除し、&quot;文字列&quot;のみ取得
+   * val text = WikiUtil.deleteTag(html)
+   * }}}
+   */
+  def deleteTag(text: String): String = {
+    """<(.|\s)+?>""".r
+      .replaceAllIn(text, m => m.group(1))
+  }
+  /**
+   * 数値かどうかチェックします。数値の場合は真、そうでない場合は偽を返します。
+   * {{{
+   * if (WikiUtil.checkNumeric(param)) {
+   *   // 整数の場合の処理
+   * } else {
+   *   // 整数でない場合の処理
+   * }
+   * }}}
+   */
+  def checkNumeric(text: String) = {
+    text.matches("""^[0-9]+$""")
+  }
+  /**
+   *
+   * {{{
+   *
+   * }}}
+   */
   def sendMail() = {}
+  /**
+   *
+   * {{{
+   *
+   * }}}
+   */
   def handyphone(): Boolean = { false }
+  /**
+   *
+   * {{{
+   *
+   * }}}
+   */
   def smartphone(): Boolean = { false }
+  /**
+   *
+   * {{{
+   *
+   * }}}
+   */
   private def unescape() = {}
+  /**
+   *
+   * {{{
+   *
+   * }}}
+   */
   def loadConfigHash(filename: String): HashMap[String, String] = {
     new HashMap().empty
   }
+  /**
+   *
+   * {{{
+   *
+   * }}}
+   */
   def loadConfigText() = {}
+  /**
+   *
+   * {{{
+   *
+   * }}}
+   */
   def saveConfigHash(filename: String, hash: HashMap[String, String]) = {
   }
+  /**
+   *
+   * {{{
+   *
+   * }}}
+   */
   def saveConfigText() = {}
+  /**
+   *
+   * {{{
+   *
+   * }}}
+   */
   def syncUpdateConfig() = {}
+  /**
+   *
+   * {{{
+   *
+   * }}}
+   */
   def privatemakeQuotedText() = {}
+  /**
+   *
+   * {{{
+   *
+   * }}}
+   */
   def fileLock() = {}
+  /**
+   *
+   * {{{
+   *
+   * }}}
+   */
   def fileUnlock() = {}
-  def inlineError() = {}
+  /**
+   *
+   * {{{
+   *
+   * }}}
+   */
+  def inlineError(message: String, format: String = "WIKI"): String = {
+    "Error"
+  }
+  /**
+   *
+   * {{{
+   *
+   * }}}
+   */
   def paragraphError(message: String, format: String = "WIKI"): String = {
     "Error"
   }
+  /**
+   *
+   * {{{
+   *
+   * }}}
+   */
   def getResponse(wiki: AbstractWiki, image: String) = {
     ""
   }
+  /**
+   *
+   * {{{
+   *
+   * }}}
+   */
   def getModuleFile(module: String): Option[File] = {
     Try {
       new File(module)
@@ -77,11 +247,63 @@ object WikiUtil {
         None
     }
   }
+  /**
+   *
+   * {{{
+   *
+   * }}}
+   */
   def debug() = {}
-  def md5() = {}
+  /**
+   * java.security.MessageDigestを用いたパスワードの暗号化を行います。
+   * 第一引数にパスワード、第二引数にアカウントを渡します。
+   *
+   * {{{
+   * val md5pass = WikiUtil.md5(pass, account)
+   * }}}
+   */
+  def md5(pass: String, salt: String) = {
+    val md5 = java.security.MessageDigest.getInstance("MD5")
+    md5.update(salt.getBytes)
+    md5.digest(pass.getBytes)
+      .map("%02x".format(_))
+      .mkString
+  }
+  /**
+   *
+   * {{{
+   *
+   * }}}
+   */
   def makeContentDisposition() = {}
-  private def die() = {}
-  private def exit() = {}
+  /**
+   *
+   * {{{
+   *
+   * }}}
+   */
+  def die() = {}
+  /**
+   *
+   * {{{
+   *
+   * }}}
+   */
+  def exit() = {}
+  /**
+   *
+   * {{{
+   *
+   * }}}
+   */
   def restoreDie() = {}
-
+  /**
+   *
+   * {{{
+   *
+   * }}}
+   */
+  def rmtree(file: File): Boolean = {
+    org.apache.commons.io.FileUtils.deleteQuietly(file)
+  }
 }

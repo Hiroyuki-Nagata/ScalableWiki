@@ -24,17 +24,13 @@ import scala.io.Source
 
 object Application extends Controller {
 
-  // make instance of Wiki and CGI
-  val wiki = new Wiki("setup.conf")
-  val cgi = wiki.getCGI
-
-  def overwriteConfigs(configMaps: Map[String, List[String]]) = {
+  def overwriteConfigs(configMaps: Map[String, List[String]])(implicit wiki: Wiki) = {
     configMaps.foreach { m =>
       overwriteConfig(m._1, m._2)
     }
   }
 
-  def overwriteConfig(key: String, params: List[String]) = {
+  def overwriteConfig(key: String, params: List[String])(implicit wiki: Wiki) = {
     // take last of params
     // get config values and concat values
     val path: String = params.init.map {
@@ -43,17 +39,31 @@ object Application extends Controller {
     wiki.config(key, path)
   }
 
-  def index = Action { request =>
+  def params(key: String)(implicit request: play.api.mvc.Request[AnyContent]): String = {
+    request.queryString.get(key) match {
+      case Some(value) if (value.size == 1) =>
+        value.head
+      case Some(value) if (value.size != 1) =>
+        value.mkString(",")
+      case None =>
+        ""
+    }
+  }
+
+  def index = Action { implicit request =>
+
+    // make instance of Wiki and CGI
+    val wiki = new Wiki("setup.conf", request)
 
     // use directory for session, use also for Farm
     wiki.config("session_dir", wiki.config("log_dir").getOrElse("./log"))
 
     /*
      * In a case, Swiki works as Farm
-     */
     if (cgi.pathInfo.length > 0) {
       // blah, blah, blah
     }
+     */
 
     // overwrite configs if it needs
     overwriteConfigs(
@@ -67,10 +77,10 @@ object Application extends Controller {
         "site_smartphone_tmpl" ->
           List("tmpl_dir", "/site/", "site_tmpl_theme", "/", "site_tmpl_theme", "_smartphone.tmpl")
       )
-    )
+    )(wiki)
 
     // destroy timeouted session
-    cgi.removeSession(wiki)
+    //cgi.removeSession(wiki)
 
     // load user information
     Cache.getAs[Users]("wiki.users") match {
@@ -92,8 +102,8 @@ object Application extends Controller {
     wiki.doHook("initialize")
 
     // call action handler
-    val action = cgi.paramAction.get
-    val content = wiki.callHandler(action)
+    //val action = cgi.paramAction.get
+    //val content = wiki.callHandler(action)
 
     // FIXME: +error handling
 
@@ -162,14 +172,16 @@ object Application extends Controller {
     }
 
     // detect this page is top or not
-    val top = if (cgi.paramPage() == wiki.config("frontpage")) {
+    val top = if (params("page") == wiki.config("frontpage")) {
       1
     } else {
       0
     }
 
     // determine page title
-    val title = if (cgi.paramAction.isEmpty && wiki.pageExists(cgi.paramPage()) && wiki.isInstalled("search")) {
+    val title = if (params("action").isEmpty &&
+      wiki.pageExists(params("page")) &&
+      wiki.isInstalled("search")) {
       val href = wiki.createUrl(HashMap("SEARCH" -> wiki.getTitle))
       val escapedTitle = WikiUtil.escapeHTML(wiki.getTitle)
       "<a href=\"%s\">%s</a>".format(href, escapedTitle)

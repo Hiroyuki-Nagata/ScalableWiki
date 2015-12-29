@@ -93,6 +93,7 @@ object ScalableWiki extends Build with HtmlTemplateConverter with CommonTrait {
     "jp.t2v" %% "play2-auth"      % "0.13.5",
     "jp.t2v" %% "play2-auth-test" % "0.13.5" % "test",
     "net.ceedubs" %% "ficus" % "1.0.1",
+    "commons-io" % "commons-io" % "2.4",
     "org.scalatest" %% "scalatest" % "2.2.4" % "test"
   )
 

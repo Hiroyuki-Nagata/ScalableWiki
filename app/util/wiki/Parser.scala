@@ -27,7 +27,8 @@ class Parser {
   def lParagraph() = {}
   def lTable() = {}
   def lPlugin() = {}
-  def lImage() = {}
+  def lImage(page: String, filename: String, width: Int, height: Int) = {
+    ""
+  }
   def error() = {}
-
 }

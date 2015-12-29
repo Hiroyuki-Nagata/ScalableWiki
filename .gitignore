@@ -22,7 +22,7 @@ project/plugins/project/
 app/plugin/search
 app/plugin/info
 app/plugin/pdf
-app/plugin/attach
+#app/plugin/attach
 app/plugin/editlog
 app/plugin/core
 app/plugin/recent
