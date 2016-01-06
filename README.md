@@ -17,3 +17,9 @@
 | TMPL_IF		 | @if(value.nonEmpty) |
 | TMPL_ELSE		 | } else {            |
 | TMPL_UNLESS	 | @if(value.isEmpty)  |
+
+    * Documents  
+```
+# apt-get insall graphviz
+> sbt doc
+```

@@ -107,6 +107,7 @@ object ScalableWiki extends Build with HtmlTemplateConverter with CommonTrait {
         "-language:implicitConversions" ::
         Nil
     ),
+    scalacOptions in (Compile,doc) := Seq("-groups", "-implicits", "-diagrams"),
     watchSources ~= {
       _.filterNot(f => f.getName.endsWith(".swp") || f.getName.endsWith(".swo") || f.isDirectory)
     },
