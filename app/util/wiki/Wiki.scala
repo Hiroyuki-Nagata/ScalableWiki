@@ -7,6 +7,7 @@ import java.io.File
 import java.net.URL
 import java.net.URL
 import jp.gr.java_conf.hangedman.model._
+import jp.gr.java_conf.hangedman.util.WikiUtil
 import net.ceedubs.ficus.Ficus.{ booleanValueReader, stringValueReader, optionValueReader, toFicusConfig }
 import net.ceedubs.ficus._
 import org.joda.time.DateTime
@@ -15,6 +16,7 @@ import play.api.mvc.Controller
 import play.api.mvc.Request
 import play.api.mvc.Result
 import play.api.mvc.Results
+import scala.collection.immutable.ListMap
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.HashMap
 import scala.collection.mutable.ListBuffer
@@ -115,8 +117,43 @@ class Wiki(setupfile: String = "setup.conf", request: Request[AnyContent])
   def convertFromFswiki(source: String, formatType: WikiFormat, isInline: Boolean = false): String = { "" }
   def convertToFswiki(source: String, formatType: WikiFormat, isInline: Boolean = false): String = { "" }
   def createChildWiki(siteName: String, adminId: String, password: String): Unit = {}
-  def createPageUrl(pageName: String): String = { "" }
-  def createUrl(params: scala.collection.immutable.HashMap[String, String]): String = { "" }
+  /**
+   * ページにジャンプするためのURLを生成するユーティリティメソッドです。
+   * 引数としてページ名を渡します。
+   * {{{
+   * wiki.createPageUrl(&quot;FrontPage&quot;)
+   * }}}
+   * 上記のコードは通常、以下のURLを生成します。
+   * wiki.cgi?page=FrontPage
+   */
+  def createPageUrl(page: String): String = {
+    this.createUrl(scala.collection.immutable.HashMap("page" -> page))
+  }
+  /**
+   * 任意のURLを生成するためのユーティリティメソッドです。
+   * 引数としてパラメータのハッシュリファレンスを渡します。
+   * {{{
+   * wiki.createUrl(HashMap("action" -> "HOGE", "type" -> "1"))
+   * }}}
+   * 上記のコードは通常、以下のURLを生成します。
+   * {{{
+   * wiki.cgi?action=HOGE&amp;type=1
+   * }}}
+   */
+  def createUrl(params: scala.collection.immutable.HashMap[String, String]): String = {
+    val url: String = this.config("script_name").getOrElse("wiki.cgi") + "?"
+    val sorted: List[String] = params.map { case (action, _) => action }.toList.sorted
+    val headq: String = sorted.head match {
+      case key =>
+        WikiUtil.urlEncode(key) + "=" + WikiUtil.urlEncode(params(key))
+    }
+    val tailq: String = sorted.tail.map { key =>
+      "&amp;" + WikiUtil.urlEncode(key) + "=" + WikiUtil.urlEncode(params(key))
+    }.mkString
+
+    val query = headq + tailq
+    if (query.isEmpty) url else s"${url}${query}"
+  }
   def createUrl(): String = { "" }
   def doHook(name: String, arguments: String*): Unit = {}
   def error(message: String): String = {
