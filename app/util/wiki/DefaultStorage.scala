@@ -4,6 +4,11 @@ import java.io.File
 import jp.gr.java_conf.hangedman.model.WikiPageLevel
 import jp.gr.java_conf.hangedman.util.WikiUtil
 
+sealed abstract class PageFlag
+case object Create extends PageFlag
+case object Update extends PageFlag
+case object Remove extends PageFlag
+
 /**
  * FSWikiデフォルトのストレージプラグイン。
  *
@@ -50,9 +55,23 @@ class DefaultStorage(abstractWiki: AbstractWiki) {
     // adjust pagename and contents
     val page = WikiUtil.trim(rawPage)
   }
-  private def CreatePageListFile() = {}
-  private def GetBackupNumber() = {}
-  private def RenameOldHistory() = {}
+  /**
+   * ページ一覧のインデックスファイルを作成、更新します。
+   * 第一引数にページ名、第二引数に'create'、'update'、'remove'のいずれかを指定します。
+   * インデックスファイルが存在しない場合は引数に関わらずインデックスファイルの作成を行います。
+   */
+  private def createPageListFile(page: String, flag: PageFlag) = {
+  }
+  /**
+   * ページを保存
+   */
+  private def getBackupNumber() = {
+  }
+  /**
+   * ページを保存
+   */
+  private def renameOldHistory() = {
+  }
   def getPageList() = {}
   def getLastModified() = {}
   def getLastModified2() = {}
