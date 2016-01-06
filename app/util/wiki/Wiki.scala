@@ -50,7 +50,7 @@ class Wiki(setupfile: String = "setup.conf", request: Request[AnyContent])
   val headInfo = ListBuffer()
 
   // FIXME: Timezone, post_max
-  val storage = new DefaultStorage
+  val storage = new DefaultStorage(this)
   var isEdit: Boolean = false
 
   def getCanShowMax(): Option[WikiPageLevel] = { Some(PublishAll) }
