@@ -30,6 +30,8 @@ class DefaultStorage(abstractWiki: AbstractWiki) {
     case None =>
       "1"
   }
+  val showLevel = scala.collection.mutable.HashMap[String, String]().empty
+
   /**
    * ページを取得
    */
@@ -72,26 +74,75 @@ class DefaultStorage(abstractWiki: AbstractWiki) {
    */
   private def renameOldHistory() = {
   }
+  /**
+   * ページを保存
+   */
   def getPageList() = {}
+  /**
+   * ページを保存
+   */
   def getLastModified() = {}
+  /**
+   * ページを保存
+   */
   def getLastModified2() = {}
+  /**
+   * ページを保存
+   */
   def pageExists(page: String, path: String): Boolean = {
     true
   }
+  /**
+   * ページを保存
+   */
   def backupType() = {}
+  /**
+   * ページを保存
+   */
   def deleteBackupFiles() = {}
+  /**
+   * ページを保存
+   */
   def getBackupList() = {}
+  /**
+   * ページを保存
+   */
   def getBackup(pageName: String, version: Int = 0): Option[String] = {
     Some("")
   }
+  /**
+   * ページを保存
+   */
   def freezePage() = {}
+  /**
+   * ページを保存
+   */
   def unFreezePage() = {}
+  /**
+   * ページを保存
+   */
   def getFreezeList() = {}
+  /**
+   * ページを保存
+   */
   def isFreeze(page: String, path: String): Boolean = {
     false
   }
+  /**
+   * ページを保存
+   */
   def setPageLevel(pageName: String, level: WikiPageLevel) = {
   }
-  def getPageLevel() = {}
-
+  /**
+   * Get page level of reference
+   */
+  def getPageLevel(page: String, path: String) = {
+    if (!showLevel.get(path).isDefined) {
+      // execute replacing config_dir
+      val configdir = wiki.config("config_dir").getOrElse("./config_dir")
+      if (path.nonEmpty) {
+        wiki.config("config_dir", s"${configdir}/${path}")
+      }
+    }
+  }
 }

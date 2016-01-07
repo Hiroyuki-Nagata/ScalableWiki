@@ -3,6 +3,7 @@ package jp.gr.java_conf.hangedman.util
 import java.io.File
 import java.net.URLDecoder
 import java.net.URLEncoder
+import javax.mail.internet.MimeUtility
 import jp.gr.java_conf.hangedman.util.wiki.AbstractWiki
 import org.joda.time.DateTime
 import play.Logger
@@ -117,12 +118,25 @@ object WikiUtil {
     text.matches("""^[0-9]+$""")
   }
   /**
+   * 管理者にメールを送信します。
+   * setup.datの設定内容に応じてsendmailコマンドもしくはSMTP通信によってメールが送信されます。
+   * どちらも設定されていない場合は送信を行わず、エラーにもなりません。
+   * SMTPで送信する場合、このメソッドを呼び出した時点でNet::SMTPがuseされます。
    *
    * {{{
-   *
+   * WikiUtil.sendMail(wiki,件名,本文)
    * }}}
    */
-  def sendMail() = {}
+  def sendMail(wiki: AbstractWiki, rawSubject: String, rawContent: String) = {
+    val subject = Try {
+      MimeUtility.encodeText(rawSubject)
+    } match {
+      case Success(mime) =>
+        mime
+      case Failure(e) =>
+        ""
+    }
+  }
   /**
    *
    * {{{
