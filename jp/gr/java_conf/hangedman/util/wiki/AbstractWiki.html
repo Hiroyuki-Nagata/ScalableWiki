@@ -45,7 +45,11 @@
         </div><div class="toggleContainer block">
           <span class="toggle">Known Subclasses</span>
           <div class="subClasses hiddenContent"><a href="Wiki.html" class="extype" name="jp.gr.java_conf.hangedman.util.wiki.Wiki">Wiki</a></div>
-        </div></div>
+        </div><div class="toggleContainer block diagram-container" id="inheritance-diagram-container">
+                <span class="toggle diagram-link">Type Hierarchy</span>
+                <a href="http://docs.scala-lang.org/overviews/scaladoc/usage.html#diagrams" target="_blank" class="diagram-help">Learn more about scaladoc diagrams</a>
+                <div class="diagram" id="inheritance-diagram"><svg class="class-diagram" id="graph9" viewBox="0.00 0.00 158.00 155.00" height="155pt" width="158pt" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg"><g transform="scale(1 1) rotate(0) translate(4 151)" class="graph" id="graph0"><polygon points="-4,4 -4,-151 154,-151 154,4 -4,4" stroke="none" fill="white"></polygon><g class="cluster" id="clust1"></g><g class="cluster" id="clust2"></g><!-- node0 --><g class="node this class" id="graph9_0"><g id="a_this class|graph9_0"><a xlink:title="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki (this class)" xlink:href="#inheritance-diagram"><polygon points="125.5,-86 24.5,-86 24.5,-61 125.5,-61 125.5,-86" stroke="#115f3b" fill="#0a955b"></polygon><image xlink:href="../../../../../../lib/class_diagram.png" y="-80.5" x="35" preserveAspectRatio="xMinYMin meet" height="15px" width="15px"></image><text fill="#ffffff" font-size="10.00" font-family="Arial" y="-70.5" x="56" text-anchor="start">AbstractWiki</text></a></g></g><!-- node1 --><g class="node class" id="graph9_1"><g id="a_class|graph9_1"><a xlink:title="jp.gr.java_conf.hangedman.util.wiki.Wiki" xlink:href="Wiki.html#inheritance-diagram"><polygon points="107,-25 43,-25 43,-0 107,-0 107,-25" stroke="#115f3b" fill="#0a955b"></polygon><image xlink:href="../../../../../../lib/class_diagram.png" y="-19.5" x="53" preserveAspectRatio="xMinYMin meet" height="15px" width="15px"></image><text fill="#ffffff" font-size="10.00" font-family="Arial" y="-9.5" x="74" text-anchor="start">Wiki</text></a></g></g><!-- node0&#45;&gt;node1 --><g class="edge inheritance" id="graph9_0_1"><g id="a_inheritance|graph9_0_1"><a xlink:title="Wiki is a subtype of AbstractWiki"><path d="M75,-55.6874C75,-45.9173 75,-33.8534 75,-25.1323" stroke="#d4d4d4" fill="none"></path><polygon points="73.2501,-55.8435 75,-60.8435 76.7501,-55.8435 73.2501,-55.8435" stroke="#d4d4d4" fill="none"></polygon></a></g></g><!-- node2 --><g class="node class" id="graph9_2"><g id="a_class|graph9_2"><a xlink:title="scala.AnyRef"><polygon points="113,-147 37,-147 37,-122 113,-122 113,-147" stroke="#115f3b" fill="#0a955b"></polygon><image xlink:href="../../../../../../lib/class_diagram.png" y="-141.5" x="47" preserveAspectRatio="xMinYMin meet" height="15px" width="15px"></image><text fill="#ffffff" font-size="10.00" font-family="Arial" y="-131.5" x="68" text-anchor="start">AnyRef</text></a></g></g><!-- node2&#45;&gt;node0 --><g class="edge inheritance" id="graph9_2_0"><g id="a_inheritance|graph9_2_0"><a xlink:title="AbstractWiki is a subtype of AnyRef"><path d="M75,-116.687C75,-106.917 75,-94.8534 75,-86.1323" stroke="#d4d4d4" fill="none"></path><polygon points="73.2501,-116.843 75,-121.843 76.7501,-116.844 73.2501,-116.843" stroke="#d4d4d4" fill="none"></polygon></a></g></g></g></svg></div>
+              </div></div>
         
 
       <div id="mbrsel">
@@ -119,7 +123,8 @@
         <span class="name">addAdminHandler</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="action">action: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="cls">cls: <span class="extype" name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki.addAdminHandler.T">T</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Add action handler plugin for admin
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#addAdminMenu" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="addAdminMenu(label:String,url:String,weight:jp.gr.java_conf.hangedman.model.Weight,desc:String):Unit"></a>
       <a id="addAdminMenu(String,String,Weight,String):Unit"></a>
@@ -132,7 +137,8 @@
         <span class="name">addAdminMenu</span><span class="params">(<span name="label">label: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="weight">weight: <a href="../../model/Weight.html" class="extype" name="jp.gr.java_conf.hangedman.model.Weight">Weight</a></span>, <span name="desc">desc: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Add admin menu will be shown in a case of logining by admin
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#addBlockPlugin" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="addBlockPlugin(name:String,cls:jp.gr.java_conf.hangedman.model.WikiPlugin):Unit"></a>
       <a id="addBlockPlugin(String,WikiPlugin):Unit"></a>
@@ -145,7 +151,8 @@
         <span class="name">addBlockPlugin</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="cls">cls: <a href="../../model/WikiPlugin.html" class="extype" name="jp.gr.java_conf.hangedman.model.WikiPlugin">WikiPlugin</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Register a block plugin, specify the format &quot;WIKI&quot; or &quot;HTML&quot;
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#addEditformPlugin" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="addEditformPlugin(plugin:jp.gr.java_conf.hangedman.model.WikiPlugin,weight:jp.gr.java_conf.hangedman.model.Weight):Unit"></a>
       <a id="addEditformPlugin(WikiPlugin,Weight):Unit"></a>
@@ -158,7 +165,8 @@
         <span class="name">addEditformPlugin</span><span class="params">(<span name="plugin">plugin: <a href="../../model/WikiPlugin.html" class="extype" name="jp.gr.java_conf.hangedman.model.WikiPlugin">WikiPlugin</a></span>, <span name="weight">weight: <a href="../../model/Weight.html" class="extype" name="jp.gr.java_conf.hangedman.model.Weight">Weight</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Add editform plugin
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#addFormatPlugin" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="addFormatPlugin(name:String,cls:jp.gr.java_conf.hangedman.model.WikiPlugin):Unit"></a>
       <a id="addFormatPlugin(String,WikiPlugin):Unit"></a>
@@ -171,7 +179,8 @@
         <span class="name">addFormatPlugin</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="cls">cls: <a href="../../model/WikiPlugin.html" class="extype" name="jp.gr.java_conf.hangedman.model.WikiPlugin">WikiPlugin</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Add format plugin
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#addHandler" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="addHandler[T](action:String,cls:T):Unit"></a>
       <a id="addHandler[T](String,T):Unit"></a>
@@ -184,7 +193,8 @@
         <span class="name">addHandler</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="action">action: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="cls">cls: <span class="extype" name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki.addHandler.T">T</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Add action handler plugin
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#addHeadInfo" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="addHeadInfo(info:String):Unit"></a>
       <a id="addHeadInfo(String):Unit"></a>
@@ -197,8 +207,9 @@
         <span class="name">addHeadInfo</span><span class="params">(<span name="info">info: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      
-    </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#addHook" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <p class="shortcomment cmt">Add element to head TAG
+</p>
+    </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#addHook" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="addHook[T](name:String,obj:T):Unit"></a>
       <a id="addHook[T](String,T):Unit"></a>
       <h4 class="signature">
@@ -210,7 +221,8 @@
         <span class="name">addHook</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="obj">obj: <span class="extype" name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki.addHook.T">T</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Register a hook plugin</p><div class="fullcomment"><div class="comment cmt"><p>Register a hook plugin</p></div><dl class="paramcmts block"><dt class="param">name</dt><dd class="cmt"><p>plugin name</p></dd><dt class="param">obj</dt><dd class="cmt"><p>plugin class name
+</p></dd></dl></div>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#addInlinePlugin" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="addInlinePlugin(name:String,cls:jp.gr.java_conf.hangedman.model.WikiPlugin):Unit"></a>
       <a id="addInlinePlugin(String,WikiPlugin):Unit"></a>
@@ -223,7 +235,8 @@
         <span class="name">addInlinePlugin</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="cls">cls: <a href="../../model/WikiPlugin.html" class="extype" name="jp.gr.java_conf.hangedman.model.WikiPlugin">WikiPlugin</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Register a inline plugin, specify the format &quot;WIKI&quot; or &quot;HTML&quot;
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#addMenu" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="addMenu(name:String,href:String,weight:jp.gr.java_conf.hangedman.model.Weight,nofollow:Boolean):Unit"></a>
       <a id="addMenu(String,String,Weight,Boolean):Unit"></a>
@@ -236,7 +249,8 @@
         <span class="name">addMenu</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="href">href: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="weight">weight: <a href="../../model/Weight.html" class="extype" name="jp.gr.java_conf.hangedman.model.Weight">Weight</a></span>, <span name="nofollow">nofollow: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Add menu, if you don't allow crowling set nofollow true
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#addParagraphPlugin" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="addParagraphPlugin(name:String,cls:jp.gr.java_conf.hangedman.model.WikiPlugin):Unit"></a>
       <a id="addParagraphPlugin(String,WikiPlugin):Unit"></a>
@@ -249,7 +263,8 @@
         <span class="name">addParagraphPlugin</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="cls">cls: <a href="../../model/WikiPlugin.html" class="extype" name="jp.gr.java_conf.hangedman.model.WikiPlugin">WikiPlugin</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Register a paragraph plugin, specify the format &quot;WIKI&quot; or &quot;HTML&quot;
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#addPlugin" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="addPlugin(name:String,cls:String):Unit"></a>
       <a id="addPlugin(String,String):Unit"></a>
@@ -288,7 +303,8 @@
         <span class="name">addUser</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="pass">pass: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="role">role: <a href="../../model/Role.html" class="extype" name="jp.gr.java_conf.hangedman.model.Role">Role</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Add user; specify 0 if user is admin, else 1
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#addUserHandler" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="addUserHandler[T](action:String,cls:T):Unit"></a>
       <a id="addUserHandler[T](String,T):Unit"></a>
@@ -301,7 +317,8 @@
         <span class="name">addUserHandler</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="action">action: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="cls">cls: <span class="extype" name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki.addUserHandler.T">T</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Add action handler plugin for logining user
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#addUserMenu" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="addUserMenu(label:String,url:String,weight:jp.gr.java_conf.hangedman.model.Weight,desc:String):Unit"></a>
       <a id="addUserMenu(String,String,Weight,String):Unit"></a>
@@ -314,7 +331,8 @@
         <span class="name">addUserMenu</span><span class="params">(<span name="label">label: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="weight">weight: <a href="../../model/Weight.html" class="extype" name="jp.gr.java_conf.hangedman.model.Weight">Weight</a></span>, <span name="desc">desc: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Add user menu will be shown always
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#callHandler" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="callHandler(action:String):String"></a>
       <a id="callHandler(String):String"></a>
@@ -327,7 +345,8 @@
         <span class="name">callHandler</span><span class="params">(<span name="action">action: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Execute registerd ActionHandler
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#canModifyPage" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="canModifyPage(pageName:String):Boolean"></a>
       <a id="canModifyPage(String):Boolean"></a>
@@ -340,7 +359,8 @@
         <span class="name">canModifyPage</span><span class="params">(<span name="pageName">pageName: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Check the page is editable
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#canShow" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="canShow(pageName:String):Boolean"></a>
       <a id="canShow(String):Boolean"></a>
@@ -353,7 +373,8 @@
         <span class="name">canShow</span><span class="params">(<span name="pageName">pageName: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Get the page can be referenced
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#checkLogin" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="checkLogin(id:String,pass:String,path:String):Option[jp.gr.java_conf.hangedman.model.LoginInfo]"></a>
       <a id="checkLogin(String,String,String):Option[LoginInfo]"></a>
@@ -366,7 +387,8 @@
         <span class="name">checkLogin</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="pass">pass: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="path">path: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="../../model/LoginInfo.html" class="extype" name="jp.gr.java_conf.hangedman.model.LoginInfo">LoginInfo</a>]</span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Check login infomation if user is logining
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#childWikiExists" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="childWikiExists(wikiName:String):Boolean"></a>
       <a id="childWikiExists(String):Boolean"></a>
@@ -379,7 +401,8 @@
         <span class="name">childWikiExists</span><span class="params">(<span name="wikiName">wikiName: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Check the child wiki's existence
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#config" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="config(key:String):Option[String]"></a>
       <a id="config(String):Option[String]"></a>
@@ -405,7 +428,8 @@
         <span class="name">config</span><span class="params">(<span name="key">key: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="value">value: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Get value if key is specified, else set the value
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#convertFromFswiki" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="convertFromFswiki(source:String,formatType:jp.gr.java_conf.hangedman.model.WikiFormat,isInline:Boolean):String"></a>
       <a id="convertFromFswiki(String,WikiFormat,Boolean):String"></a>
@@ -418,7 +442,8 @@
         <span class="name">convertFromFswiki</span><span class="params">(<span name="source">source: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="formatType">formatType: <a href="../../model/WikiFormat.html" class="extype" name="jp.gr.java_conf.hangedman.model.WikiFormat">WikiFormat</a></span>, <span name="isInline">isInline: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Convert FSWiki style source to other format Wiki one
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#convertToFswiki" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="convertToFswiki(source:String,formatType:jp.gr.java_conf.hangedman.model.WikiFormat,isInline:Boolean):String"></a>
       <a id="convertToFswiki(String,WikiFormat,Boolean):String"></a>
@@ -431,7 +456,8 @@
         <span class="name">convertToFswiki</span><span class="params">(<span name="source">source: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="formatType">formatType: <a href="../../model/WikiFormat.html" class="extype" name="jp.gr.java_conf.hangedman.model.WikiFormat">WikiFormat</a></span>, <span name="isInline">isInline: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Convert other format Wiki source to FSWiki style one
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#createChildWiki" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="createChildWiki(siteName:String,adminId:String,password:String):Unit"></a>
       <a id="createChildWiki(String,String,String):Unit"></a>
@@ -444,7 +470,8 @@
         <span class="name">createChildWiki</span><span class="params">(<span name="siteName">siteName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="adminId">adminId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="password">password: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Create child wiki
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#createPageUrl" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="createPageUrl(pageName:String):String"></a>
       <a id="createPageUrl(String):String"></a>
@@ -457,7 +484,8 @@
         <span class="name">createPageUrl</span><span class="params">(<span name="pageName">pageName: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Create page URL for jumping the page
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#createUrl" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="createUrl():String"></a>
       <a id="createUrl():String"></a>
@@ -483,8 +511,9 @@
         <span class="name">createUrl</span><span class="params">(<span name="params">params: <span class="extype" name="scala.collection.immutable.HashMap">HashMap</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4>
-      
-    </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#doHook" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <p class="shortcomment cmt">Utility method for generating any URL
+</p>
+    </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#doHook" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="doHook(name:String,arguments:String*):Unit"></a>
       <a id="doHook(String,String*):Unit"></a>
       <h4 class="signature">
@@ -496,7 +525,8 @@
         <span class="name">doHook</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="arguments">arguments: <span class="extype" name="scala.Predef.String">String</span>*</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Execute a registered hook plugin</p><div class="fullcomment"><div class="comment cmt"><p>Execute a registered hook plugin</p></div><dl class="paramcmts block"><dt class="param">name</dt><dd class="cmt"><p>plugin name</p></dd><dt class="param">arguments</dt><dd class="cmt"><p>arguments for hook method
+</p></dd></dl></div>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#error" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="error(message:String):String"></a>
       <a id="error(String):String"></a>
@@ -509,7 +539,8 @@
         <span class="name">error</span><span class="params">(<span name="message">message: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Report error from action handler
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#farmIsEnable" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="farmIsEnable():Boolean"></a>
       <a id="farmIsEnable():Boolean"></a>
@@ -522,7 +553,8 @@
         <span class="name">farmIsEnable</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Check the function for farm is enabled or not
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#freezePage" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="freezePage(pageName:String):Unit"></a>
       <a id="freezePage(String):Unit"></a>
@@ -535,7 +567,8 @@
         <span class="name">freezePage</span><span class="params">(<span name="pageName">pageName: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Freeze a page
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#getAdminMenu" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="getAdminMenu():jp.gr.java_conf.hangedman.model.Menu"></a>
       <a id="getAdminMenu():Menu"></a>
@@ -548,8 +581,9 @@
         <span class="name">getAdminMenu</span><span class="params">()</span><span class="result">: <a href="../../model/Menu.html" class="extype" name="jp.gr.java_conf.hangedman.model.Menu">Menu</a></span>
       </span>
       </h4>
-      
-    </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#getBackup" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <p class="shortcomment cmt">Get admin menu
+</p>
+    </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#getBackup" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="getBackup(pageName:String,version:Int):Option[String]"></a>
       <a id="getBackup(String,Int):Option[String]"></a>
       <h4 class="signature">
@@ -561,7 +595,8 @@
         <span class="name">getBackup</span><span class="params">(<span name="pageName">pageName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="version">version: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Get backuped source</p><div class="fullcomment"><div class="comment cmt"><p>Get backuped source</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>None if it not exist
+</p></dd></dl></div>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#getCGI" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="getCGI():jp.gr.java_conf.hangedman.model.DummyCGI"></a>
       <a id="getCGI():DummyCGI"></a>
@@ -574,7 +609,8 @@
         <span class="name">getCGI</span><span class="params">()</span><span class="result">: <a href="../../model/DummyCGI.html" class="extype" name="jp.gr.java_conf.hangedman.model.DummyCGI">DummyCGI</a></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Get CGI object
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#getCanShowMax" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="getCanShowMax():Option[jp.gr.java_conf.hangedman.model.WikiPageLevel]"></a>
       <a id="getCanShowMax():Option[WikiPageLevel]"></a>
@@ -587,8 +623,9 @@
         <span class="name">getCanShowMax</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="../../model/WikiPageLevel.html" class="extype" name="jp.gr.java_conf.hangedman.model.WikiPageLevel">WikiPageLevel</a>]</span>
       </span>
       </h4>
-      
-    </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#getChildWikiDepth" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <p class="shortcomment cmt">Get the max level for current user's permission
+</p>
+    </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#getChildWikiDepth" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="getChildWikiDepth():Int"></a>
       <a id="getChildWikiDepth():Int"></a>
       <h4 class="signature">
@@ -600,7 +637,10 @@
         <span class="name">getChildWikiDepth</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Get current level of wiki;
+Root =&gt; 0, child =&gt; 1.</p><div class="fullcomment"><div class="comment cmt"><p>Get current level of wiki;
+Root =&gt; 0, child =&gt; 1...and so on.
+</p></div></div>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#getCurrentParser" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="getCurrentParser():Option[jp.gr.java_conf.hangedman.util.wiki.Parser]"></a>
       <a id="getCurrentParser():Option[Parser]"></a>
@@ -613,7 +653,8 @@
         <span class="name">getCurrentParser</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="Parser.html" class="extype" name="jp.gr.java_conf.hangedman.util.wiki.Parser">Parser</a>]</span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">If wiki instance is parsing, return instance of Parser
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#getEditFormat" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="getEditFormat():jp.gr.java_conf.hangedman.model.WikiFormat"></a>
       <a id="getEditFormat():WikiFormat"></a>
@@ -626,7 +667,8 @@
         <span class="name">getEditFormat</span><span class="params">()</span><span class="result">: <a href="../../model/WikiFormat.html" class="extype" name="jp.gr.java_conf.hangedman.model.WikiFormat">WikiFormat</a></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Get a wiki format edited by current user
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#getEditformPlugin" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="getEditformPlugin():String"></a>
       <a id="getEditformPlugin():String"></a>
@@ -639,7 +681,8 @@
         <span class="name">getEditformPlugin</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Get editform plugin's output
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#getFormatNames" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="getFormatNames():List[String]"></a>
       <a id="getFormatNames():List[String]"></a>
@@ -652,7 +695,8 @@
         <span class="name">getFormatNames</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.List">List</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Get list of format plugins
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#getFreezeList" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="getFreezeList():List[String]"></a>
       <a id="getFreezeList():List[String]"></a>
@@ -665,7 +709,8 @@
         <span class="name">getFreezeList</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.List">List</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Get frozen page list
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#getLastModified" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="getLastModified(page:String):org.joda.time.DateTime"></a>
       <a id="getLastModified(String):DateTime"></a>
@@ -678,7 +723,8 @@
         <span class="name">getLastModified</span><span class="params">(<span name="page">page: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="org.joda.time.DateTime">DateTime</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Get last modified time from data file
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#getLastModifiedLogically" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="getLastModifiedLogically():org.joda.time.DateTime"></a>
       <a id="getLastModifiedLogically():DateTime"></a>
@@ -691,7 +737,8 @@
         <span class="name">getLastModifiedLogically</span><span class="params">()</span><span class="result">: <span class="extype" name="org.joda.time.DateTime">DateTime</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Get last modified time
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#getLoginInfo" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="getLoginInfo():Option[jp.gr.java_conf.hangedman.model.LoginInfo]"></a>
       <a id="getLoginInfo():Option[LoginInfo]"></a>
@@ -704,7 +751,8 @@
         <span class="name">getLoginInfo</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="../../model/LoginInfo.html" class="extype" name="jp.gr.java_conf.hangedman.model.LoginInfo">LoginInfo</a>]</span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Get login infomation if user is logining
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#getPage" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="getPage(pageName:String,format:jp.gr.java_conf.hangedman.model.WikiFormat):String"></a>
       <a id="getPage(String,WikiFormat):String"></a>
@@ -717,7 +765,8 @@
         <span class="name">getPage</span><span class="params">(<span name="pageName">pageName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="format">format: <a href="../../model/WikiFormat.html" class="extype" name="jp.gr.java_conf.hangedman.model.WikiFormat">WikiFormat</a> = <span class="symbol"><span class="name"><a href="../../../../../package.html">WIKI_FORMAT</a></span></span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Get page source
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#getPageLevel" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="getPageLevel(pageName:String):jp.gr.java_conf.hangedman.model.WikiPageLevel"></a>
       <a id="getPageLevel(String):WikiPageLevel"></a>
@@ -730,7 +779,8 @@
         <span class="name">getPageLevel</span><span class="params">(<span name="pageName">pageName: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <a href="../../model/WikiPageLevel.html" class="extype" name="jp.gr.java_conf.hangedman.model.WikiPageLevel">WikiPageLevel</a></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Get the level of page
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#getPageList" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="getPageList(params:String*):List[String]"></a>
       <a id="getPageList(String*):List[String]"></a>
@@ -743,7 +793,8 @@
         <span class="name">getPageList</span><span class="params">(<span name="params">params: <span class="extype" name="scala.Predef.String">String</span>*</span>)</span><span class="result">: <span class="extype" name="scala.List">List</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Get page list
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#getPluginInfo" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="getPluginInfo(name:String):Option[jp.gr.java_conf.hangedman.model.PluginInfo]"></a>
       <a id="getPluginInfo(String):Option[PluginInfo]"></a>
@@ -756,7 +807,8 @@
         <span class="name">getPluginInfo</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="../../model/PluginInfo.html" class="extype" name="jp.gr.java_conf.hangedman.model.PluginInfo">PluginInfo</a>]</span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Get plugin info
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#getPluginInstance" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="getPluginInstance[T](cls:T):T"></a>
       <a id="getPluginInstance[T](T):T"></a>
@@ -769,7 +821,8 @@
         <span class="name">getPluginInstance</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="cls">cls: <span class="extype" name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki.getPluginInstance.T">T</span></span>)</span><span class="result">: <span class="extype" name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki.getPluginInstance.T">T</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Get plugin's instance
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#getTitle" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="getTitle():String"></a>
       <a id="getTitle():String"></a>
@@ -782,7 +835,8 @@
         <span class="name">getTitle</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Get title
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#getWikiList" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="getWikiList():List[String]"></a>
       <a id="getWikiList():List[String]"></a>
@@ -795,7 +849,8 @@
         <span class="name">getWikiList</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.List">List</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Get the List of child wiki
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#installPlugin" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="installPlugin(pluginName:String):String"></a>
       <a id="installPlugin(String):String"></a>
@@ -821,7 +876,8 @@
         <span class="name">installPlugin</span><span class="params">(<span name="plugin">plugin: <a href="../../model/WikiPlugin.html" class="extype" name="jp.gr.java_conf.hangedman.model.WikiPlugin">WikiPlugin</a></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Install plugin
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#isFreeze" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="isFreeze(pageName:String):Boolean"></a>
       <a id="isFreeze(String):Boolean"></a>
@@ -834,7 +890,8 @@
         <span class="name">isFreeze</span><span class="params">(<span name="pageName">pageName: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Check the page is frozen
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#isInstalled" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="isInstalled(pluginName:String):Boolean"></a>
       <a id="isInstalled(String):Boolean"></a>
@@ -860,7 +917,8 @@
         <span class="name">isInstalled</span><span class="params">(<span name="plugin">plugin: <a href="../../model/WikiPlugin.html" class="extype" name="jp.gr.java_conf.hangedman.model.WikiPlugin">WikiPlugin</a></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Check installed plugin
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#pageExists" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="pageExists(pageName:String):Boolean"></a>
       <a id="pageExists(String):Boolean"></a>
@@ -873,7 +931,8 @@
         <span class="name">pageExists</span><span class="params">(<span name="pageName">pageName: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Check the page exists or not
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#parseInlinePlugin" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="parseInlinePlugin(text:String):(String,Array[String],String)"></a>
       <a id="parseInlinePlugin(String):(String,Array[String],String)"></a>
@@ -886,7 +945,8 @@
         <span class="name">parseInlinePlugin</span><span class="params">(<span name="text">text: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: (<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Predef.String">String</span>)</span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Devine inline plugin to command &amp; arguments
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#processBeforeExit" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="processBeforeExit():Unit"></a>
       <a id="processBeforeExit():Unit"></a>
@@ -899,7 +959,8 @@
         <span class="name">processBeforeExit</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Process before the terminate
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#processPlugin" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="processPlugin(plugin:jp.gr.java_conf.hangedman.model.WikiPlugin,parser:jp.gr.java_conf.hangedman.util.wiki.Parser):Unit"></a>
       <a id="processPlugin(WikiPlugin,Parser):Unit"></a>
@@ -912,7 +973,8 @@
         <span class="name">processPlugin</span><span class="params">(<span name="plugin">plugin: <a href="../../model/WikiPlugin.html" class="extype" name="jp.gr.java_conf.hangedman.model.WikiPlugin">WikiPlugin</a></span>, <span name="parser">parser: <a href="Parser.html" class="extype" name="jp.gr.java_conf.hangedman.util.wiki.Parser">Parser</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Call inline plugin or paragragh plugin
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#processWiki" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="processWiki(wikiformat:String):String"></a>
       <a id="processWiki(String):String"></a>
@@ -925,7 +987,8 @@
         <span class="name">processWiki</span><span class="params">(<span name="wikiformat">wikiformat: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Convert wiki format string to HTML
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#redirect" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="redirect(pageName:String,part:Int):play.api.mvc.Result"></a>
       <a id="redirect(String,Int):Result"></a>
@@ -938,7 +1001,8 @@
         <span class="name">redirect</span><span class="params">(<span name="pageName">pageName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="part">part: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">0</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Result">Result</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Redirect to the page specified by arguments
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#redirectURL" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="redirectURL(url:String):play.api.mvc.Result"></a>
       <a id="redirectURL(String):Result"></a>
@@ -964,7 +1028,8 @@
         <span class="name">redirectURL</span><span class="params">(<span name="url">url: <span class="extype" name="java.net.URL">URL</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Result">Result</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Redirect to the page specified by URL
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#removeChildWiki" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="removeChildWiki(path:String):Unit"></a>
       <a id="removeChildWiki(String):Unit"></a>
@@ -977,7 +1042,8 @@
         <span class="name">removeChildWiki</span><span class="params">(<span name="path">path: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Remove a child wiki
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#savePage" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="savePage(pageName:String,content:String,updateTimestamp:Boolean):Unit"></a>
       <a id="savePage(String,String,Boolean):Unit"></a>
@@ -990,7 +1056,8 @@
         <span class="name">savePage</span><span class="params">(<span name="pageName">pageName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="content">content: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="updateTimestamp">updateTimestamp: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">true</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Save wiki page
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#searchChild" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="searchChild(dir:String):List[String]"></a>
       <a id="searchChild(String):List[String]"></a>
@@ -1003,7 +1070,8 @@
         <span class="name">searchChild</span><span class="params">(<span name="dir">dir: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.List">List</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Get the tree of child wiki
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#setPageLevel" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="setPageLevel(pageName:String,level:jp.gr.java_conf.hangedman.model.WikiPageLevel):Unit"></a>
       <a id="setPageLevel(String,WikiPageLevel):Unit"></a>
@@ -1016,7 +1084,8 @@
         <span class="name">setPageLevel</span><span class="params">(<span name="pageName">pageName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="level">level: <a href="../../model/WikiPageLevel.html" class="extype" name="jp.gr.java_conf.hangedman.model.WikiPageLevel">WikiPageLevel</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Configure the level of page
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#setTitle" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="setTitle(title:String,isEditing:Boolean):Unit"></a>
       <a id="setTitle(String,Boolean):Unit"></a>
@@ -1029,7 +1098,8 @@
         <span class="name">setTitle</span><span class="params">(<span name="title">title: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="isEditing">isEditing: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Configure the title in action handler
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#unFreezePage" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="unFreezePage(pageName:String):Unit"></a>
       <a id="unFreezePage(String):Unit"></a>
@@ -1042,7 +1112,8 @@
         <span class="name">unFreezePage</span><span class="params">(<span name="pageName">pageName: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Un-freeze a page
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#userIsExists" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="userIsExists(user:jp.gr.java_conf.hangedman.model.User):Boolean"></a>
       <a id="userIsExists(User):Boolean"></a>
@@ -1068,7 +1139,8 @@
         <span class="name">userIsExists</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Check user exist or not
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki#addPlugin" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="addPlugin(name:String,cls:jp.gr.java_conf.hangedman.model.WikiPlugin):Unit"></a>
       <a id="addPlugin(String,WikiPlugin):Unit"></a>
@@ -1081,7 +1153,9 @@
         <span class="name deprecated" title="Deprecated: (Since version 1.0.0) This function remains for compatibility for FreeStyleWiki 3.4">addPlugin</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="cls">cls: <a href="../../model/WikiPlugin.html" class="extype" name="jp.gr.java_conf.hangedman.model.WikiPlugin">WikiPlugin</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Annotations</dt><dd>
+      <p class="shortcomment cmt">Add inline plugin
+</p><div class="fullcomment"><div class="comment cmt"><p>Add inline plugin
+</p></div><dl class="attributes block"> <dt>Annotations</dt><dd>
                 <span class="name">@deprecated</span>
               
         </dd><dt>Deprecated</dt><dd class="cmt"><p><i>(Since version 1.0.0)</i> This function remains for compatibility for FreeStyleWiki 3.4</p></dd></dl></div>

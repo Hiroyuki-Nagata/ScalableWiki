@@ -39,10 +39,17 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>FSWikiデフォルトのストレージプラグイン。</p><p>setup.datのbackup=1もしくはbackupディレクティブを省略した場合は１世代のみ、
+backup=2以上もしくは0を指定した場合は世代バックアップに対応します。
+backup=0を指定した場合は無制限にバックアップを行います。
+</p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
-        </div></div>
+        </div><div class="toggleContainer block diagram-container" id="inheritance-diagram-container">
+                <span class="toggle diagram-link">Type Hierarchy</span>
+                <a href="http://docs.scala-lang.org/overviews/scaladoc/usage.html#diagrams" target="_blank" class="diagram-help">Learn more about scaladoc diagrams</a>
+                <div class="diagram" id="inheritance-diagram"><svg class="class-diagram" id="graph7" viewBox="0.00 0.00 164.00 118.00" height="118pt" width="164pt" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg"><g transform="scale(1 1) rotate(0) translate(4 114)" class="graph" id="graph0"><polygon points="-4,4 -4,-114 160,-114 160,4 -4,4" stroke="none" fill="white"></polygon><g class="cluster" id="clust1"></g><g class="cluster" id="clust2"></g><!-- node0 --><g class="node this class" id="graph7_0"><g id="a_this class|graph7_0"><a xlink:title="jp.gr.java_conf.hangedman.util.wiki.DefaultStorage (this class)" xlink:href="#inheritance-diagram"><polygon points="132,-49 24,-49 24,-24 132,-24 132,-49" stroke="#115f3b" fill="#0a955b"></polygon><image xlink:href="../../../../../../lib/class_diagram.png" y="-43.5" x="34" preserveAspectRatio="xMinYMin meet" height="15px" width="15px"></image><text fill="#ffffff" font-size="10.00" font-family="Arial" y="-33.5" x="55" text-anchor="start">DefaultStorage</text></a></g></g><!-- node1 --><g class="node class" id="graph7_1"><g id="a_class|graph7_1"><a xlink:title="scala.AnyRef"><polygon points="116,-110 40,-110 40,-85 116,-85 116,-110" stroke="#115f3b" fill="#0a955b"></polygon><image xlink:href="../../../../../../lib/class_diagram.png" y="-104.5" x="50" preserveAspectRatio="xMinYMin meet" height="15px" width="15px"></image><text fill="#ffffff" font-size="10.00" font-family="Arial" y="-94.5" x="71" text-anchor="start">AnyRef</text></a></g></g><!-- node1&#45;&gt;node0 --><g class="edge inheritance" id="graph7_1_0"><g id="a_inheritance|graph7_1_0"><a xlink:title="DefaultStorage is a subtype of AnyRef"><path d="M78,-79.6874C78,-69.9173 78,-57.8534 78,-49.1323" stroke="#d4d4d4" fill="none"></path><polygon points="76.2501,-79.8435 78,-84.8435 79.7501,-79.8435 76.2501,-79.8435" stroke="#d4d4d4" fill="none"></polygon></a></g></g></g></svg></div>
+              </div></div>
         
 
       <div id="mbrsel">
@@ -85,7 +92,7 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="jp.gr.java_conf.hangedman.util.wiki.DefaultStorage#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;():jp.gr.java_conf.hangedman.util.wiki.DefaultStorage"></a>
+      <a id="&lt;init&gt;(abstractWiki:jp.gr.java_conf.hangedman.util.wiki.AbstractWiki):jp.gr.java_conf.hangedman.util.wiki.DefaultStorage"></a>
       <a id="&lt;init&gt;:DefaultStorage"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -93,7 +100,7 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">DefaultStorage</span><span class="params">()</span>
+        <span class="name">DefaultStorage</span><span class="params">(<span name="abstractWiki">abstractWiki: <a href="AbstractWiki.html" class="extype" name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki">AbstractWiki</a></span>)</span>
       </span>
       </h4>
       
@@ -247,6 +254,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="jp.gr.java_conf.hangedman.util.wiki.DefaultStorage#backup" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="backup:String"></a>
+      <a id="backup:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">backup</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4>
+      
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.DefaultStorage#backupType" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="backupType():Unit"></a>
       <a id="backupType():Unit"></a>
@@ -528,7 +548,8 @@
         <span class="name">getPage</span><span class="params">(<span name="page">page: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="path">path: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">ページを取得
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.DefaultStorage#getPageLevel" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="getPageLevel():Unit"></a>
       <a id="getPageLevel():Unit"></a>
@@ -647,18 +668,19 @@
       </h4>
       
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.DefaultStorage#savePage" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="savePage():Unit"></a>
-      <a id="savePage():Unit"></a>
+      <a id="savePage(rawPage:String,rawContent:String,sage:Boolean):Unit"></a>
+      <a id="savePage(String,String,Boolean):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">savePage</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">savePage</span><span class="params">(<span name="rawPage">rawPage: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="rawContent">rawContent: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="sage">sage: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">ページを保存
+</p>
     </li><li name="jp.gr.java_conf.hangedman.util.wiki.DefaultStorage#setPageLevel" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="setPageLevel(pageName:String,level:jp.gr.java_conf.hangedman.model.WikiPageLevel):Unit"></a>
       <a id="setPageLevel(String,WikiPageLevel):Unit"></a>
@@ -768,6 +790,19 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="jp.gr.java_conf.hangedman.util.wiki.DefaultStorage#wiki" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="wiki:jp.gr.java_conf.hangedman.util.wiki.AbstractWiki"></a>
+      <a id="wiki:AbstractWiki"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">wiki</span><span class="result">: <a href="AbstractWiki.html" class="extype" name="jp.gr.java_conf.hangedman.util.wiki.AbstractWiki">AbstractWiki</a></span>
+      </span>
+      </h4>
+      
     </li><li name="scala.Predef.any2ArrowAssoc#→" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="→[B](y:B):(A,B)"></a>
       <a id="→[B](B):(DefaultStorage,B)"></a>
