@@ -151,12 +151,7 @@ object WikiUtil {
    * }}}
    */
   def handyphone()(implicit request: Request[AnyContent]): Boolean = {
-    val userAgent: String = Try {
-      request.headers("User-Agent")
-    } match {
-      case Success(ua) => ua
-      case Failure(e) => ""
-    }
+    val userAgent = getUserAgent
     if (userAgent.matches("""^DoCoMo\/.*$|^J-PHONE\/.*$|UP\.Browser.*$|\(DDIPOCKET\;.*$|\(WILLCOM\;.*$|^Vodafone\/.*$|^SoftBank\/.*$""")) {
       true
     } else {
@@ -164,12 +159,35 @@ object WikiUtil {
     }
   }
   /**
-   *
+   * クライアントがスマートフォンかどうかチェックします。
+   * スマートフォンの場合は真、そうでない場合は偽を返します。
    * {{{
-   *
+   * if (WikiUtil.smartphone) {
+   *   // スマートフォンの場合の処理
+   * } else {
+   *   // スマートフォンでない場合の処理
+   * }
    * }}}
    */
-  def smartphone(): Boolean = { false }
+  def smartphone()(implicit request: Request[AnyContent]): Boolean = {
+    val userAgent = getUserAgent
+    if (userAgent.matches(""".*Android.*|.*iPhone.*""")) {
+      true
+    } else {
+      false
+    }
+  }
+
+  private def getUserAgent()(implicit request: Request[AnyContent]): String = {
+    Try {
+      request.headers("User-Agent")
+    } match {
+      case Success(ua) =>
+        ua
+      case Failure(e) =>
+        ""
+    }
+  }
   /**
    *
    * {{{
