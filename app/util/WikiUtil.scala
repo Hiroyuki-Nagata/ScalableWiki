@@ -7,6 +7,8 @@ import javax.mail.internet.MimeUtility
 import jp.gr.java_conf.hangedman.util.wiki.AbstractWiki
 import org.joda.time.DateTime
 import play.Logger
+import play.api.mvc.AnyContent
+import play.api.mvc.Request
 import scala.collection.immutable.HashMap
 import scala.util.Failure
 import scala.util.Success
@@ -138,12 +140,29 @@ object WikiUtil {
     }
   }
   /**
-   *
+   * クライアントが携帯電話かどうかチェックします。
+   * 携帯電話の場合は真、そうでない場合は偽を返します。
    * {{{
-   *
+   * if (WikiUtil.handyphone) {
+   *   // 携帯電話の場合の処理
+   * } else {
+   *   // 携帯電話でない場合の処理
+   * }
    * }}}
    */
-  def handyphone(): Boolean = { false }
+  def handyphone()(implicit request: Request[AnyContent]): Boolean = {
+    val userAgent: String = Try {
+      request.headers("User-Agent")
+    } match {
+      case Success(ua) => ua
+      case Failure(e) => ""
+    }
+    if (userAgent.matches("""^DoCoMo\/.*$|^J-PHONE\/.*$|UP\.Browser.*$|\(DDIPOCKET\;.*$|\(WILLCOM\;.*$|^Vodafone\/.*$|^SoftBank\/.*$""")) {
+      true
+    } else {
+      false
+    }
+  }
   /**
    *
    * {{{

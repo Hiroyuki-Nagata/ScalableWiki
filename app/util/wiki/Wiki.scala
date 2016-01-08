@@ -23,7 +23,7 @@ import scala.collection.mutable.ListBuffer
 import scala.concurrent.Future
 import scala.util.matching.Regex
 
-class Wiki(setupfile: String = "setup.conf", request: Request[AnyContent])
+class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
     extends AbstractWiki with Controller {
 
   // load "setup.conf"
@@ -31,6 +31,7 @@ class Wiki(setupfile: String = "setup.conf", request: Request[AnyContent])
   val defaultConf: Config = ConfigFactory.parseFile(new File("conf/config.dat"))
   val pluginDir: String = config.as[Option[String]]("setup.plugin_dir").getOrElse(".")
   val frontPage: String = config.as[Option[String]]("setup.frontpage").getOrElse("FrontPage")
+  val request = initRequest
 
   // initialize instance variables
   val handler = HashMap.empty[String, String]

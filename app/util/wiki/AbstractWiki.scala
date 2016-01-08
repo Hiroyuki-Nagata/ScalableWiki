@@ -3,10 +3,15 @@ package jp.gr.java_conf.hangedman.util.wiki
 import java.net.URL
 import jp.gr.java_conf.hangedman.model._
 import org.joda.time.DateTime
+import play.api.mvc.AnyContent
+import play.api.mvc.Request
 import play.api.mvc.Result
 import scala.concurrent.Future
 
 abstract class AbstractWiki {
+
+  // request information
+  val request: Request[AnyContent]
 
   /**
    * Add user; specify 0 if user is admin, else 1
