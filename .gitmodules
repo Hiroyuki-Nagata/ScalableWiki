@@ -1,0 +1,4 @@
+[submodule "docs"]
+	path = docs
+	url = git@github.com:Hiroyuki-Nagata/ScalableWiki.git
+	branch = gh-pages

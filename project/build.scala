@@ -90,10 +90,11 @@ object ScalableWiki extends Build with HtmlTemplateConverter with CommonTrait {
   lazy val LibraryDependencies = Seq(
     "com.google.guava" % "guava" % "18.0",
     "com.typesafe" % "config" % "1.3.0",
+    "commons-io" % "commons-io" % "2.4",
+    "javax.mail" % "mail" % "1.4.7",
     "jp.t2v" %% "play2-auth"      % "0.13.5",
     "jp.t2v" %% "play2-auth-test" % "0.13.5" % "test",
     "net.ceedubs" %% "ficus" % "1.0.1",
-    "commons-io" % "commons-io" % "2.4",
     "org.scalatest" %% "scalatest" % "2.2.4" % "test"
   )
 
@@ -107,6 +108,7 @@ object ScalableWiki extends Build with HtmlTemplateConverter with CommonTrait {
         "-language:implicitConversions" ::
         Nil
     ),
+    scalacOptions in (Compile,doc) := Seq("-groups", "-implicits", "-diagrams"),
     watchSources ~= {
       _.filterNot(f => f.getName.endsWith(".swp") || f.getName.endsWith(".swo") || f.isDirectory)
     },

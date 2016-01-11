@@ -70,7 +70,7 @@ class Vote(className: String, tpe: WikiPluginType, format: WikiFormat)
         WikiUtil.urlEncode(votename),
         "vote"
       )
-    val hash = WikiUtil.loadConfigHash(filename)
+    val hash = WikiUtil.loadConfigHash(wiki, filename)
 
     // 表示用テキストを組み立てる
     val buf = new StringBuilder(",項目,得票数\n")

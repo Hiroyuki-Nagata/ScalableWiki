@@ -56,7 +56,7 @@ class Amazon(className: String, tpe: WikiPluginType, format: WikiFormat)
     val item: String = WikiUtil.escapeHTML(rawItem)
     val aid: Option[String] = wiki.config("amazon_aid")
 
-    val link: String = (WikiUtil.handyphone, aid) match {
+    val link: String = (WikiUtil.handyphone()(wiki.request), aid) match {
       case (true, Some(aid)) =>
         "http://www.amazon.co.jp/gp/aw/rd.html?uid=NULLGWDOCOMOat=" + aid + "a=" + item + "dl=1url=%2Fgp%2Faw%2Fd.html"
       case (true, None) =>
