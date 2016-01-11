@@ -32,6 +32,7 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
   val pluginDir: String = config.as[Option[String]]("setup.plugin_dir").getOrElse(".")
   val frontPage: String = config.as[Option[String]]("setup.frontpage").getOrElse("FrontPage")
   val request = initRequest
+  var configCache = HashMap[String, String]().empty
 
   // initialize instance variables
   val handler = HashMap.empty[String, String]

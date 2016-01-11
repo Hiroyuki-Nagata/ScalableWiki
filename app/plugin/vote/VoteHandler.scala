@@ -50,12 +50,12 @@ class VoteHandler(className: String, tpe: WikiPluginType, format: WikiFormat)
         wiki.config("log_dir").get,
         WikiUtil.urlEncode(votename), "vote"
       )
-      WikiUtil.loadConfigHash(filename).get(item) match {
+      WikiUtil.loadConfigHash(wiki, filename).get(item) match {
         case Some(count: String) =>
           val increment: Int = count.toInt + 1
           WikiUtil.saveConfigHash(
             filename,
-            WikiUtil.loadConfigHash(filename).updated(count.toString, increment.toString)
+            WikiUtil.loadConfigHash(wiki, filename).updated(count.toString, increment.toString)
           )
         case None =>
         //

@@ -256,7 +256,7 @@ class AttachHandler(className: String, tpe: WikiPluginType, format: WikiFormat)
     // FIXME
     val typeName = "" //lc(substr(file,rindex(file," + ")+1))
     val hash: HashMap[String, String] = WikiUtil.loadConfigHash(
-      wiki.config("mime_file").getOrElse("./mime_file")
+      wiki, wiki.config("mime_file").getOrElse("./mime_file")
     )
     val ctype = hash.get(typeName) match {
       case Some(ctype) =>

@@ -77,7 +77,7 @@ class Ref(className: String, tpe: WikiPluginType, format: WikiFormat)
           val countFile: String = wiki.config("log_dir").getOrElse("./log") + "/" +
             wiki.config("download_count_file").getOrElse("count")
 
-          WikiUtil.loadConfigHash(countFile).get(s"${page}::${file}") match {
+          WikiUtil.loadConfigHash(wiki, countFile).get(s"${page}::${file}") match {
             case Some(currentNumber) =>
               Try { currentNumber.trim.toInt } match {
                 case Success(c) =>

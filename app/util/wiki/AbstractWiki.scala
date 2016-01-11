@@ -6,12 +6,14 @@ import org.joda.time.DateTime
 import play.api.mvc.AnyContent
 import play.api.mvc.Request
 import play.api.mvc.Result
+import scala.collection.mutable.HashMap
 import scala.concurrent.Future
 
 abstract class AbstractWiki {
 
   // request information
   val request: Request[AnyContent]
+  var configCache: HashMap[String, String]
 
   /**
    * Add user; specify 0 if user is admin, else 1

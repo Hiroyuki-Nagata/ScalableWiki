@@ -189,28 +189,55 @@ object WikiUtil {
     }
   }
   /**
-   *
-   * {{{
-   *
-   * }}}
+   * load_config_hash関数で使用するアンエスケープ用関数
    */
-  private def unescape() = {}
-  /**
-   *
-   * {{{
-   *
-   * }}}
-   */
-  def loadConfigHash(filename: String): HashMap[String, String] = {
-    new HashMap().empty
+  private def unescape(value: String): String = {
+    val table = HashMap("\\\\" -> "\\", "\\n" -> "\n", "\\r" -> "\r")
+    """(\\[\\nr]""".r
+      .replaceAllIn(value, m => table(m.group(1)))
   }
   /**
-   *
+   * 設定ファイルを格納するディレクトリ（デフォルトでは./config）から指定したファイルを読み込み、
+   * ハッシュリファレンスとして取得します。第一引数にはwikiを渡し、第二引数でファイル名を指定します。
    * {{{
-   *
+   * val hashref = WikiUtil.loadConfigHash(wiki, &quot;hoge.dat&quot;)
    * }}}
    */
-  def loadConfigText() = {}
+  def loadConfigHash(wiki: AbstractWiki, filename: String): HashMap[String, String] = {
+    val text = loadConfigText(wiki, filename)
+    val lines: List[String] = text.split("\n").toList
+    val hash: scala.collection.immutable.HashMap[String, String] = HashMap(lines.map {
+      line => trim(line)
+    }.filterNot {
+      line => line.startsWith("#") || line == "\n" || line == "\r" || line == "\r\n"
+    }.map {
+      line => line -> line
+    }.toSeq: _*)
+
+    // Perl's map -> http://perldoc.jp/func/map
+    hash
+  }
+  /**
+   * 設定ファイルを格納するディレクトリ（デフォルトでは./config）から指定したファイルを読み込み、
+   * ファイル内容を文字列として取得します。第一引数にはwikiを渡し、第二引数でファイル名を指定します。
+   * {{{
+   * val content = WikiUtil.loadConfigText(wiki, &quot;hoge.dat&quot;)
+   * }}}
+   */
+  def loadConfigText(wiki: AbstractWiki, filename: String): String = {
+    val fullpath = wiki.config("config_dir").getOrElse("./config_dir") + s"/${filename}"
+    val file: File = new File(fullpath)
+    if (!file.exists) "" // there is no such a file
+
+    wiki.configCache.get(fullpath) match {
+      case Some(buf) =>
+        buf
+      case None =>
+        val buf = scala.io.Source.fromFile(file).mkString("")
+        wiki.configCache.put(fullpath, buf)
+        buf
+    }
+  }
   /**
    *
    * {{{

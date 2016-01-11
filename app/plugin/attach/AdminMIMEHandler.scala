@@ -67,7 +67,7 @@ class AdminMIMEHandler(className: String, tpe: WikiPluginType, format: WikiForma
       "<table>\n" +
       "<tr><th>nbsp</td><th>拡張子</th><th>MIMEタイプ</th></tr>\n")
 
-    val mime = WikiUtil.loadConfigHash(wiki.config("mime_file").getOrElse("./mime_file"))
+    val mime = WikiUtil.loadConfigHash(wiki, wiki.config("mime_file").getOrElse("./mime_file"))
 
     mime.foreach {
       case (key, value) =>
@@ -96,7 +96,7 @@ class AdminMIMEHandler(className: String, tpe: WikiPluginType, format: WikiForma
     val mime = cgi.getParam("mimetype")
 
     if (ext.nonEmpty && mime.nonEmpty) {
-      val hash = WikiUtil.loadConfigHash(wiki.config("mime_file").getOrElse("./mime_file"))
+      val hash = WikiUtil.loadConfigHash(wiki, wiki.config("mime_file").getOrElse("./mime_file"))
       WikiUtil.saveConfigHash(
         wiki.config("mime_file").getOrElse("./mime_file"),
         hash.updated("ext", mime)
@@ -114,7 +114,7 @@ class AdminMIMEHandler(className: String, tpe: WikiPluginType, format: WikiForma
     val cgi = wiki.getCGI
 
     val extList: Array[String] = cgi.getParam("extention").split(',')
-    val hash = WikiUtil.loadConfigHash(wiki.config("mime_file").getOrElse("./mime_file"))
+    val hash = WikiUtil.loadConfigHash(wiki, wiki.config("mime_file").getOrElse("./mime_file"))
 
     val result: HashMap[String, String] = hash.map {
       case (key, value) =>
