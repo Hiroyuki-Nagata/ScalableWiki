@@ -11,6 +11,7 @@ import jp.gr.java_conf.hangedman.util.WikiUtil
 import net.ceedubs.ficus.Ficus.{ booleanValueReader, stringValueReader, optionValueReader, toFicusConfig }
 import net.ceedubs.ficus._
 import org.joda.time.DateTime
+import play.Logger
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Request
@@ -204,6 +205,7 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
     ""
   }
   def installPlugin(pluginName: String): String = {
+    Logger.debug(s"install plugin: $pluginName")
     if (pluginName.matches("""[^\p{Alnum}]""")) {
       "<div class=\"error\">" + xml.Utility.escape(s"${plugin}プラグインは不正なプラグインです。") + "</div>"
     }
