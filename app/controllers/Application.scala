@@ -69,6 +69,7 @@ object Application extends Controller {
     // reflect configures ( I would like to do it more smart )
     ////////////////////////////////////////////////////////////////////////////////
     val configs = WikiUtil.loadConfigHash(wiki, wiki.config("config_file").getOrElse("./config_file"))
+    Logger.debug(s"configs loaded")
     configs.foreach {
       case (key, value) =>
         Logger.debug(s"configs ${key} => ${value}")

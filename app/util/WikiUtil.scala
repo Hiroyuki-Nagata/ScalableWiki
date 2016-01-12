@@ -327,8 +327,12 @@ object WikiUtil {
    * }}}
    */
   def getModuleFile(module: String): Option[File] = {
+
+    Logger.debug(s"install plugin: $module")
+
     Try {
-      new File(module)
+      val resource: String = getClass.getResource(module).getPath
+      new File(resource)
     } match {
       case Success(file: File) =>
         Some(file)

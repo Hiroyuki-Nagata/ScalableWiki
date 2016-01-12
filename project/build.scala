@@ -95,6 +95,7 @@ object ScalableWiki extends Build with HtmlTemplateConverter with CommonTrait {
     "jp.t2v" %% "play2-auth"      % "0.13.5",
     "jp.t2v" %% "play2-auth-test" % "0.13.5" % "test",
     "net.ceedubs" %% "ficus" % "1.0.1",
+    "org.clapper" %% "classutil" % "1.0.6",
     "org.scalatest" %% "scalatest" % "2.2.4" % "test"
   )
 
@@ -106,8 +107,7 @@ object ScalableWiki extends Build with HtmlTemplateConverter with CommonTrait {
         "-language:existentials" ::
         "-language:higherKinds" ::
         "-language:implicitConversions" ::
-        Nil
-    ),
+        Nil),
     scalacOptions in (Compile,doc) := Seq("-groups", "-implicits", "-diagrams"),
     watchSources ~= {
       _.filterNot(f => f.getName.endsWith(".swp") || f.getName.endsWith(".swo") || f.isDirectory)
@@ -128,6 +128,7 @@ object ScalableWiki extends Build with HtmlTemplateConverter with CommonTrait {
     scalaVersion := ScalaVersion,
     resolvers += DefaultMavenRepository,
     resolvers += Classpaths.typesafeReleases,
+    resolvers += Resolver.jcenterRepo,
     libraryDependencies ++= LibraryDependencies,
     commands ++= Seq(tmplCommand, genPluginCommand, cleanPluginCommand),
     //
@@ -146,7 +147,9 @@ object ScalableWiki extends Build with HtmlTemplateConverter with CommonTrait {
   lazy val project = Project(
     "ScalableWiki",
     file(".")
-  ).enablePlugins(PlayScala, HerokuPlugin).settings(
+  ).enablePlugins(
+    PlayScala, HerokuPlugin
+  ).settings(
     projectSettings: _*
   )
 }

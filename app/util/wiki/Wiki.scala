@@ -12,6 +12,7 @@ import net.ceedubs.ficus.Ficus.{ booleanValueReader, stringValueReader, optionVa
 import net.ceedubs.ficus._
 import org.joda.time.DateTime
 import play.Logger
+import play.Logger
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Request
@@ -22,6 +23,9 @@ import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.HashMap
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.Future
+import scala.util.Failure
+import scala.util.Success
+import scala.util.Try
 import scala.util.matching.Regex
 
 class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
@@ -206,32 +210,38 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
   }
   def installPlugin(pluginName: String): String = {
     Logger.debug(s"install plugin: $pluginName")
+
     if (pluginName.matches("""[^\p{Alnum}]""")) {
       "<div class=\"error\">" + xml.Utility.escape(s"${plugin}プラグインは不正なプラグインです。") + "</div>"
     }
-    val module: String = s"plugin::${plugin}::Install"
-    import jp.gr.java_conf.hangedman.util.{ Eval, WikiUtil }
 
-    // Load plugin file, and call install dynamic
-    WikiUtil.getModuleFile(module) match {
-      case Some(file) if (file.exists) =>
-        val isSuccess: Either[String, Boolean] = Eval.fromFile[WikiPlugin](file).install(this)
-        isSuccess match {
-          case Right(r) =>
-            installedPlugin += pluginName
-            ""
-          case Left(message) =>
-            "<div class=\"error\">" +
-              xml.Utility.escape(s"${plugin}プラグインがインストールできません。${message}") +
-              "</div>"
-        }
+    val moduleStr = s"jp.gr.java_conf.hangedman.plugin.${pluginName}.Install"
+    Logger.debug(s"Start dynamic loading => $moduleStr")
 
-      case _ =>
+    val isSuccess = Try {
+      // FIXME: http://software.clapper.org/classutil/
+      moduleStr.getClass.asInstanceOf[WikiPlugin]
+    } match {
+      case Success(module) =>
+        module.install(this)
+      case Failure(e) =>
+        Logger.warn(e.getMessage)
+        Left(e.getMessage)
+    }
+
+    isSuccess match {
+      case Right(r) =>
+        installedPlugin += pluginName
+        Logger.info(s"${pluginName}プラグインをインストール完了。")
+        ""
+      case Left(message) =>
+        Logger.warn(s"${pluginName}プラグインがインストールできません。${message}")
         "<div class=\"error\">" +
-          xml.Utility.escape(s"${plugin}プラグインが存在しません。") +
+          xml.Utility.escape(s"${pluginName}プラグインがインストールできません。${message}") +
           "</div>"
     }
   }
+
   def isFreeze(pageName: String): Boolean = {
 
     val pattern = new Regex("""(^.*?[^:]):([^:].*?$)""", "path", "page")
