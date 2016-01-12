@@ -189,11 +189,11 @@ object WikiUtil {
     }
   }
   /**
-   * load_config_hash関数で使用するアンエスケープ用関数
+   * loadConfigHash関数で使用するアンエスケープ用関数
    */
-  private def unescape(value: String): String = {
+  private val unescape = (value: String) => {
     val table = HashMap("\\\\" -> "\\", "\\n" -> "\n", "\\r" -> "\r")
-    """(\\[\\nr]""".r
+    """(\\[\\nr])""".r
       .replaceAllIn(value, m => table(m.group(1)))
   }
   /**
@@ -206,15 +206,27 @@ object WikiUtil {
   def loadConfigHash(wiki: AbstractWiki, filename: String): HashMap[String, String] = {
     val text = loadConfigText(wiki, filename)
     val lines: List[String] = text.split("\n").toList
+    Logger.trace(s"lines => $lines")
     val hash: scala.collection.immutable.HashMap[String, String] = HashMap(lines.map {
       line => trim(line)
     }.filterNot {
+      // ignore comment and new-lines
       line => line.startsWith("#") || line == "\n" || line == "\r" || line == "\r\n"
+    }.map { line =>
+      Logger.trace(s"lines => $line")
+      if (line.matches("""^"\(.*\)"$""")) {
+        // 1) If "KEY" only exist, un-quote and value is empty
+        // 2) Quoted \"\" -> \"
+        """^"\(.*\)"$""".r.replaceAllIn(line, m => m.group(1)).replaceAll("\"\"", "\"") -> ""
+      } else {
+        line.split("=")(0) -> line.split("=")(1)
+      }
     }.map {
-      line => line -> line
+      case (name, value) =>
+        Logger.trace(s"name => $name, value => $value")
+        unescape(name).trim -> unescape(value).trim
     }.toSeq: _*)
 
-    // Perl's map -> http://perldoc.jp/func/map
     hash
   }
   /**

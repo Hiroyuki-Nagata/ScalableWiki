@@ -65,17 +65,28 @@ object Application extends Controller {
     }
      */
 
+    ////////////////////////////////////////////////////////////////////////////////
+    // reflect configures ( I would like to do it more smart )
+    ////////////////////////////////////////////////////////////////////////////////
+    val configs = WikiUtil.loadConfigHash(wiki, wiki.config("config_file").getOrElse("./config_file"))
+    println("Trace configs ! => " + configs)
+    configs.foreach {
+      case (key, value) =>
+        Logger.debug(s"configs ${key} => ${value}")
+        wiki.config(key, value)
+    }
+
     // overwrite configs if it needs
     overwriteConfigs(
       Map(
         "css" ->
-          List("theme_uri", "/", "theme", "/", "theme", ".css"),
+          List("theme_uri", "/", configs("theme"), "/", configs("theme"), ".css"),
         "site_tmpl" ->
-          List("tmpl_dir", "/site/", "site_tmpl_theme", "/", "site_tmpl_theme", ".tmpl"),
+          List("tmpl_dir", "/site/", configs("site_tmpl_theme"), "/", configs("site_tmpl_theme"), ".tmpl"),
         "site_handyphone_tmpl" ->
-          List("tmpl_dir", "/site/", "site_tmpl_theme", "/", "site_tmpl_theme", "_handyphone.tmpl"),
+          List("tmpl_dir", "/site/", configs("site_tmpl_theme"), "/", configs("site_tmpl_theme"), "_handyphone.tmpl"),
         "site_smartphone_tmpl" ->
-          List("tmpl_dir", "/site/", "site_tmpl_theme", "/", "site_tmpl_theme", "_smartphone.tmpl")
+          List("tmpl_dir", "/site/", configs("site_tmpl_theme"), "/", configs("site_tmpl_theme"), "_smartphone.tmpl")
       )
     )(wiki)
 
