@@ -16,7 +16,7 @@ class ApplicationSpec extends Specification {
         //println(text)
         //text must not empty
       }
-    }
+    }.pendingUntilFixed("pending unless implementing installPlugin neatly")
 
     "/swiki also must return HTML" in {
       running(FakeApplication()) {

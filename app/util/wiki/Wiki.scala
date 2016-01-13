@@ -6,10 +6,13 @@ import com.typesafe.config.ConfigValueFactory
 import java.io.File
 import java.net.URL
 import java.net.URL
+import java.net.URLClassLoader
 import jp.gr.java_conf.hangedman.model._
 import jp.gr.java_conf.hangedman.util.WikiUtil
 import net.ceedubs.ficus.Ficus.{ booleanValueReader, stringValueReader, optionValueReader, toFicusConfig }
 import net.ceedubs.ficus._
+import org.clapper.classutil.ClassFinder
+import org.clapper.classutil.ClassInfo
 import org.joda.time.DateTime
 import play.Logger
 import play.Logger
@@ -219,11 +222,22 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
     Logger.debug(s"Start dynamic loading => $moduleStr")
 
     val isSuccess = Try {
-      // FIXME: http://software.clapper.org/classutil/
-      moduleStr.getClass.asInstanceOf[WikiPlugin]
+      // See Also: http://software.clapper.org/classutil/
+      val finder = ClassFinder()
+      val classes: Iterator[ClassInfo] = finder.getClasses().iterator
+      val plugins = ClassFinder.concreteSubclasses(moduleStr, classes)
+      val loader = (Thread.currentThread.getContextClassLoader).asInstanceOf[URLClassLoader]
+
+      plugins.map { moduleName =>
+        Logger.info(s"Loading $moduleName...")
+        val plugin = loader.loadClass(moduleName.name).newInstance.asInstanceOf[WikiPlugin]
+        plugin.install(this)
+      }.mkString
+
     } match {
-      case Success(module) =>
-        module.install(this)
+      case Success(message) =>
+        Logger.info(message)
+        Right(message)
       case Failure(e) =>
         Logger.warn(e.getMessage)
         Left(e.getMessage)
