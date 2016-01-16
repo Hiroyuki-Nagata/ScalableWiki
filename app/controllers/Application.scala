@@ -39,6 +39,7 @@ object Application extends Controller {
     wiki.config(key, path)
   }
 
+  // Ruby like method
   def params(key: String)(implicit request: play.api.mvc.Request[AnyContent]): String = {
     request.queryString.get(key) match {
       case Some(value) if (value.size == 1) =>
@@ -65,17 +66,28 @@ object Application extends Controller {
     }
      */
 
+    ////////////////////////////////////////////////////////////////////////////////
+    // reflect configures ( I would like to do it more smart )
+    ////////////////////////////////////////////////////////////////////////////////
+    val configs = WikiUtil.loadConfigHash(wiki, wiki.config("config_file").getOrElse("./config_file"))
+    Logger.debug(s"configs loaded")
+    configs.foreach {
+      case (key, value) =>
+        Logger.debug(s"configs ${key} => ${value}")
+        wiki.config(key, value)
+    }
+
     // overwrite configs if it needs
     overwriteConfigs(
       Map(
         "css" ->
-          List("theme_uri", "/", "theme", "/", "theme", ".css"),
+          List("theme_uri", "/", configs("theme"), "/", configs("theme"), ".css"),
         "site_tmpl" ->
-          List("tmpl_dir", "/site/", "site_tmpl_theme", "/", "site_tmpl_theme", ".tmpl"),
+          List("tmpl_dir", "/site/", configs("site_tmpl_theme"), "/", configs("site_tmpl_theme"), ".tmpl"),
         "site_handyphone_tmpl" ->
-          List("tmpl_dir", "/site/", "site_tmpl_theme", "/", "site_tmpl_theme", "_handyphone.tmpl"),
+          List("tmpl_dir", "/site/", configs("site_tmpl_theme"), "/", configs("site_tmpl_theme"), "_handyphone.tmpl"),
         "site_smartphone_tmpl" ->
-          List("tmpl_dir", "/site/", "site_tmpl_theme", "/", "site_tmpl_theme", "_smartphone.tmpl")
+          List("tmpl_dir", "/site/", configs("site_tmpl_theme"), "/", configs("site_tmpl_theme"), "_smartphone.tmpl")
       )
     )(wiki)
 
@@ -95,15 +107,17 @@ object Application extends Controller {
 
     // install and initialize plugins
     Source.fromFile("conf/" + wiki.config("plugin_file").getOrElse("plugin.dat")).getLines.foreach {
-      line => wiki.installPlugin(line)
+      line =>
+        Logger.debug(s"Install plugin: $line")
+        wiki.installPlugin(line)
     }
 
     // start plugins each initialization
     wiki.doHook("initialize")
 
     // call action handler
-    //val action = cgi.paramAction.get
-    //val content = wiki.callHandler(action)
+    val action = params("action")
+    val content = wiki.callHandler(action)
 
     // FIXME: +error handling
 
@@ -209,8 +223,8 @@ object Application extends Controller {
       wiki.config("admin_name").getOrElse("admin"),
       "0.0.1-SNAPSHOT", // this module version
       "Scala", // lang name
-      scala.util.Properties.versionString, // scala version
-      "" // play version
+      play.core.PlayVersion.scalaVersion, // scala version
+      s"Play framework version.${play.core.PlayVersion.current}" // play version
     )
     // FIXME: Get Menu
 

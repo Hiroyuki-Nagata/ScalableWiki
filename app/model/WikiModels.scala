@@ -1,6 +1,7 @@
 package jp.gr.java_conf.hangedman.model
 
 import jp.gr.java_conf.hangedman.util.wiki.AbstractWiki
+import jp.gr.java_conf.hangedman.util.WikiUtil
 import scala.collection.mutable.HashMap
 import scala.util.{ Try, Success, Failure }
 
@@ -43,6 +44,8 @@ abstract class WikiPlugin(className: String, tpe: WikiPluginType, format: WikiFo
 
   def install(wiki: AbstractWiki): Either[String, Boolean]
 
+  def hook(wiki: AbstractWiki, name: String, args: Seq[String]): String
+
   implicit def toPath(filename: String) = get(filename)
 
   def copy(from: String, to: String): Either[String, Boolean] = {
@@ -56,9 +59,7 @@ abstract class WikiPlugin(className: String, tpe: WikiPluginType, format: WikiFo
     }
   }
 
-  def glob(wildcard: String): List[String] = {
-    List("", "", "")
-  }
+  def glob(wildcard: String): List[String] = WikiUtil.glob(wildcard)
 }
 
 class PathInfo() {

@@ -34,6 +34,8 @@ class RenameForm(className: String, tpe: WikiPluginType, format: WikiFormat)
     }
   }
 
+  def hook(wiki: AbstractWiki, name: String, args: Seq[String]) = { "" }
+
   //===========================================================
   // ヘルプを表示します。
   //===========================================================

@@ -4,13 +4,15 @@ import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import com.typesafe.config.ConfigValueFactory
 import java.io.File
+import java.lang.reflect.Method
 import java.net.URL
-import java.net.URL
+import java.net.URLClassLoader
 import jp.gr.java_conf.hangedman.model._
 import jp.gr.java_conf.hangedman.util.WikiUtil
 import net.ceedubs.ficus.Ficus.{ booleanValueReader, stringValueReader, optionValueReader, toFicusConfig }
 import net.ceedubs.ficus._
 import org.joda.time.DateTime
+import play.api.Logger
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Request
@@ -21,6 +23,10 @@ import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.HashMap
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.Future
+import scala.tools.nsc.doc.Universe
+import scala.util.Failure
+import scala.util.Success
+import scala.util.Try
 import scala.util.matching.Regex
 
 class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
@@ -33,6 +39,7 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
   val frontPage: String = config.as[Option[String]]("setup.frontpage").getOrElse("FrontPage")
   val request = initRequest
   var configCache = HashMap[String, String]().empty
+  var hooks = HashMap[String, WikiPlugin]().empty
 
   // initialize instance variables
   val handler = HashMap.empty[String, String]
@@ -67,7 +74,9 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
   def addFormatPlugin(name: String, cls: WikiPlugin): Unit = {}
   def addHandler[T](action: String, cls: T): Unit = {}
   def addHeadInfo(info: String): Unit = {}
-  def addHook[T](name: String, obj: T): Unit = {
+  def addHook(name: String, obj: WikiPlugin): Unit = {
+    Logger.debug(s"Adding hook ${name} for ${obj}")
+    hooks.put(name, obj)
   }
   def addInlinePlugin(name: String, cls: WikiPlugin) = {
     this.plugin += ((name, cls))
@@ -157,7 +166,23 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
     if (query.isEmpty) url else s"${url}${query}"
   }
   def createUrl(): String = { "" }
-  def doHook(name: String, arguments: String*): Unit = {}
+  /**
+   * addHookメソッドで登録されたフックプラグインを実行します。
+   * 引数にはフックの名前に加えて任意のパラメータを渡すことができます。
+   * これらのパラメータは呼び出されるクラスのhookメソッドの引数として渡されます。
+   *
+   * {{{
+   * wiki.doHook(フック名[,引数1[,引数2...]])
+   * }}}
+   */
+  def doHook(name: String, arguments: String*): Unit = {
+    Logger.debug(s"Do hook ${name}")
+    hooks.foreach {
+      case (name, obj) =>
+        Logger.debug(s"Adding hook $name, $arguments")
+        obj.hook(this, name, arguments)
+    }
+  }
   def error(message: String): String = {
     setTitle("エラー")
     "<div class=\"error\">%s</div>".format(xml.Utility.escape(message))
@@ -204,32 +229,50 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
     ""
   }
   def installPlugin(pluginName: String): String = {
-    if (pluginName.matches("""[^\p{Alnum}]""")) {
-      "<div class=\"error\">" + xml.Utility.escape(s"${plugin}プラグインは不正なプラグインです。") + "</div>"
-    }
-    val module: String = s"plugin::${plugin}::Install"
-    import jp.gr.java_conf.hangedman.util.{ Eval, WikiUtil }
+    Logger.info(s"install plugin: $pluginName")
 
-    // Load plugin file, and call install dynamic
-    WikiUtil.getModuleFile(module) match {
-      case Some(file) if (file.exists) =>
-        val isSuccess: Either[String, Boolean] = Eval.fromFile[WikiPlugin](file).install(this)
-        isSuccess match {
-          case Right(r) =>
-            installedPlugin += pluginName
-            ""
-          case Left(message) =>
-            "<div class=\"error\">" +
-              xml.Utility.escape(s"${plugin}プラグインがインストールできません。${message}") +
-              "</div>"
-        }
+    if (!pluginName.matches("""^[a-zA-Z0-9]*$""")) {
+      val message = s"${pluginName}プラグインは不正なプラグインです。"
+      Logger.error(message)
+      error(message)
+    } else {
+      import scala.reflect.runtime.universe
+      import jp.gr.java_conf.hangedman.plugin.InstallTrait
 
-      case _ =>
-        "<div class=\"error\">" +
-          xml.Utility.escape(s"${plugin}プラグインが存在しません。") +
-          "</div>"
+      val runtimeMirror = universe.runtimeMirror(getClass.getClassLoader)
+      val moduleStr = s"jp.gr.java_conf.hangedman.plugin.${pluginName}.Install"
+      Logger.debug(s"Start dynamic loading => $moduleStr")
+
+      Try(runtimeMirror.staticModule(moduleStr)) match {
+        case Failure(e) =>
+          val message = "s${pluginName}プラグインは存在しません。"
+          Logger.error(message, e)
+          error(message)
+
+        case Success(module) =>
+          val message: Either[String, String] = Try {
+            val obj = runtimeMirror.reflectModule(module)
+            val install = obj.instance.asInstanceOf[InstallTrait]
+            install.install(this)
+          } match {
+            case Success(_) =>
+              Right(s"${pluginName}プラグインのインストールに成功しました。")
+            case Failure(e) =>
+              Left(s"${pluginName}プラグインのインストールに失敗しました。")
+          }
+
+          message match {
+            case Left(m) =>
+              Logger.error(m)
+              error(m)
+            case Right(m) =>
+              Logger.info(m)
+              ""
+          }
+      }
     }
   }
+
   def isFreeze(pageName: String): Boolean = {
 
     val pattern = new Regex("""(^.*?[^:]):([^:].*?$)""", "path", "page")

@@ -34,6 +34,8 @@ class AttachForm(className: String, tpe: WikiPluginType, format: WikiFormat)
     }
   }
 
+  def hook(wiki: AbstractWiki, name: String, args: Seq[String]) = { "" }
+
   //==========================================================
   // 添付フォームを表示
   //==========================================================

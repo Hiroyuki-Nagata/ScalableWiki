@@ -189,11 +189,11 @@ object WikiUtil {
     }
   }
   /**
-   * load_config_hash関数で使用するアンエスケープ用関数
+   * loadConfigHash関数で使用するアンエスケープ用関数
    */
-  private def unescape(value: String): String = {
+  private val unescape = (value: String) => {
     val table = HashMap("\\\\" -> "\\", "\\n" -> "\n", "\\r" -> "\r")
-    """(\\[\\nr]""".r
+    """(\\[\\nr])""".r
       .replaceAllIn(value, m => table(m.group(1)))
   }
   /**
@@ -206,15 +206,27 @@ object WikiUtil {
   def loadConfigHash(wiki: AbstractWiki, filename: String): HashMap[String, String] = {
     val text = loadConfigText(wiki, filename)
     val lines: List[String] = text.split("\n").toList
+    Logger.trace(s"lines => $lines")
     val hash: scala.collection.immutable.HashMap[String, String] = HashMap(lines.map {
       line => trim(line)
     }.filterNot {
+      // ignore comment and new-lines
       line => line.startsWith("#") || line == "\n" || line == "\r" || line == "\r\n"
+    }.map { line =>
+      Logger.trace(s"lines => $line")
+      if (line.matches("""^"\(.*\)"$""")) {
+        // 1) If "KEY" only exist, un-quote and value is empty
+        // 2) Quoted \"\" -> \"
+        """^"\(.*\)"$""".r.replaceAllIn(line, m => m.group(1)).replaceAll("\"\"", "\"") -> ""
+      } else {
+        line.split("=")(0) -> line.split("=")(1)
+      }
     }.map {
-      line => line -> line
+      case (name, value) =>
+        Logger.trace(s"name => $name, value => $value")
+        unescape(name).trim -> unescape(value).trim
     }.toSeq: _*)
 
-    // Perl's map -> http://perldoc.jp/func/map
     hash
   }
   /**
@@ -315,8 +327,12 @@ object WikiUtil {
    * }}}
    */
   def getModuleFile(module: String): Option[File] = {
+
+    Logger.debug(s"install plugin: $module")
+
     Try {
-      new File(module)
+      val resource: String = getClass.getResource(module).getPath
+      new File(resource)
     } match {
       case Success(file: File) =>
         Some(file)
@@ -383,5 +399,53 @@ object WikiUtil {
    */
   def rmtree(file: File): Boolean = {
     org.apache.commons.io.FileUtils.deleteQuietly(file)
+  }
+  /**
+   * Unixのls的な関数、ディレクトリを渡すと再帰的に
+   * ディレクトリを探してList[File]形式で返す。
+   * @seealso http://hwada.hatenablog.com/entry/20100916/1284625639
+   *
+   * {{{
+   * val files: List[File] = WikiUtil.glob("/var/www/html/")
+   * }}}
+   */
+  def ls(dir: String): List[File] = {
+    Option(new File(dir)) match {
+      case Some(files) if (Option(files.listFiles).isDefined) =>
+        files.listFiles.toList.flatMap {
+          case f if f.isDirectory => ls(f.getPath)
+          case x => List(x)
+        }
+      case Some(files) =>
+        List.empty[File]
+      case None =>
+        List.empty[File]
+    }
+  }
+  /**
+   * Perlのglob的な関数、ディレクトリを渡すと再帰的に存在する
+   * ディレクトリとファイルを探してList[String]形式で返す。
+   *
+   * {{{
+   * // To find files and directories
+   * val files: List[String] = WikiUtil.glob("/var/www/html/")
+   * // Only to find directories
+   * val files: List[String] = WikiUtil.glob("/var/www/html/", true)
+   * }}}
+   */
+  def glob(dir: String, onlyDir: Boolean = false): List[String] = {
+    val files: List[File] = ls(dir)
+    val pathes: List[String] = files.collect {
+      case f: File => f.getPath
+    }
+    val dirs: List[String] = files.sorted.map {
+      file => file.getParent
+    }.distinct
+
+    if (onlyDir) {
+      dirs.sorted
+    } else {
+      (pathes ++ dirs).sorted
+    }
   }
 }
