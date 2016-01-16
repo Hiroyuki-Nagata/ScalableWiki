@@ -220,8 +220,8 @@ object Application extends Controller {
       wiki.config("admin_name").getOrElse("admin"),
       "0.0.1-SNAPSHOT", // this module version
       "Scala", // lang name
-      scala.util.Properties.versionString, // scala version
-      "" // play version
+      play.core.PlayVersion.scalaVersion, // scala version
+      s"Play framework version.${play.core.PlayVersion.current}" // play version
     )
     // FIXME: Get Menu
 

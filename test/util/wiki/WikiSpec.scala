@@ -15,8 +15,8 @@ class WikiSpec extends Specification {
     val wiki: Wiki = new Wiki("setup.conf", request)
 
     "Wiki#installPlugin can find plugins in the current classpath" in {
-      val res = wiki.installPlugin("access")
-      println(s"installed => $res")
+      val res = wiki.installPlugin("amazon")
+      Logger("application").info(s"installed => $res")
       true
     }
 

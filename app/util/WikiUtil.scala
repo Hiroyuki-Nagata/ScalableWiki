@@ -424,15 +424,28 @@ object WikiUtil {
   }
   /**
    * Perlのglob的な関数、ディレクトリを渡すと再帰的に存在する
-   * ディレクトリを探してList[String]形式で返す。
+   * ディレクトリとファイルを探してList[String]形式で返す。
    *
    * {{{
+   * // To find files and directories
    * val files: List[String] = WikiUtil.glob("/var/www/html/")
+   * // Only to find directories
+   * val files: List[String] = WikiUtil.glob("/var/www/html/", true)
    * }}}
    */
-  def glob(dir: String): List[String] = {
-    ls(dir).collect {
+  def glob(dir: String, onlyDir: Boolean = false): List[String] = {
+    val files: List[File] = ls(dir)
+    val pathes: List[String] = files.collect {
       case f: File => f.getPath
+    }
+    val dirs: List[String] = files.sorted.map {
+      file => file.getParent
+    }.distinct
+
+    if (onlyDir) {
+      dirs.sorted
+    } else {
+      (pathes ++ dirs).sorted
     }
   }
 }

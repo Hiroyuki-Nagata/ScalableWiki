@@ -4,16 +4,15 @@ import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import com.typesafe.config.ConfigValueFactory
 import java.io.File
+import java.lang.reflect.Method
 import java.net.URL
 import java.net.URLClassLoader
 import jp.gr.java_conf.hangedman.model._
 import jp.gr.java_conf.hangedman.util.WikiUtil
 import net.ceedubs.ficus.Ficus.{ booleanValueReader, stringValueReader, optionValueReader, toFicusConfig }
 import net.ceedubs.ficus._
-import org.clapper.classutil.ClassFinder
-import org.clapper.classutil.ClassInfo
 import org.joda.time.DateTime
-import play.Logger
+import play.api.Logger
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Request
@@ -24,6 +23,7 @@ import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.HashMap
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.Future
+import scala.tools.nsc.doc.Universe
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
@@ -210,63 +210,48 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
     ""
   }
   def installPlugin(pluginName: String): String = {
-    Logger.debug(s"install plugin: $pluginName")
+    Logger.info(s"install plugin: $pluginName")
 
     if (!pluginName.matches("""^[a-zA-Z0-9]*$""")) {
-      val message = "<div class=\"error\">" +
-        xml.Utility.escape(s"${pluginName}プラグインは不正なプラグインです。") +
-        "</div>"
+      val message = s"${pluginName}プラグインは不正なプラグインです。"
       Logger.error(message)
-      message
+      error(message)
+    } else {
+      import scala.reflect.runtime.universe
+      import jp.gr.java_conf.hangedman.plugin.InstallTrait
+
+      val runtimeMirror = universe.runtimeMirror(getClass.getClassLoader)
+      val moduleStr = s"jp.gr.java_conf.hangedman.plugin.${pluginName}.Install"
+      Logger.debug(s"Start dynamic loading => $moduleStr")
+
+      Try(runtimeMirror.staticModule(moduleStr)) match {
+        case Failure(e) =>
+          val message = "s${pluginName}プラグインは存在しません。"
+          Logger.error(message, e)
+          error(message)
+
+        case Success(module) =>
+          val message: Either[String, String] = Try {
+            val obj = runtimeMirror.reflectModule(module)
+            val install = obj.instance.asInstanceOf[InstallTrait]
+            install.install(this)
+          } match {
+            case Success(_) =>
+              Right(s"${pluginName}プラグインのインストールに成功しました。")
+            case Failure(e) =>
+              Left(s"${pluginName}プラグインのインストールに失敗しました。")
+          }
+
+          message match {
+            case Left(m) =>
+              Logger.error(m)
+              error(m)
+            case Right(m) =>
+              Logger.info(m)
+              ""
+          }
+      }
     }
-
-    // See Also: http://software.clapper.org/classutil/
-    val classfiles: String = getClass.getResource("/") match {
-      case cp if (cp.getPath.startsWith("file:")) =>
-        cp.getPath.replaceFirst("file:", "")
-      case cp: URL =>
-        cp.getPath
-    }
-    val classpath = WikiUtil.glob(s"${classfiles}jp/gr/java_conf/hangedman/plugin/").map(new File(_))
-    val finder = ClassFinder(classpath)
-    val classes: Iterator[ClassInfo] = finder.getClasses.iterator
-    // classes.map {
-    //   clazz => clazz.toString
-    // }.filter(clazz => clazz.contains("java_conf")).foreach { e =>
-    //   Logger.info(e.toString)
-    // }
-    val loader = (Thread.currentThread.getContextClassLoader).asInstanceOf[URLClassLoader]
-    val moduleStr = s"jp.gr.java_conf.hangedman.plugin.${pluginName}.Install"
-
-    Logger.debug(s"Start dynamic loading => $moduleStr")
-
-    ClassFinder.concreteSubclasses(moduleStr, classes) match {
-      case modules if (modules.size == 0) =>
-        Logger.error(s"==> $modules")
-        val message = "<div class=\"error\">" +
-          xml.Utility.escape(s"${pluginName}プラグインは存在しません。") +
-          "</div>"
-        Logger.error(message)
-        message
-      case modules =>
-        modules.map { moduleName =>
-          Logger.info(s"Loading $moduleName...")
-          val plugin = loader.loadClass(moduleName.name).newInstance.asInstanceOf[WikiPlugin]
-          plugin.install(this)
-        }.mkString
-    }
-
-    // isSuccess match {
-    //   case Right(r) =>
-    //     installedPlugin += pluginName
-    //     Logger.info(s"${pluginName}プラグインをインストール完了。")
-    //     ""
-    //   case Left(message) =>
-    //     Logger.warn(s"${pluginName}プラグインがインストールできません。${message}")
-    //     "<div class=\"error\">" +
-    //       xml.Utility.escape(s"${pluginName}プラグインがインストールできません。${message}") +
-    //       "</div>"
-    // }
   }
 
   def isFreeze(pageName: String): Boolean = {
