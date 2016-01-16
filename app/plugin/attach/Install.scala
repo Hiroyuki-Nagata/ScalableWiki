@@ -17,23 +17,23 @@ import scala.util.{ Failure, Success, Try }
 object Install {
   def install(wiki: jp.gr.java_conf.hangedman.util.wiki.AbstractWiki) {
 
-    wiki.addHook[AttachInitializer](
+    wiki.addHook(
       "initialize",
       new AttachInitializer("initializer", NonSpecify, NO_FORMAT)
     )
-    wiki.addHook[AttachInitializer](
+    wiki.addHook(
       "remove_wiki",
       new AttachInitializer("initializer", NonSpecify, NO_FORMAT)
     )
-    wiki.addHandler[AttachHandler](
+    wiki.addHandler(
       "ATTACH",
       new AttachHandler("ATTACH", NonSpecify, NO_FORMAT)
     )
-    wiki.addHook[AttachDelete](
+    wiki.addHook(
       "delete",
       new AttachDelete("delete", NonSpecify, NO_FORMAT)
     )
-    wiki.addHook[AttachRename](
+    wiki.addHook(
       "rename",
       new AttachRename("rename", NonSpecify, NO_FORMAT)
     )
@@ -67,7 +67,7 @@ object Install {
       Weight(990), "MIMEタイプの追加、削除を行います。"
     )
 
-    wiki.addAdminHandler[AdminMIMEHandler](
+    wiki.addAdminHandler(
       "ADMINMIME",
       new AdminMIMEHandler("ADMINMIME", NonSpecify, NO_FORMAT)
     )

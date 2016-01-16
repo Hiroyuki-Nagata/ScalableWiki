@@ -36,6 +36,8 @@ class ToDoHandler(className: String, tpe: WikiPluginType, format: WikiFormat)
     }
   }
 
+  def hook(wiki: AbstractWiki, name: String, args: String*) = { "" }
+
   //=============================================================
   // アクションメソッド
   // ToDoの完了処理

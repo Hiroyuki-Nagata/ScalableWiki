@@ -39,6 +39,7 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
   val frontPage: String = config.as[Option[String]]("setup.frontpage").getOrElse("FrontPage")
   val request = initRequest
   var configCache = HashMap[String, String]().empty
+  var hooks = HashMap[String, WikiPlugin]().empty
 
   // initialize instance variables
   val handler = HashMap.empty[String, String]
@@ -73,7 +74,9 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
   def addFormatPlugin(name: String, cls: WikiPlugin): Unit = {}
   def addHandler[T](action: String, cls: T): Unit = {}
   def addHeadInfo(info: String): Unit = {}
-  def addHook[T](name: String, obj: T): Unit = {
+  def addHook(name: String, obj: WikiPlugin): Unit = {
+    Logger.debug(s"Adding hook ${name} for ${obj}")
+    hooks.put(name, obj)
   }
   def addInlinePlugin(name: String, cls: WikiPlugin) = {
     this.plugin += ((name, cls))
@@ -163,7 +166,20 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
     if (query.isEmpty) url else s"${url}${query}"
   }
   def createUrl(): String = { "" }
-  def doHook(name: String, arguments: String*): Unit = {}
+  /**
+   * addHookメソッドで登録されたフックプラグインを実行します。
+   * 引数にはフックの名前に加えて任意のパラメータを渡すことができます。
+   * これらのパラメータは呼び出されるクラスのhookメソッドの引数として渡されます。
+   *
+   * {{{
+   * wiki.doHook(フック名[,引数1[,引数2...]])
+   * }}}
+   */
+  def doHook(name: String, arguments: String*): Unit = {
+    hooks.foreach {
+      case (name, obj) =>
+    }
+  }
   def error(message: String): String = {
     setTitle("エラー")
     "<div class=\"error\">%s</div>".format(xml.Utility.escape(message))

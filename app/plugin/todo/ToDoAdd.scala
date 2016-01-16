@@ -42,6 +42,8 @@ class ToDoAdd(className: String, tpe: WikiPluginType, format: WikiFormat)
     }
   }
 
+  def hook(wiki: AbstractWiki, name: String, args: String*) = { "" }
+
   //===========================================================
   // ToDoリスト追加フォーム
   //===========================================================

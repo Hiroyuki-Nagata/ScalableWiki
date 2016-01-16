@@ -39,14 +39,16 @@ class AttachInitializer(className: String, tpe: WikiPluginType, format: WikiForm
   //===========================================================
   // attachプラグインの初期化
   //===========================================================
-  def hook(wiki: AbstractWiki, name: String): Unit = {
+  def hook(wiki: AbstractWiki, name: String, args: String*): String = {
     // remove_wikiフック
     if (name == "remove_wiki") {
       val path = wiki.getCGI.getParam("path")
       wiki.config("attach_dir") match {
         case Some(attachDir) if (new File(attachDir).exists) =>
           WikiUtil.rmtree(new File(attachDir))
+          ""
         case _ => // do nothing
+          ""
       }
       // initializeフック
     } else if (name == "initialize") {
@@ -60,8 +62,12 @@ class AttachInitializer(className: String, tpe: WikiPluginType, format: WikiForm
       wiki.config("attach_dir") match {
         case Some(attachDir) if (!new File(attachDir).exists) =>
           new File(attachDir).mkdirs
+          ""
         case _ => // do nothing
+          ""
       }
+    } else {
+      ""
     }
   }
 }

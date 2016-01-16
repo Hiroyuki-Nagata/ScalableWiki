@@ -72,7 +72,7 @@ abstract class AbstractWiki {
    * @param name plugin name
    * @param obj  plugin class name
    */
-  def addHook[T](name: String, obj: T)
+  def addHook(name: String, obj: WikiPlugin)
   /**
    * Execute a registered hook plugin
    * @param name plugin name

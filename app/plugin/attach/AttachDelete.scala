@@ -37,7 +37,7 @@ class AttachDelete(className: String, tpe: WikiPluginType, format: WikiFormat)
   //===========================================================
   // ページ削除時に呼び出されるフック関数
   //===========================================================
-  def hook(wiki: AbstractWiki): String = {
+  def hook(wiki: AbstractWiki, name: String, args: String*) = {
     val cgi = wiki.getCGI
     val pagename = cgi.getParam("page")
     val encodePage = WikiUtil.urlEncode(pagename)

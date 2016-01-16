@@ -37,7 +37,7 @@ class AttachRename(className: String, tpe: WikiPluginType, format: WikiFormat)
   //==============================================================================
   // フックメソッド（ページのリネーム時に添付ファイルをコピーする）
   //==============================================================================
-  def hook(wiki: AbstractWiki): String = {
+  def hook(wiki: AbstractWiki, name: String, args: String*): String = {
     val page = wiki.getCGI.getParam("page")
     val newpage = wiki.getCGI.getParam("newpage")
     val dir = wiki.config("attach_dir").getOrElse("./attach_dir")
