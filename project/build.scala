@@ -122,6 +122,7 @@ object ScalableWiki extends Build with HtmlTemplateConverter with CommonTrait {
     },
     parallelExecution in Test := false,
     testOptions in Test += Tests.Argument(TestFrameworks.Specs2, "junitxml", "console"),
+    testOptions in Test += Tests.Setup(() => sys.props += "logback.debug" -> "true"),
     organization := Organization,
     name := Name,
     version := Version,

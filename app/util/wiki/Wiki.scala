@@ -5,7 +5,6 @@ import com.typesafe.config.ConfigFactory
 import com.typesafe.config.ConfigValueFactory
 import java.io.File
 import java.net.URL
-import java.net.URL
 import java.net.URLClassLoader
 import jp.gr.java_conf.hangedman.model._
 import jp.gr.java_conf.hangedman.util.WikiUtil
@@ -14,7 +13,6 @@ import net.ceedubs.ficus._
 import org.clapper.classutil.ClassFinder
 import org.clapper.classutil.ClassInfo
 import org.joda.time.DateTime
-import play.Logger
 import play.Logger
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
@@ -214,46 +212,61 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
   def installPlugin(pluginName: String): String = {
     Logger.debug(s"install plugin: $pluginName")
 
-    if (pluginName.matches("""[^\p{Alnum}]""")) {
-      "<div class=\"error\">" + xml.Utility.escape(s"${plugin}プラグインは不正なプラグインです。") + "</div>"
+    if (!pluginName.matches("""^[a-zA-Z0-9]*$""")) {
+      val message = "<div class=\"error\">" +
+        xml.Utility.escape(s"${pluginName}プラグインは不正なプラグインです。") +
+        "</div>"
+      Logger.error(message)
+      message
     }
 
+    // See Also: http://software.clapper.org/classutil/
+    val classfiles: String = getClass.getResource("/") match {
+      case cp if (cp.getPath.startsWith("file:")) =>
+        cp.getPath.replaceFirst("file:", "")
+      case cp: URL =>
+        cp.getPath
+    }
+    val classpath = WikiUtil.glob(s"${classfiles}jp/gr/java_conf/hangedman/plugin/").map(new File(_))
+    val finder = ClassFinder(classpath)
+    val classes: Iterator[ClassInfo] = finder.getClasses.iterator
+    // classes.map {
+    //   clazz => clazz.toString
+    // }.filter(clazz => clazz.contains("java_conf")).foreach { e =>
+    //   Logger.info(e.toString)
+    // }
+    val loader = (Thread.currentThread.getContextClassLoader).asInstanceOf[URLClassLoader]
     val moduleStr = s"jp.gr.java_conf.hangedman.plugin.${pluginName}.Install"
+
     Logger.debug(s"Start dynamic loading => $moduleStr")
 
-    val isSuccess = Try {
-      // See Also: http://software.clapper.org/classutil/
-      val finder = ClassFinder()
-      val classes: Iterator[ClassInfo] = finder.getClasses().iterator
-      val plugins = ClassFinder.concreteSubclasses(moduleStr, classes)
-      val loader = (Thread.currentThread.getContextClassLoader).asInstanceOf[URLClassLoader]
-
-      plugins.map { moduleName =>
-        Logger.info(s"Loading $moduleName...")
-        val plugin = loader.loadClass(moduleName.name).newInstance.asInstanceOf[WikiPlugin]
-        plugin.install(this)
-      }.mkString
-
-    } match {
-      case Success(message) =>
-        Logger.info(message)
-        Right(message)
-      case Failure(e) =>
-        Logger.warn(e.getMessage)
-        Left(e.getMessage)
-    }
-
-    isSuccess match {
-      case Right(r) =>
-        installedPlugin += pluginName
-        Logger.info(s"${pluginName}プラグインをインストール完了。")
-        ""
-      case Left(message) =>
-        Logger.warn(s"${pluginName}プラグインがインストールできません。${message}")
-        "<div class=\"error\">" +
-          xml.Utility.escape(s"${pluginName}プラグインがインストールできません。${message}") +
+    ClassFinder.concreteSubclasses(moduleStr, classes) match {
+      case modules if (modules.size == 0) =>
+        Logger.error(s"==> $modules")
+        val message = "<div class=\"error\">" +
+          xml.Utility.escape(s"${pluginName}プラグインは存在しません。") +
           "</div>"
+        Logger.error(message)
+        message
+      case modules =>
+        modules.map { moduleName =>
+          Logger.info(s"Loading $moduleName...")
+          val plugin = loader.loadClass(moduleName.name).newInstance.asInstanceOf[WikiPlugin]
+          plugin.install(this)
+        }.mkString
     }
+
+    // isSuccess match {
+    //   case Right(r) =>
+    //     installedPlugin += pluginName
+    //     Logger.info(s"${pluginName}プラグインをインストール完了。")
+    //     ""
+    //   case Left(message) =>
+    //     Logger.warn(s"${pluginName}プラグインがインストールできません。${message}")
+    //     "<div class=\"error\">" +
+    //       xml.Utility.escape(s"${pluginName}プラグインがインストールできません。${message}") +
+    //       "</div>"
+    // }
   }
 
   def isFreeze(pageName: String): Boolean = {

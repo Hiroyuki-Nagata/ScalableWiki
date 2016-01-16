@@ -400,4 +400,39 @@ object WikiUtil {
   def rmtree(file: File): Boolean = {
     org.apache.commons.io.FileUtils.deleteQuietly(file)
   }
+  /**
+   * Unixのls的な関数、ディレクトリを渡すと再帰的に
+   * ディレクトリを探してList[File]形式で返す。
+   * @seealso http://hwada.hatenablog.com/entry/20100916/1284625639
+   *
+   * {{{
+   * val files: List[File] = WikiUtil.glob("/var/www/html/")
+   * }}}
+   */
+  def ls(dir: String): List[File] = {
+    Option(new File(dir)) match {
+      case Some(files) if (Option(files.listFiles).isDefined) =>
+        files.listFiles.toList.flatMap {
+          case f if f.isDirectory => ls(f.getPath)
+          case x => List(x)
+        }
+      case Some(files) =>
+        List.empty[File]
+      case None =>
+        List.empty[File]
+    }
+  }
+  /**
+   * Perlのglob的な関数、ディレクトリを渡すと再帰的に存在する
+   * ディレクトリを探してList[String]形式で返す。
+   *
+   * {{{
+   * val files: List[String] = WikiUtil.glob("/var/www/html/")
+   * }}}
+   */
+  def glob(dir: String): List[String] = {
+    ls(dir).collect {
+      case f: File => f.getPath
+    }
+  }
 }
