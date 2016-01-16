@@ -39,6 +39,7 @@ object Application extends Controller {
     wiki.config(key, path)
   }
 
+  // Ruby like method
   def params(key: String)(implicit request: play.api.mvc.Request[AnyContent]): String = {
     request.queryString.get(key) match {
       case Some(value) if (value.size == 1) =>
@@ -106,15 +107,17 @@ object Application extends Controller {
 
     // install and initialize plugins
     Source.fromFile("conf/" + wiki.config("plugin_file").getOrElse("plugin.dat")).getLines.foreach {
-      line => wiki.installPlugin(line)
+      line =>
+        Logger.debug(s"Install plugin: $line")
+        wiki.installPlugin(line)
     }
 
     // start plugins each initialization
     wiki.doHook("initialize")
 
     // call action handler
-    //val action = cgi.paramAction.get
-    //val content = wiki.callHandler(action)
+    val action = params("action")
+    val content = wiki.callHandler(action)
 
     // FIXME: +error handling
 

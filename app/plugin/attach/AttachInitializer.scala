@@ -39,7 +39,7 @@ class AttachInitializer(className: String, tpe: WikiPluginType, format: WikiForm
   //===========================================================
   // attachプラグインの初期化
   //===========================================================
-  def hook(wiki: AbstractWiki, name: String, args: String*): String = {
+  def hook(wiki: AbstractWiki, name: String, args: Seq[String]): String = {
     // remove_wikiフック
     if (name == "remove_wiki") {
       val path = wiki.getCGI.getParam("path")

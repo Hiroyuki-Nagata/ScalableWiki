@@ -49,7 +49,7 @@ class Ref(className: String, tpe: WikiPluginType, format: WikiFormat)
     }
   }
 
-  def hook(wiki: AbstractWiki, name: String, args: String*) = { "" }
+  def hook(wiki: AbstractWiki, name: String, args: Seq[String]) = { "" }
 
   //===========================================================
   // インライン関数

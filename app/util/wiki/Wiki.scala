@@ -176,8 +176,11 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
    * }}}
    */
   def doHook(name: String, arguments: String*): Unit = {
+    Logger.debug(s"Do hook ${name}")
     hooks.foreach {
       case (name, obj) =>
+        Logger.debug(s"Adding hook $name, $arguments")
+        obj.hook(this, name, arguments)
     }
   }
   def error(message: String): String = {

@@ -44,7 +44,7 @@ abstract class WikiPlugin(className: String, tpe: WikiPluginType, format: WikiFo
 
   def install(wiki: AbstractWiki): Either[String, Boolean]
 
-  def hook(wiki: AbstractWiki, name: String, args: String*): String
+  def hook(wiki: AbstractWiki, name: String, args: Seq[String]): String
 
   implicit def toPath(filename: String) = get(filename)
 

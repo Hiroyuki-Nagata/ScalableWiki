@@ -35,7 +35,7 @@ class AdminMIMEHandler(className: String, tpe: WikiPluginType, format: WikiForma
     }
   }
 
-  def hook(wiki: AbstractWiki, name: String, args: String*) = { "" }
+  def hook(wiki: AbstractWiki, name: String, args: Seq[String]) = { "" }
 
   //==============================================================================
   // アクションハンドラメソッド
