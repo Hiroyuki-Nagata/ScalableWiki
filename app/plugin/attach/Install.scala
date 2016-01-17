@@ -5,6 +5,7 @@
 ////////////////////////////////////////////////////////////
 package jp.gr.java_conf.hangedman.plugin.attach
 
+import jp.gr.java_conf.hangedman.plugin._
 import jp.gr.java_conf.hangedman.plugin.attach._
 import jp.gr.java_conf.hangedman.util.WikiUtil
 import jp.gr.java_conf.hangedman.model._
@@ -14,7 +15,7 @@ import play.Logger
 import scala.collection.immutable.HashMap
 import scala.util.{ Failure, Success, Try }
 
-object Install {
+object Install extends InstallTrait {
   def install(wiki: jp.gr.java_conf.hangedman.util.wiki.AbstractWiki) {
 
     wiki.addHook(

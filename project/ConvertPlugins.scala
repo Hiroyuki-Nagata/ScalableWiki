@@ -97,6 +97,7 @@ val installDef = """
                 .replace(s".${className};", "")
               p.println(s"package ${ourPackageName}.${fullPackageName}")
               p.println(s"""|
+                            |import ${ourPackageName}.plugin._
                             |import ${ourPackageName}.${fullPackageName}._
                             |import ${ourPackageName}.util.WikiUtil
                             |import jp.gr.java_conf.hangedman.model._
@@ -129,7 +130,7 @@ val installDef = """
             case line if (line.startsWith("sub")) =>
               if (line.contains("install")) {
                 p.println(
-                  line.replace("sub", s"object ${className} {\n")
+                  line.replace("sub", s"object ${className} extends InstallTrait {\n")
                     .replace("install", s"def install(wiki: ${wikiPackage}.AbstractWiki)")
                 )
               } else {
