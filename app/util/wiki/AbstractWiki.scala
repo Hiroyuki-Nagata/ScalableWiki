@@ -82,15 +82,15 @@ abstract class AbstractWiki {
   /**
    * Add action handler plugin
    */
-  def addHandler[T](action: String, cls: T)
+  def addHandler(action: String, obj: WikiPlugin)
   /**
    * Add action handler plugin for logining user
    */
-  def addUserHandler[T](action: String, cls: T)
+  def addUserHandler(action: String, obj: WikiPlugin)
   /**
    * Add action handler plugin for admin
    */
-  def addAdminHandler[T](action: String, cls: T)
+  def addAdminHandler(action: String, obj: WikiPlugin)
   /**
    * Add inline plugin
    */

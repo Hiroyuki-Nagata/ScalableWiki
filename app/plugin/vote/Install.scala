@@ -15,6 +15,6 @@ import java.io.File
 object Install extends InstallTrait {
   def install(wiki: jp.gr.java_conf.hangedman.util.wiki.AbstractWiki) {
     wiki.addParagraphPlugin("vote", new Vote("vote", Paragraph, WIKI_FORMAT))
-    wiki.addHandler[VoteHandler]("VOTE", new VoteHandler("VOTE", Paragraph, WIKI_FORMAT))
+    wiki.addHandler("VOTE", new VoteHandler("VOTE", Paragraph, WIKI_FORMAT))
   }
 }

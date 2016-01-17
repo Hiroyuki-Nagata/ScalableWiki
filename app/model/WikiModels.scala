@@ -30,6 +30,11 @@ case object PublishAll extends WikiPageLevel
 case object PublishUser extends WikiPageLevel
 case object PublishAdmin extends WikiPageLevel
 
+sealed abstract class HandlerPermission
+case object PermitAll extends HandlerPermission
+case object PermitLoggedin extends HandlerPermission
+case object PermitAdmin extends HandlerPermission
+
 case class LoginInfo(id: String, userType: String, path: String) extends HashMap[String, String]
 case class PluginInfo(className: String, tpe: WikiPluginType, format: WikiFormat)
 
@@ -43,8 +48,8 @@ abstract class WikiPlugin(className: String, tpe: WikiPluginType, format: WikiFo
   import java.nio.file.Paths.get
 
   def install(wiki: AbstractWiki): Either[String, Boolean]
-
   def hook(wiki: AbstractWiki, name: String, args: Seq[String]): String
+  //def doAction(wiki: AbstractWiki): String
 
   implicit def toPath(filename: String) = get(filename)
 

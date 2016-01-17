@@ -40,10 +40,10 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
   val request = initRequest
   var configCache = HashMap[String, String]().empty
   var hooks = HashMap[String, WikiPlugin]().empty
+  var handlers = HashMap[String, WikiPlugin]().empty
+  var handlerPermissons = HashMap[String, HandlerPermission]().empty
 
   // initialize instance variables
-  val handler = HashMap.empty[String, String]
-  val handlerPermission = HashMap.empty[String, String]
   val plugin = HashMap.empty[String, WikiPlugin]
   var title = ""
   val menu = ArrayBuffer.empty[String]
@@ -64,7 +64,17 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
 
   def getCanShowMax(): Option[WikiPageLevel] = { Some(PublishAll) }
   def getChildWikiDepth(): Int = { 0 }
-  def addAdminHandler[T](action: String, cls: T) = {
+  /**
+   * 管理者用のアクションハンドラを追加します。
+   * このメソッドによって追加されたアクションハンドラは管理者としてログインしている場合のみ実行可能です。
+   * それ以外の場合はエラーメッセージを表示します。
+   * {{{
+   * wiki.addAdminHandler(actionパラメータ,アクションハンドラのクラス名)
+   * }}}
+   */
+  def addAdminHandler(action: String, obj: WikiPlugin) = {
+    handlers.put(action, obj)
+    handlerPermissons.put(action, PermitAdmin)
   }
   def addAdminMenu(label: String, url: String, weight: Weight, desc: String): Unit = {}
   def addBlockPlugin(name: String, cls: WikiPlugin) = {
@@ -72,7 +82,17 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
   }
   def addEditformPlugin(plugin: WikiPlugin, weight: Weight): Unit = {}
   def addFormatPlugin(name: String, cls: WikiPlugin): Unit = {}
-  def addHandler[T](action: String, cls: T): Unit = {}
+  /**
+   * アクションハンドラプラグインを追加します。
+   * リクエスト時にactionというパラメータが一致するアクションが呼び出されます。
+   * {{{
+   * wiki.addHandler(actionパラメータ,アクションハンドラのクラス名)
+   * }}}
+   */
+  def addHandler(action: String, obj: WikiPlugin): Unit = {
+    handlers.put(action, obj)
+    handlerPermissons.put(action, PermitAll)
+  }
   def addHeadInfo(info: String): Unit = {}
   def addHook(name: String, obj: WikiPlugin): Unit = {
     Logger.debug(s"Adding hook ${name} for ${obj}")
@@ -105,9 +125,41 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
   def addUser(id: String, pass: String, role: Role) = {
     users.append(User(id, pass, role))
   }
-  def addUserHandler[T](action: String, cls: T): Unit = {}
+  /**
+   * ログインユーザ用のアクションハンドラを追加します。
+   * このメソッドによって追加されたアクションハンドラはログインしている場合のみ実行可能です。
+   * それ以外の場合はエラーメッセージを表示します。
+   * {{{
+   * wiki.addUserHandler(actionパラメータ,アクションハンドラのクラス名)
+   * }}}
+   */
+  def addUserHandler(action: String, obj: WikiPlugin): Unit = {
+    handlers.put(action, obj)
+    handlerPermissons.put(action, PermitLoggedin)
+  }
   def addUserMenu(label: String, url: String, weight: Weight, desc: String): Unit = {}
-  def callHandler(action: String): String = { "" }
+  /**
+   * add_handlerメソッドで登録されたアクションハンドラを実行します。
+   * アクションハンドラのdo_actionメソッドの戻り値を返します。
+   * {{{
+   * val content = wiki.callHandler(actionパラメータ)
+   * }}}
+   */
+  def callHandler(action: String): String = {
+    if (!handlers.isDefinedAt(action) || !handlerPermissons.isDefinedAt(action)) {
+      error("不正なアクションです。")
+    } else {
+      val obj: WikiPlugin = handlers(action)
+      handlerPermissons(action) match {
+        case PermitAdmin =>
+          ""
+        case PermitLoggedin =>
+          ""
+        case PermitAll =>
+          ""
+      }
+    }
+  }
   def canModifyPage(pageName: String): Boolean = { true }
   def canShow(pageName: String): Boolean = { true }
   def checkLogin(id: String, pass: String, path: String): Option[LoginInfo] = { None }
@@ -235,6 +287,10 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
       val message = s"${pluginName}プラグインは不正なプラグインです。"
       Logger.error(message)
       error(message)
+    } else if (installedPlugin.exists(installed => installed == pluginName)) {
+      val message = s"${pluginName}プラグインはすでにインストール済みです。"
+      Logger.debug(message)
+      ""
     } else {
       import scala.reflect.runtime.universe
       import jp.gr.java_conf.hangedman.plugin.InstallTrait
@@ -245,7 +301,7 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
 
       Try(runtimeMirror.staticModule(moduleStr)) match {
         case Failure(e) =>
-          val message = "s${pluginName}プラグインは存在しません。"
+          val message = "プラグインは存在しません。"
           Logger.error(message, e)
           error(message)
 
@@ -256,9 +312,9 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
             install.install(this)
           } match {
             case Success(_) =>
-              Right(s"${pluginName}プラグインのインストールに成功しました。")
+              Right("プラグインのインストールに成功しました。")
             case Failure(e) =>
-              Left(s"${pluginName}プラグインのインストールに失敗しました。")
+              Left("プラグインのインストールに失敗しました。")
           }
 
           message match {
