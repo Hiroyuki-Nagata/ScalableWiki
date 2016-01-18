@@ -116,7 +116,7 @@ abstract class AbstractWiki {
   /**
    * Execute registerd ActionHandler
    */
-  def callHandler(action: String): String
+  def callHandler(action: String): Either[String, play.api.mvc.Result]
   /**
    * Convert wiki format string to HTML
    */

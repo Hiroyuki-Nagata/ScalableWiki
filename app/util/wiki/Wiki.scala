@@ -13,9 +13,12 @@ import net.ceedubs.ficus.Ficus.{ booleanValueReader, stringValueReader, optionVa
 import net.ceedubs.ficus._
 import org.joda.time.DateTime
 import play.api.Logger
+import play.api.libs.iteratee.Enumerator
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Request
+import play.api.mvc.ResponseHeader
+import play.api.mvc.Result
 import play.api.mvc.Result
 import play.api.mvc.Results
 import scala.collection.immutable.ListMap
@@ -61,6 +64,9 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
   // FIXME: Timezone, post_max
   val storage = new DefaultStorage(this)
   var isEdit: Boolean = false
+  val returnMenu: String = "<div class=\"comment\"><a href=\"" +
+    this.createUrl(scala.collection.immutable.HashMap("action" -> "LOGIN")) +
+    "\">メニューに戻る</a></div>"
 
   def getCanShowMax(): Option[WikiPageLevel] = { Some(PublishAll) }
   def getChildWikiDepth(): Int = { 0 }
@@ -138,6 +144,18 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
     handlerPermissons.put(action, PermitLoggedin)
   }
   def addUserMenu(label: String, url: String, weight: Weight, desc: String): Unit = {}
+
+  private def doActionWrapper(handler: WikiHandler): Either[String, play.api.mvc.Result] = {
+    handler.doAction(this) match {
+      case Left(message) =>
+        Left(message)
+      case Right(_) =>
+        Right(Result(
+          header = ResponseHeader(200, Map(CONTENT_TYPE -> "text/plain")),
+          body = Enumerator(returnMenu.getBytes())
+        ))
+    }
+  }
   /**
    * add_handlerメソッドで登録されたアクションハンドラを実行します。
    * アクションハンドラのdo_actionメソッドの戻り値を返します。
@@ -145,19 +163,34 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
    * val content = wiki.callHandler(actionパラメータ)
    * }}}
    */
-  def callHandler(action: String): String = {
+  def callHandler(action: String): Either[String, play.api.mvc.Result] = {
     if (!handlers.isDefinedAt(action) || !handlerPermissons.isDefinedAt(action)) {
-      error("不正なアクションです。")
+      errorL("不正なアクションです。")
     } else {
-      val obj: WikiHandler = handlers(action)
-      Logger.debug(s"Call a handler of ${obj.action}")
+      val handler: WikiHandler = handlers(action)
+      Logger.debug(s"Call a handler of ${handler.action}")
       handlerPermissons(action) match {
         case PermitAdmin =>
-          ""
+          // Action for a admin
+          getLoginInfo match {
+            case None =>
+              errorL("ログインしていません。")
+            case Some(loginInfo) if (loginInfo.tpe == Administrator) =>
+              errorL("管理者権限が必要です。")
+            case Some(loginInfo) =>
+              doActionWrapper(handler)
+          }
         case PermitLoggedin =>
-          ""
+          // Action for logged-in users
+          getLoginInfo match {
+            case None =>
+              errorL("ログインしていません。")
+            case Some(loginInfo) =>
+              doActionWrapper(handler)
+          }
+        // Normal action
         case PermitAll =>
-          ""
+          doActionWrapper(handler)
       }
     }
   }

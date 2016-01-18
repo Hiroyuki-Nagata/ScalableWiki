@@ -36,10 +36,33 @@ class WikiSpec extends Specification {
         wiki.addHandler("ADD_TODO", new ToDoAddHandler("ADD_TODO", Paragraph, WIKI_FORMAT))
       } match {
         case Success(_) =>
-          !wiki.callHandler("ADD_TODO").contains("error")
+          wiki.callHandler("ADD_TODO") match {
+            case Right(result) =>
+              result.header.status == OK
+            case Left(_) =>
+              false
+          }
         case Failure(e) =>
           false
       }
     }
+
+    "Wiki#callHandler should return error if un-registered handler called" in {
+      import jp.gr.java_conf.hangedman.plugin.todo.ToDoAddHandler
+      Try {
+        wiki.addHandler("ADD_TODO", new ToDoAddHandler("ADD_TODO", Paragraph, WIKI_FORMAT))
+      } match {
+        case Success(_) =>
+          wiki.callHandler("ADD_XXXX") match {
+            case Right(_) =>
+              false
+            case Left(_) =>
+              true
+          }
+        case Failure(e) =>
+          false
+      }
+    }
+
   }
 }
