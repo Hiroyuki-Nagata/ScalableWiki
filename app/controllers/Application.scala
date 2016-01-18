@@ -106,20 +106,31 @@ object Application extends Controller {
     }
 
     // install and initialize plugins
-    Source.fromFile("conf/" + wiki.config("plugin_file").getOrElse("plugin.dat")).getLines.foreach {
-      line =>
-        Logger.debug(s"Install plugin: $line")
-        wiki.installPlugin(line)
-    }
+    val pluginError: String =
+      Source.fromFile("conf/" + wiki.config("plugin_file").getOrElse("plugin.dat")).getLines.map {
+        line =>
+          Logger.debug(s"Install plugin: $line")
+          val error = wiki.installPlugin(line)
+          Logger.debug(s"Install with error: $error")
+          error
+      }.mkString("\n")
 
     // start plugins each initialization
     wiki.doHook("initialize")
 
     // call action handler
     val action = params("action")
-    val content = wiki.callHandler(action)
-
-    // FIXME: +error handling
+    val content: String = if (pluginError.nonEmpty) {
+      // in a case of failing installation plugins
+      pluginError
+    } else {
+      wiki.callHandler(action) match {
+        case Left(message) =>
+          message
+        case Right(result) =>
+          result.body.toString
+      }
+    }
 
     // Response
     val isHandyPhone: Boolean = WikiUtil.handyphone
@@ -251,7 +262,7 @@ object Application extends Controller {
       "Default Title", // TITLE
       "Page Menu", // EXIST_PAGE_Menu
       "Page Header", // EXIST_PAGE_Header
-      "Contents", // CONTENT
+      content, // CONTENT
       "Page Footer", // EXIST_PAGE_Footer
       footerTmpl // FOOTER
     )
