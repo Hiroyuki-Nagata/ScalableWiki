@@ -36,7 +36,7 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
     extends AbstractWiki with Controller {
 
   // load "setup.conf"
-  val config: Config = ConfigFactory.parseFile(new File("conf/" + setupfile))
+  var config: Config = ConfigFactory.parseFile(new File("conf/" + setupfile))
   val defaultConf: Config = ConfigFactory.parseFile(new File("conf/config.dat"))
   val pluginDir: String = config.as[Option[String]]("setup.plugin_dir").getOrElse(".")
   val frontPage: String = config.as[Option[String]]("setup.frontpage").getOrElse("FrontPage")
@@ -209,7 +209,8 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
     }
   }
   def config(key: String, value: String): Unit = {
-    config.withValue(key, ConfigValueFactory.fromAnyRef(value))
+    Logger.debug(s"Overwrite config key: $key, value: $value")
+    config = config.withValue(key, ConfigValueFactory.fromAnyRef(value))
   }
   def convertFromFswiki(source: String, formatType: WikiFormat, isInline: Boolean = false): String = { "" }
   def convertToFswiki(source: String, formatType: WikiFormat, isInline: Boolean = false): String = { "" }

@@ -8,3 +8,7 @@ GET     /swiki                      jp.gr.java_conf.hangedman.controllers.Applic
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
+GET     /data/*file                 controllers.Assets.at(path="/public/data", file)
+GET     /stylesheets/*file          controllers.Assets.at(path="/public/stylesheets", file)
+GET     /theme/*file                controllers.Assets.at(path="/public/theme", file)
+GET     /tmpl/*file                 controllers.Assets.at(path="/public/tmpl", file)

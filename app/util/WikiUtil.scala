@@ -206,6 +206,8 @@ object WikiUtil {
   def loadConfigHash(wiki: AbstractWiki, filename: String): HashMap[String, String] = {
     val text = loadConfigText(wiki, filename)
     val lines: List[String] = text.split("\n").toList
+    val unquote = """^\"\(.*\)\"$""".r
+
     Logger.trace(s"lines => $lines")
     val hash: scala.collection.immutable.HashMap[String, String] = HashMap(lines.map {
       line => trim(line)
@@ -222,7 +224,8 @@ object WikiUtil {
         line.split("=")(0) -> line.split("=")(1)
       }
     }.map {
-      case (name, value) =>
+      case (name, rawValue) =>
+        val value = rawValue.replaceAll("^\"|\"$", "")
         Logger.trace(s"name => $name, value => $value")
         unescape(name).trim -> unescape(value).trim
     }.toSeq: _*)
