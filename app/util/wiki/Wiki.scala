@@ -40,7 +40,7 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
   val request = initRequest
   var configCache = HashMap[String, String]().empty
   var hooks = HashMap[String, WikiPlugin]().empty
-  var handlers = HashMap[String, WikiPlugin]().empty
+  var handlers = HashMap[String, WikiHandler]().empty
   var handlerPermissons = HashMap[String, HandlerPermission]().empty
 
   // initialize instance variables
@@ -72,7 +72,7 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
    * wiki.addAdminHandler(actionパラメータ,アクションハンドラのクラス名)
    * }}}
    */
-  def addAdminHandler(action: String, obj: WikiPlugin) = {
+  def addAdminHandler(action: String, obj: WikiHandler) = {
     handlers.put(action, obj)
     handlerPermissons.put(action, PermitAdmin)
   }
@@ -89,7 +89,7 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
    * wiki.addHandler(actionパラメータ,アクションハンドラのクラス名)
    * }}}
    */
-  def addHandler(action: String, obj: WikiPlugin): Unit = {
+  def addHandler(action: String, obj: WikiHandler): Unit = {
     handlers.put(action, obj)
     handlerPermissons.put(action, PermitAll)
   }
@@ -133,7 +133,7 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
    * wiki.addUserHandler(actionパラメータ,アクションハンドラのクラス名)
    * }}}
    */
-  def addUserHandler(action: String, obj: WikiPlugin): Unit = {
+  def addUserHandler(action: String, obj: WikiHandler): Unit = {
     handlers.put(action, obj)
     handlerPermissons.put(action, PermitLoggedin)
   }
@@ -149,7 +149,7 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
     if (!handlers.isDefinedAt(action) || !handlerPermissons.isDefinedAt(action)) {
       error("不正なアクションです。")
     } else {
-      val obj: WikiPlugin = handlers(action)
+      val obj: WikiHandler = handlers(action)
       handlerPermissons(action) match {
         case PermitAdmin =>
           ""
@@ -238,6 +238,9 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
   def error(message: String): String = {
     setTitle("エラー")
     "<div class=\"error\">%s</div>".format(xml.Utility.escape(message))
+  }
+  def errorL(message: String): Either[String, play.api.mvc.Result] = {
+    Left(this.error(message))
   }
   def farmIsEnable(): Boolean = { true }
   def freezePage(pageName: String): Unit = {}

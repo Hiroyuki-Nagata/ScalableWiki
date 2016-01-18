@@ -19,7 +19,7 @@ import scala.util.Try
 // コンストラクタ
 //===========================================================
 class VoteHandler(className: String, tpe: WikiPluginType, format: WikiFormat)
-    extends WikiPlugin(className, tpe, format) {
+    extends WikiHandler(className, tpe, format) {
 
   //===========================================================
   // installメソッド
@@ -41,7 +41,7 @@ class VoteHandler(className: String, tpe: WikiPluginType, format: WikiFormat)
   //===========================================================
   // 投票の反映
   //===========================================================
-  def doAction(wiki: AbstractWiki): play.api.mvc.Result = {
+  def doAction(wiki: AbstractWiki): Either[String, play.api.mvc.Result] = {
     val cgi = wiki.getCGI
     val item = cgi.getParam("item")
     val votename = cgi.getParam("vote")
@@ -63,6 +63,6 @@ class VoteHandler(className: String, tpe: WikiPluginType, format: WikiFormat)
         //
       }
     }
-    wiki.redirect(page, 0)
+    Right(wiki.redirect(page, 0))
   }
 }

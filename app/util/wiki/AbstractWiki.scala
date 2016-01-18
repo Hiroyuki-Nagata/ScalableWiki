@@ -82,15 +82,15 @@ abstract class AbstractWiki {
   /**
    * Add action handler plugin
    */
-  def addHandler(action: String, obj: WikiPlugin)
+  def addHandler(action: String, obj: WikiHandler)
   /**
    * Add action handler plugin for logining user
    */
-  def addUserHandler(action: String, obj: WikiPlugin)
+  def addUserHandler(action: String, obj: WikiHandler)
   /**
    * Add action handler plugin for admin
    */
-  def addAdminHandler(action: String, obj: WikiPlugin)
+  def addAdminHandler(action: String, obj: WikiHandler)
   /**
    * Add inline plugin
    */
@@ -133,6 +133,7 @@ abstract class AbstractWiki {
    * Report error from action handler
    */
   def error(message: String): String
+  def errorL(message: String): Either[String, play.api.mvc.Result]
   /**
    * Get plugin's instance
    */

@@ -42,17 +42,11 @@ case class Weight(weight: Int)
 case class Menu()
 case class Parser(name: String)
 
-abstract class WikiPlugin(className: String, tpe: WikiPluginType, format: WikiFormat) {
-
+trait Perl {
   import java.nio.file.StandardCopyOption.REPLACE_EXISTING
   import java.nio.file.Paths.get
 
-  def install(wiki: AbstractWiki): Either[String, Boolean]
-  def hook(wiki: AbstractWiki, name: String, args: Seq[String]): String
-  //def doAction(wiki: AbstractWiki): String
-
   implicit def toPath(filename: String) = get(filename)
-
   def copy(from: String, to: String): Either[String, Boolean] = {
     Try {
       java.nio.file.Files.copy(from, to, REPLACE_EXISTING)
@@ -63,8 +57,16 @@ abstract class WikiPlugin(className: String, tpe: WikiPluginType, format: WikiFo
         Left(e.getStackTraceString)
     }
   }
-
   def glob(wildcard: String): List[String] = WikiUtil.glob(wildcard)
+}
+
+abstract class WikiPlugin(className: String, tpe: WikiPluginType, format: WikiFormat) extends Perl {
+  def install(wiki: AbstractWiki): Either[String, Boolean]
+  def hook(wiki: AbstractWiki, name: String, args: Seq[String]): String
+}
+
+abstract class WikiHandler(className: String, tpe: WikiPluginType, format: WikiFormat) extends Perl {
+  def doAction(wiki: AbstractWiki): Either[String, play.api.mvc.Result]
 }
 
 class PathInfo() {
