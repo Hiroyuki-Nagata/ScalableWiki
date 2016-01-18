@@ -60,11 +60,46 @@ trait Perl {
   def glob(wildcard: String): List[String] = WikiUtil.glob(wildcard)
 }
 
+/**
+  * Abstract class for impementing FreeStyleWiki plugins
+  * FreeStyleWikiのプラグイン実装用抽象クラス
+  * {{{
+  *  //
+  *  // Constructor
+  *  //
+  *  class NewPlugin(className: String, tpe: WikiPluginType, format: WikiFormat)
+  *      extends WikiPlugin(className, tpe, format) { ...
+  *
+  *  // install method
+  *  def install(wiki: AbstractWiki): Either[String, Boolean] = Install.install(wiki)
+  * }}}
+  *
+  * 最低限上のような実装をする
+  */
 abstract class WikiPlugin(className: String, tpe: WikiPluginType, format: WikiFormat) extends Perl {
   def install(wiki: AbstractWiki): Either[String, Boolean]
   def hook(wiki: AbstractWiki, name: String, args: Seq[String]): String
 }
 
+/**
+  * Abstract class for impementing FreeStyleWiki plugins
+  * FreeStyleWikiのプラグイン実装用抽象クラス
+  * {{{
+  *  //
+  *  // Constructor
+  *  //
+  *  class NewPluginHandler(className: String, tpe: WikiPluginType, format: WikiFormat)
+  *      extends WikiHandler(className, tpe, format) { ...
+  *
+  *  // install method
+  *  def install(wiki: AbstractWiki): Either[String, Boolean] = Install.install(wiki)
+  *
+  *  // doAction method
+  *  def doAction(wiki: AbstractWiki): Either[String, play.api.mvc.Result] = Left("error")
+  * }}}
+  *
+  * 最低限上のような実装をする
+  */
 abstract class WikiHandler(className: String, tpe: WikiPluginType, format: WikiFormat) extends Perl {
   val action = className
   def doAction(wiki: AbstractWiki): Either[String, play.api.mvc.Result]
