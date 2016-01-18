@@ -66,6 +66,7 @@ abstract class WikiPlugin(className: String, tpe: WikiPluginType, format: WikiFo
 }
 
 abstract class WikiHandler(className: String, tpe: WikiPluginType, format: WikiFormat) extends Perl {
+  val action = className
   def doAction(wiki: AbstractWiki): Either[String, play.api.mvc.Result]
 }
 

@@ -150,6 +150,7 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
       error("不正なアクションです。")
     } else {
       val obj: WikiHandler = handlers(action)
+      Logger.debug(s"Call a handler of ${obj.action}")
       handlerPermissons(action) match {
         case PermitAdmin =>
           ""
