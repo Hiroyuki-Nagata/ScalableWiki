@@ -30,24 +30,23 @@ case object PublishAll extends WikiPageLevel
 case object PublishUser extends WikiPageLevel
 case object PublishAdmin extends WikiPageLevel
 
-case class LoginInfo(id: String, userType: String, path: String) extends HashMap[String, String]
+sealed abstract class HandlerPermission
+case object PermitAll extends HandlerPermission
+case object PermitLoggedin extends HandlerPermission
+case object PermitAdmin extends HandlerPermission
+
+case class LoginInfo(id: String, userType: String, path: String, tpe: Role)
 case class PluginInfo(className: String, tpe: WikiPluginType, format: WikiFormat)
 
 case class Weight(weight: Int)
 case class Menu()
 case class Parser(name: String)
 
-abstract class WikiPlugin(className: String, tpe: WikiPluginType, format: WikiFormat) {
-
+trait Perl {
   import java.nio.file.StandardCopyOption.REPLACE_EXISTING
   import java.nio.file.Paths.get
 
-  def install(wiki: AbstractWiki): Either[String, Boolean]
-
-  def hook(wiki: AbstractWiki, name: String, args: Seq[String]): String
-
   implicit def toPath(filename: String) = get(filename)
-
   def copy(from: String, to: String): Either[String, Boolean] = {
     Try {
       java.nio.file.Files.copy(from, to, REPLACE_EXISTING)
@@ -58,8 +57,52 @@ abstract class WikiPlugin(className: String, tpe: WikiPluginType, format: WikiFo
         Left(e.getStackTraceString)
     }
   }
-
   def glob(wildcard: String): List[String] = WikiUtil.glob(wildcard)
+}
+
+/**
+ * Abstract class for impementing FreeStyleWiki plugins
+ * FreeStyleWikiのプラグイン実装用抽象クラス
+ * {{{
+ *  //
+ *  // Constructor
+ *  //
+ *  class NewPlugin(className: String, tpe: WikiPluginType, format: WikiFormat)
+ *      extends WikiPlugin(className, tpe, format) { ...
+ *
+ *  // install method
+ *  def install(wiki: AbstractWiki): Either[String, Boolean] = Install.install(wiki)
+ * }}}
+ *
+ * 最低限上のような実装をする
+ */
+abstract class WikiPlugin(className: String, tpe: WikiPluginType, format: WikiFormat) extends Perl {
+  def install(wiki: AbstractWiki): Either[String, Boolean]
+  def hook(wiki: AbstractWiki, name: String, args: Seq[String]): String
+}
+
+/**
+ * Abstract class for impementing FreeStyleWiki plugins
+ * FreeStyleWikiのプラグイン実装用抽象クラス
+ * {{{
+ *  //
+ *  // Constructor
+ *  //
+ *  class NewPluginHandler(className: String, tpe: WikiPluginType, format: WikiFormat)
+ *      extends WikiHandler(className, tpe, format) { ...
+ *
+ *  // install method
+ *  def install(wiki: AbstractWiki): Either[String, Boolean] = Install.install(wiki)
+ *
+ *  // doAction method
+ *  def doAction(wiki: AbstractWiki): Either[String, play.api.mvc.Result] = Left("error")
+ * }}}
+ *
+ * 最低限上のような実装をする
+ */
+abstract class WikiHandler(className: String, tpe: WikiPluginType, format: WikiFormat) extends Perl {
+  val action = className
+  def doAction(wiki: AbstractWiki): Either[String, play.api.mvc.Result]
 }
 
 class PathInfo() {

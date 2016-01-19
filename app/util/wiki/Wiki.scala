@@ -13,9 +13,12 @@ import net.ceedubs.ficus.Ficus.{ booleanValueReader, stringValueReader, optionVa
 import net.ceedubs.ficus._
 import org.joda.time.DateTime
 import play.api.Logger
+import play.api.libs.iteratee.Enumerator
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Request
+import play.api.mvc.ResponseHeader
+import play.api.mvc.Result
 import play.api.mvc.Result
 import play.api.mvc.Results
 import scala.collection.immutable.ListMap
@@ -33,17 +36,17 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
     extends AbstractWiki with Controller {
 
   // load "setup.conf"
-  val config: Config = ConfigFactory.parseFile(new File("conf/" + setupfile))
+  var config: Config = ConfigFactory.parseFile(new File("conf/" + setupfile))
   val defaultConf: Config = ConfigFactory.parseFile(new File("conf/config.dat"))
   val pluginDir: String = config.as[Option[String]]("setup.plugin_dir").getOrElse(".")
   val frontPage: String = config.as[Option[String]]("setup.frontpage").getOrElse("FrontPage")
   val request = initRequest
   var configCache = HashMap[String, String]().empty
   var hooks = HashMap[String, WikiPlugin]().empty
+  var handlers = HashMap[String, WikiHandler]().empty
+  var handlerPermissons = HashMap[String, HandlerPermission]().empty
 
   // initialize instance variables
-  val handler = HashMap.empty[String, String]
-  val handlerPermission = HashMap.empty[String, String]
   val plugin = HashMap.empty[String, WikiPlugin]
   var title = ""
   val menu = ArrayBuffer.empty[String]
@@ -61,10 +64,23 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
   // FIXME: Timezone, post_max
   val storage = new DefaultStorage(this)
   var isEdit: Boolean = false
+  val returnMenu: String = "<div class=\"comment\"><a href=\"" +
+    this.createUrl(scala.collection.immutable.HashMap("action" -> "LOGIN")) +
+    "\">メニューに戻る</a></div>"
 
   def getCanShowMax(): Option[WikiPageLevel] = { Some(PublishAll) }
   def getChildWikiDepth(): Int = { 0 }
-  def addAdminHandler[T](action: String, cls: T) = {
+  /**
+   * 管理者用のアクションハンドラを追加します。
+   * このメソッドによって追加されたアクションハンドラは管理者としてログインしている場合のみ実行可能です。
+   * それ以外の場合はエラーメッセージを表示します。
+   * {{{
+   * wiki.addAdminHandler(actionパラメータ,アクションハンドラのクラス名)
+   * }}}
+   */
+  def addAdminHandler(action: String, obj: WikiHandler) = {
+    handlers.put(action, obj)
+    handlerPermissons.put(action, PermitAdmin)
   }
   def addAdminMenu(label: String, url: String, weight: Weight, desc: String): Unit = {}
   def addBlockPlugin(name: String, cls: WikiPlugin) = {
@@ -72,7 +88,17 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
   }
   def addEditformPlugin(plugin: WikiPlugin, weight: Weight): Unit = {}
   def addFormatPlugin(name: String, cls: WikiPlugin): Unit = {}
-  def addHandler[T](action: String, cls: T): Unit = {}
+  /**
+   * アクションハンドラプラグインを追加します。
+   * リクエスト時にactionというパラメータが一致するアクションが呼び出されます。
+   * {{{
+   * wiki.addHandler(actionパラメータ,アクションハンドラのクラス名)
+   * }}}
+   */
+  def addHandler(action: String, obj: WikiHandler): Unit = {
+    handlers.put(action, obj)
+    handlerPermissons.put(action, PermitAll)
+  }
   def addHeadInfo(info: String): Unit = {}
   def addHook(name: String, obj: WikiPlugin): Unit = {
     Logger.debug(s"Adding hook ${name} for ${obj}")
@@ -105,9 +131,69 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
   def addUser(id: String, pass: String, role: Role) = {
     users.append(User(id, pass, role))
   }
-  def addUserHandler[T](action: String, cls: T): Unit = {}
+  /**
+   * ログインユーザ用のアクションハンドラを追加します。
+   * このメソッドによって追加されたアクションハンドラはログインしている場合のみ実行可能です。
+   * それ以外の場合はエラーメッセージを表示します。
+   * {{{
+   * wiki.addUserHandler(actionパラメータ,アクションハンドラのクラス名)
+   * }}}
+   */
+  def addUserHandler(action: String, obj: WikiHandler): Unit = {
+    handlers.put(action, obj)
+    handlerPermissons.put(action, PermitLoggedin)
+  }
   def addUserMenu(label: String, url: String, weight: Weight, desc: String): Unit = {}
-  def callHandler(action: String): String = { "" }
+
+  private def doActionWrapper(handler: WikiHandler): Either[String, play.api.mvc.Result] = {
+    handler.doAction(this) match {
+      case Left(message) =>
+        Left(message)
+      case Right(_) =>
+        Right(Result(
+          header = ResponseHeader(200, Map(CONTENT_TYPE -> "text/plain")),
+          body = Enumerator(returnMenu.getBytes())
+        ))
+    }
+  }
+  /**
+   * add_handlerメソッドで登録されたアクションハンドラを実行します。
+   * アクションハンドラのdo_actionメソッドの戻り値を返します。
+   * {{{
+   * val content = wiki.callHandler(actionパラメータ)
+   * }}}
+   */
+  def callHandler(action: String): Either[String, play.api.mvc.Result] = {
+    if (!handlers.isDefinedAt(action) || !handlerPermissons.isDefinedAt(action)) {
+      errorL("不正なアクションです。")
+    } else {
+      val handler: WikiHandler = handlers(action)
+      Logger.debug(s"Call a handler of ${handler.action}")
+      handlerPermissons(action) match {
+        case PermitAdmin =>
+          // Action for a admin
+          getLoginInfo match {
+            case None =>
+              errorL("ログインしていません。")
+            case Some(loginInfo) if (loginInfo.tpe == Administrator) =>
+              errorL("管理者権限が必要です。")
+            case Some(loginInfo) =>
+              doActionWrapper(handler)
+          }
+        case PermitLoggedin =>
+          // Action for logged-in users
+          getLoginInfo match {
+            case None =>
+              errorL("ログインしていません。")
+            case Some(loginInfo) =>
+              doActionWrapper(handler)
+          }
+        // Normal action
+        case PermitAll =>
+          doActionWrapper(handler)
+      }
+    }
+  }
   def canModifyPage(pageName: String): Boolean = { true }
   def canShow(pageName: String): Boolean = { true }
   def checkLogin(id: String, pass: String, path: String): Option[LoginInfo] = { None }
@@ -123,7 +209,8 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
     }
   }
   def config(key: String, value: String): Unit = {
-    config.withValue(key, ConfigValueFactory.fromAnyRef(value))
+    Logger.debug(s"Overwrite config key: $key, value: $value")
+    config = config.withValue(key, ConfigValueFactory.fromAnyRef(value))
   }
   def convertFromFswiki(source: String, formatType: WikiFormat, isInline: Boolean = false): String = { "" }
   def convertToFswiki(source: String, formatType: WikiFormat, isInline: Boolean = false): String = { "" }
@@ -187,6 +274,9 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
     setTitle("エラー")
     "<div class=\"error\">%s</div>".format(xml.Utility.escape(message))
   }
+  def errorL(message: String): Either[String, play.api.mvc.Result] = {
+    Left(this.error(message))
+  }
   def farmIsEnable(): Boolean = { true }
   def freezePage(pageName: String): Unit = {}
   def getAdminMenu(): Menu = { new Menu }
@@ -235,6 +325,10 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
       val message = s"${pluginName}プラグインは不正なプラグインです。"
       Logger.error(message)
       error(message)
+    } else if (installedPlugin.exists(installed => installed == pluginName)) {
+      val message = s"${pluginName}プラグインはすでにインストール済みです。"
+      Logger.debug(message)
+      ""
     } else {
       import scala.reflect.runtime.universe
       import jp.gr.java_conf.hangedman.plugin.InstallTrait
@@ -245,7 +339,7 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
 
       Try(runtimeMirror.staticModule(moduleStr)) match {
         case Failure(e) =>
-          val message = "s${pluginName}プラグインは存在しません。"
+          val message = "プラグインは存在しません。"
           Logger.error(message, e)
           error(message)
 
@@ -256,9 +350,9 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
             install.install(this)
           } match {
             case Success(_) =>
-              Right(s"${pluginName}プラグインのインストールに成功しました。")
+              Right("プラグインのインストールに成功しました。")
             case Failure(e) =>
-              Left(s"${pluginName}プラグインのインストールに失敗しました。")
+              Left("プラグインのインストールに失敗しました。")
           }
 
           message match {

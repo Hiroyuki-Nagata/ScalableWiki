@@ -33,9 +33,14 @@ object Application extends Controller {
   def overwriteConfig(key: String, params: List[String])(implicit wiki: Wiki) = {
     // take last of params
     // get config values and concat values
-    val path: String = params.init.map {
-      e: String => if (!e.contains("/")) wiki.config(e)
-    }.mkString + params.last
+    Logger.trace(s"Configs each users =>" + params)
+
+    val path: String = params.init.collect {
+      case e if (e != "/") => wiki.config(e).getOrElse(e)
+      case _ => "/"
+    }.mkString.replaceAll("//", "/") + params.last
+
+    Logger.debug(s"Concat path =>" + path)
     wiki.config(key, path)
   }
 
@@ -106,20 +111,31 @@ object Application extends Controller {
     }
 
     // install and initialize plugins
-    Source.fromFile("conf/" + wiki.config("plugin_file").getOrElse("plugin.dat")).getLines.foreach {
-      line =>
-        Logger.debug(s"Install plugin: $line")
-        wiki.installPlugin(line)
-    }
+    val pluginError: String =
+      Source.fromFile("conf/" + wiki.config("plugin_file").getOrElse("plugin.dat")).getLines.map {
+        line =>
+          Logger.debug(s"Install plugin: $line")
+          val error = wiki.installPlugin(line)
+          Logger.debug(s"Install with error: $error")
+          error
+      }.mkString("\n")
 
     // start plugins each initialization
     wiki.doHook("initialize")
 
     // call action handler
     val action = params("action")
-    val content = wiki.callHandler(action)
-
-    // FIXME: +error handling
+    val content: String = if (pluginError.nonEmpty) {
+      // in a case of failing installation plugins
+      pluginError
+    } else {
+      wiki.callHandler(action) match {
+        case Left(message) =>
+          message
+        case Right(result) =>
+          result.body.toString
+      }
+    }
 
     // Response
     val isHandyPhone: Boolean = WikiUtil.handyphone
@@ -237,12 +253,15 @@ object Application extends Controller {
       "text/html;charset=UTF-8"
     }
 
+    //val t = wiki.config("css").getOrElse("NOOOOOOOOOOO!!!")
+    //Logger.info(s"css is in the => $t")
+
     // Set parameters in template
     val wikiHtml = siteTemplate(
       "true", // EDIT_MODE
       "true", // CAN_SHOW
       headerTmpl, // HEAD_INFO
-      "css", // THEME_CSS
+      wiki.config("css").get, // THEME_CSS
       "true", // HAVE_USER_CSS
       "css", // USER_CSS
       // SITE_TITLE
@@ -251,7 +270,7 @@ object Application extends Controller {
       "Default Title", // TITLE
       "Page Menu", // EXIST_PAGE_Menu
       "Page Header", // EXIST_PAGE_Header
-      "Contents", // CONTENT
+      content, // CONTENT
       "Page Footer", // EXIST_PAGE_Footer
       footerTmpl // FOOTER
     )

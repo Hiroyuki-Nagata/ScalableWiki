@@ -13,13 +13,17 @@ import jp.gr.java_conf.hangedman.util.wiki.AbstractWiki
 import java.io.File
 import org.joda.time.DateTime
 import play.Logger
+import play.api.http.HeaderNames
+import play.api.libs.iteratee.Enumerator
+import play.api.mvc.ResponseHeader
+import play.api.mvc.Result
 import scala.util.{ Failure, Success, Try }
 
 //==============================================================================
 // コンストラクタ
 //==============================================================================
 class RenameHandler(className: String, tpe: WikiPluginType, format: WikiFormat)
-    extends WikiPlugin(className, tpe, format) {
+    extends WikiHandler(className, tpe, format) with HeaderNames {
 
   //===========================================================
   // installメソッド
@@ -41,14 +45,14 @@ class RenameHandler(className: String, tpe: WikiPluginType, format: WikiFormat)
   //==============================================================================
   // アクションの実行
   //==============================================================================
-  def doAction(wiki: AbstractWiki): String = {
+  def doAction(wiki: AbstractWiki): Either[String, play.api.mvc.Result] = {
     doRename(wiki)
   }
 
   //==============================================================================
   // リネームを実行
   //==============================================================================
-  def doRename(wiki: AbstractWiki): String = {
+  def doRename(wiki: AbstractWiki): Either[String, play.api.mvc.Result] = {
     val cgi = wiki.getCGI
     val pagename = cgi.getParam("page")
     val newpagename = cgi.getParam("newpage")
@@ -58,29 +62,29 @@ class RenameHandler(className: String, tpe: WikiPluginType, format: WikiFormat)
 
     // エラーチェック
     if (newpagename.isEmpty) {
-      wiki.error("ページが指定されていません!!")
+      wiki.errorL("ページが指定されていません!!")
     }
     if (newpagename.matches("""[\|:\[\]]""")) {
-      wiki.error("ページ名に使用できない文字が含まれています。")
+      wiki.errorL("ページ名に使用できない文字が含まれています。")
     }
     if (wiki.pageExists(newpagename)) {
-      wiki.error("既にリネーム先のページが存在します!!")
+      wiki.errorL("既にリネーム先のページが存在します!!")
     }
     if (newpagename == pagename) {
-      wiki.error("同一のページが指定されています!!")
+      wiki.errorL("同一のページが指定されています!!")
     }
     if (!wiki.canModifyPage(pagename) || !wiki.canModifyPage(newpagename)) {
-      wiki.error("ページの編集は許可されていません。")
+      wiki.errorL("ページの編集は許可されていません。")
     }
     if (wiki.pageExists(pagename)) {
       if (DateTime.parse(cgi.getParam("lastmodified")).isAfter(time.getMillis)) {
-        wiki.error("ページは既に別のユーザによって更新されています。")
+        wiki.errorL("ページは既に別のユーザによって更新されています。")
       }
     }
 
     // FrontPageを移動しようとした場合にはエラー
     if (pagename == wiki.config("frontpage") && paramDo != "copy") {
-      wiki.error(wiki.config("frontpage") + "を移動することはできません。")
+      wiki.errorL(wiki.config("frontpage") + "を移動することはできません。")
     }
 
     // コピー処理
@@ -96,12 +100,17 @@ class RenameHandler(className: String, tpe: WikiPluginType, format: WikiFormat)
     }
 
     // フックの起動と返却メッセージ
-    if (paramDo == "copy") {
+    val bodyHtml = if (paramDo == "copy") {
       wiki.setTitle(pagename + "をコピーしました")
       WikiUtil.escapeHTML(pagename) + "をコピーしました。"
     } else {
       wiki.setTitle(pagename + "をリネームしました")
       WikiUtil.escapeHTML(pagename) + "をリネームしました。"
     }
+
+    Right(Result(
+      header = ResponseHeader(200, Map(CONTENT_TYPE -> "text/plain")),
+      body = Enumerator(bodyHtml.getBytes())
+    ))
   }
 }

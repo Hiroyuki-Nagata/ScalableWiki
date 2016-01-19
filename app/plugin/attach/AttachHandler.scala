@@ -18,7 +18,7 @@ import scala.util.{ Failure, Success, Try }
 // コンストラクタ
 //===========================================================
 class AttachHandler(className: String, tpe: WikiPluginType, format: WikiFormat)
-    extends WikiPlugin(className, tpe, format) {
+    extends WikiHandler(className, tpe, format) {
 
   //===========================================================
   // installメソッド
@@ -40,7 +40,7 @@ class AttachHandler(className: String, tpe: WikiPluginType, format: WikiFormat)
   //===========================================================
   // アクションの実行
   //===========================================================
-  def doAction(wiki: AbstractWiki): String = {
+  def doAction(wiki: AbstractWiki): Either[String, play.api.mvc.Result] = {
     val cgi = wiki.getCGI
     val pagename = if (cgi.paramPage("page").isEmpty) {
       wiki.config("frontpage") match {
@@ -70,7 +70,7 @@ class AttachHandler(className: String, tpe: WikiPluginType, format: WikiFormat)
        */
     }
 
-    ""
+    Left("")
   }
   /**
    * //-------------------------------------------------------

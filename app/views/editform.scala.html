@@ -4,7 +4,7 @@
 <!-- ページの編集フォーム -->
 <!--=========================================================================-->
 <form class="update" method="post" action="@SCRIPT_NAME">
-  <textarea cols="80" rows="20" name="content" class="edit">@CONTENT</textarea>
+  <textarea cols="80" rows="20" name="content" class="edit">@Html(CONTENT)</textarea>
   <p>
     @if(EXISTS_PAGE.nonEmpty) { 
     <input type="checkbox" name="sage" value="1" id="sage"

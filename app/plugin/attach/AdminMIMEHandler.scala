@@ -18,7 +18,7 @@ import scala.util.{ Failure, Success, Try }
 // コンストラクタ
 //==============================================================================
 class AdminMIMEHandler(className: String, tpe: WikiPluginType, format: WikiFormat)
-    extends WikiPlugin(className, tpe, format) {
+    extends WikiHandler(className, tpe, format) {
 
   //===========================================================
   // installメソッド

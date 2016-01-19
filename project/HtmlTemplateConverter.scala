@@ -1,7 +1,7 @@
 /*
  * This program is written for converting Perl HTML::Template format text
  * to Scala template's one.
- * 
+ *
  * Copyright (C) 2015 Hiroyuki Nagata
  *
  * This program is free software: you can redistribute it and/or modify
@@ -83,7 +83,7 @@ trait HtmlTemplateConverter {
         // Get end index of <!--/TMPL_IF-->
         val endOfIf: Int = restOfLines.indexWhere(line => line.contains("<!--/TMPL_IF-->"))
 
-        // Recursion ! Recursion ! 
+        // Recursion ! Recursion !
         removeMultiLineIfStatement(
           lines.take(index) ++
             List( tmplIfBeginToScala( lines(index) ) ) ++
@@ -136,9 +136,14 @@ trait HtmlTemplateConverter {
   """<!--TMPL_VAR(?:.*)NAME=\"(.*?)\".*-->""".r
     .replaceAllIn(statement, m => "@" + defaultElem + m.group(1))
 
-  val tmplVarToScala = (perlString: String) =>
-  """<!--TMPL_VAR(?:.*)NAME=\"(.*?)\".*-->""".r
-    .replaceAllIn(perlString, m => "@" + m.group(1))
+  val tmplVarToScala = (perlString: String) => {
+
+    val temp = """<!--TMPL_VAR(?:.*)NAME=\"CONTENT\".*-->""".r
+      .replaceAllIn(perlString, m => "@Html(CONTENT)")
+
+    """<!--TMPL_VAR(?:.*)NAME=\"(.*?)\".*-->""".r
+      .replaceAllIn(temp, m => "@" + m.group(1))
+  }
 
   val tmplIfToScala = (perlString: String) =>
   // for one line
@@ -175,7 +180,7 @@ trait HtmlTemplateConverter {
   """<!--/TMPL_LOOP-->""".r
     .replaceAllIn(perlString, m => "} ")
 
-  val tmplIfElseMultiLineToScala = (perlList: List[String]) => 
+  val tmplIfElseMultiLineToScala = (perlList: List[String]) =>
   (removeMultiLineIfStatement _ andThen removeMultiLineUnlessStatement _)(perlList): List[String]
 
   val tmplMultiLinesToScala = tmplLoopToScala.andThen(tmplIfElseMultiLineToScala)
@@ -218,6 +223,10 @@ trait HtmlTemplateConverter {
             forLoopMap.addBinding(forLoopKey, forLoopValue)
           }
           ""
+        case line if (line.trim.contains("@Html(CONTENT)"))=>
+          // I would like to ignore "@Html(FOO)" tag
+          // A below element is a argument of template files
+          "CONTENT"
         case line =>
           line.trim.replaceAll(trimRegex, "$1")
       }
@@ -230,7 +239,7 @@ trait HtmlTemplateConverter {
     }.toList.distinct match {
       case imports: List[String] =>
         val classMap: HashMap[String, String] = gen.generateCaseClasses(forLoopMap)
-        val classSpecifiedImports = imports.map { imp => 
+        val classSpecifiedImports = imports.map { imp =>
           if (classMap.contains(imp)) {
             imp + ": " + classMap(imp)
           } else if (isHtmlTag(imp)) {

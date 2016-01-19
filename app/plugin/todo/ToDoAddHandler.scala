@@ -18,7 +18,7 @@ import scala.util.{ Failure, Success, Try }
 // コンストラクタ
 //===========================================================
 class ToDoAddHandler(className: String, tpe: WikiPluginType, format: WikiFormat)
-    extends WikiPlugin(className, tpe, format) {
+    extends WikiHandler(className, tpe, format) {
 
   //===========================================================
   // installメソッド
@@ -40,7 +40,7 @@ class ToDoAddHandler(className: String, tpe: WikiPluginType, format: WikiFormat)
   //===========================================================
   // ToDoの追加
   //===========================================================
-  def doAction(wiki: AbstractWiki): play.api.mvc.Result = {
+  def doAction(wiki: AbstractWiki): Either[String, play.api.mvc.Result] = {
     val cgi = wiki.getCGI
     val dist = cgi.getParam("dist")
     val page = cgi.getParam("page")
@@ -60,6 +60,6 @@ class ToDoAddHandler(className: String, tpe: WikiPluginType, format: WikiFormat)
       wiki.savePage(dist, content)
       wiki.doHook("save_end")
     }
-    wiki.redirect(page, 0)
+    Right(wiki.redirect(page, 0))
   }
 }
