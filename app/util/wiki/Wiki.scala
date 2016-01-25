@@ -40,7 +40,21 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
   val defaultConf: Config = ConfigFactory.parseFile(new File("conf/config.dat"))
   val pluginDir: String = config.as[Option[String]]("setup.plugin_dir").getOrElse(".")
   val frontPage: String = config.as[Option[String]]("setup.frontpage").getOrElse("FrontPage")
+
+  // set request
   val request = initRequest
+  // ruby like method
+  def params(key: String): String = {
+    request.queryString.get(key) match {
+      case Some(value) if (value.size == 1) =>
+        value.head
+      case Some(value) if (value.size != 1) =>
+        value.mkString(",")
+      case None =>
+        ""
+    }
+  }
+
   var configCache = HashMap[String, String]().empty
   var hooks = HashMap[String, WikiPlugin]().empty
   var handlers = HashMap[String, WikiHandler]().empty

@@ -119,7 +119,12 @@ val installDef = """
               // replace class definition and define extends "WikiPlugin"
               beginClassParen = true
               val pluginDef = "(className: String, tpe: WikiPluginType, format: WikiFormat)"
-              val pluginArg = "WikiPlugin(className, tpe, format)"
+              val pluginArg = if (className.contains("handler")) {
+                "WikiPlugin(className, tpe, format)"
+              } else {
+                "WikiHandler(className, tpe, format)"
+              }
+
               p.println(line
                 .replace("sub", "class")
                 .replace("new", s"${className}${pluginDef}\n    extends ${pluginArg}")

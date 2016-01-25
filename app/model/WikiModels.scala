@@ -35,7 +35,7 @@ case object PermitAll extends HandlerPermission
 case object PermitLoggedin extends HandlerPermission
 case object PermitAdmin extends HandlerPermission
 
-case class LoginInfo(id: String, userType: String, path: String, tpe: Role)
+case class LoginInfo(id: String, userType: String, path: String, tpe: Role) extends HashMap[String, String]
 case class PluginInfo(className: String, tpe: WikiPluginType, format: WikiFormat)
 
 case class Weight(weight: Int)

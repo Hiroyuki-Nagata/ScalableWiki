@@ -13,6 +13,8 @@ abstract class AbstractWiki {
 
   // request information
   val request: Request[AnyContent]
+  // ruby like method
+  def params(key: String): String
   var configCache: HashMap[String, String]
 
   /**

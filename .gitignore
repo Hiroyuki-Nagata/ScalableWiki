@@ -34,7 +34,7 @@ app/plugin/comment
 app/plugin/format
 app/plugin/loginstate
 app/plugin/rename
-app/plugin/admin
+#app/plugin/admin
 app/plugin/bugtrack
 app/plugin/access
 app/plugin/bbs
