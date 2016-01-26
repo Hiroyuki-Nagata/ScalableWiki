@@ -13,6 +13,7 @@ abstract class AbstractWiki {
 
   // request information
   val request: Request[AnyContent]
+  def getSession(): play.api.mvc.Session
   // ruby like method
   def params(key: String): String
   var configCache: HashMap[String, String]

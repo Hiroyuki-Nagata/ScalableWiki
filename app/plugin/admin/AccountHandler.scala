@@ -122,10 +122,10 @@ class AccountHandler(className: String, tpe: WikiPluginType, format: WikiFormat)
           wiki.error("入力された二つのパスワードが合致しません。")
         }
 
-        // val session = cgi.get_session(wiki)
-        // session.param("wiki_id", id)
-        // session.param("wiki_type", login("type"))
-        // session.param("wiki_path", login("path"))
+        val session = wiki.getSession
+        session + (("wiki_id", id))
+        session + (("wiki_type", login.tpe.toString))
+        session + (("wiki_path", login.path))
         // session.flush()
 
         val users = WikiUtil.loadConfigHash(wiki, wiki.config("userdat_file").get)

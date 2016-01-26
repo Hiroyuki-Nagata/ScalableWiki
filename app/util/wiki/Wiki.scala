@@ -43,6 +43,10 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
 
   // set request
   val request = initRequest
+  // get session
+  def getSession(): play.api.mvc.Session = {
+    request.session
+  }
   // ruby like method
   def params(key: String): String = {
     request.queryString.get(key) match {
