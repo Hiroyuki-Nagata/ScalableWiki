@@ -53,32 +53,30 @@ class Login(className: String, tpe: WikiPluginType, format: WikiFormat)
     }
 
     if (wiki.getLoginInfo.isDefined) {
-      adminForm(wiki)
+      adminForm(wiki, wiki.getLoginInfo.get)
     } else {
       // ログインの判定
       val id = wiki.params("id")
       val pass = wiki.params("pass")
       val page = wiki.params("page")
 
-      /**
-       * if (id.nonEmpty && pass.nonEmpty) {
-       * val login = wiki.loginCheck(id, WikiUtil.md5(pass, id))
-       * if(defined(login)){
-       * val session = cgi.get_session(wiki,1)
-       * session.param("wiki_id"  ,id)
-       * session.param("wiki_type",login.("type"))
-       * session.param("wiki_path",login.("path"))
-       * session.flush()
-       * if(page){
-       * wiki.redirectURL(wiki.createPageUrl(page))
-       * } else {
-       * wiki.redirecturl(wiki.createUrl({action=>"LOGIN"}))
-       * }
-       * } else {
-       * wiki.error("IDもしくはパスワードが違います。")
-       * }
-       * }
-       */
+      if (id.nonEmpty && pass.nonEmpty) {
+        wiki.checkLogin(id, WikiUtil.md5(pass, id)) match {
+          case Some(login: LoginInfo) =>
+            val session = wiki.getSession
+            session + (("wiki_id", id))
+            session + (("wiki_type", login.tpe.toString))
+            session + (("wiki_path", login.path))
+            //session.flush()
+            if (page.nonEmpty) {
+              wiki.redirectURL(wiki.createPageUrl(page))
+            } else {
+              wiki.redirectURL(wiki.createUrl(HashMap("action" -> "LOGIN")))
+            }
+          case None =>
+            wiki.errorL("IDもしくはパスワードが違います。")
+        }
+      }
     }
 
     val bodyHtml = default(wiki)
@@ -92,42 +90,37 @@ class Login(className: String, tpe: WikiPluginType, format: WikiFormat)
   //==============================================================================
   // 管理画面フォーム
   //==============================================================================
-  def adminForm(wiki: AbstractWiki): String = {
-    /**
-     * val login = shift
-     * val buf = "<h2>ログイン中</h2>\n"
-     *
-     * // 管理者ユーザの場合
-     * if(login.("type")==0){
-     * buf +="<ul>\n"
-     * foreach(wiki.get_admin_menu){
-     * buf += "<li><a href=\"" + _.{url} + "\">" + _.("label") + "</a>"
-     * buf += " - " + WikiUtil.escapehtml(.("desc"))
-     * buf += "</li>\n"
-     * }
-     * buf += "</ul>\n"
-     *
-     * // 一般ユーザの場合
-     * } else {
-     * buf +="<ul>\n"
-     * foreach(wiki.get_admin_menu){
-     * if(_.("type")==1){
-     * buf += "<li><a href=\"" + _.{url} + "\">" + _.("label") + "</a>"
-     * buf += " - " + WikiUtil.escapehtml(.("desc"))
-     * buf += "</li>\n"
-     * }
-     * }
-     * buf += "</ul>\n"
-     * }
-     *
-     * buf += "<form action=\"" + wiki.create_url() + "\" method=\"POST\">" +
-     * "  <input type=\"submit\" name=\"logout\" value=\"ログアウト\">" +
-     * "  <input type=\"hidden\" name=\"action\" value=\"LOGIN\">" +
-     * "</form>\n"
-     *
-     * buf
-     */
-    ""
+  def adminForm(wiki: AbstractWiki, login: LoginInfo): String = {
+
+    val buf = new StringBuilder("<h2>ログイン中</h2>\n")
+
+    // 管理者ユーザの場合
+    if (login.tpe == Administrator) {
+      buf.append("<ul>\n")
+      wiki.getAdminMenu.foreach { menu =>
+        buf.append("<li><a href=\"" + menu.url + "\">" + menu.label + "</a>")
+        buf.append(" - " + WikiUtil.escapeHTML(menu.desc))
+        buf.append("</li>\n")
+      }
+      buf.append("</ul>\n")
+    } else { // 一般ユーザの場合
+      buf.append("<ul>\n")
+      wiki.getAdminMenu.foreach { menu =>
+        if (login.tpe == Administrator) {
+          buf.append("<li><a href=\"" + menu.url + "\">" + menu.label + "</a>")
+          buf.append(" - " + WikiUtil.escapeHTML(menu.desc))
+          buf.append("</li>\n")
+        }
+      }
+      buf.append("</ul>\n")
+    }
+
+    buf.append("<form action=\"" + wiki.createUrl + "\" method=\"POST\">" +
+      "  <input type=\"submit\" name=\"logout\" value=\"ログアウト\">" +
+      "  <input type=\"hidden\" name=\"action\" value=\"LOGIN\">" +
+      "</form>\n")
+
+    buf.result
   }
 
   //==============================================================================

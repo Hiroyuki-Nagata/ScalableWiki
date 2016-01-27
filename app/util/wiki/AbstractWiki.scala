@@ -35,7 +35,7 @@ abstract class AbstractWiki {
   /**
    * Check login infomation if user is logining
    */
-  def checkLogin(id: String, pass: String, path: String): Option[LoginInfo]
+  def checkLogin(id: String, pass: String): Option[LoginInfo]
   /**
    * Add editform plugin
    */
@@ -55,7 +55,7 @@ abstract class AbstractWiki {
   /**
    * Get admin menu
    */
-  def getAdminMenu(): Menu
+  def getAdminMenu(): List[Menu]
   /**
    * Install plugin
    */

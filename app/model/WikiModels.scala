@@ -39,7 +39,7 @@ case class LoginInfo(id: String, userType: String, path: String, tpe: Role) exte
 case class PluginInfo(className: String, tpe: WikiPluginType, format: WikiFormat)
 
 case class Weight(weight: Int)
-case class Menu()
+case class Menu(url: String, label: String, desc: String)
 case class Parser(name: String)
 
 trait Perl {

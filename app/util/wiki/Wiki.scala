@@ -214,7 +214,7 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
   }
   def canModifyPage(pageName: String): Boolean = { true }
   def canShow(pageName: String): Boolean = { true }
-  def checkLogin(id: String, pass: String, path: String): Option[LoginInfo] = { None }
+  def checkLogin(id: String, pass: String): Option[LoginInfo] = { None }
   def childWikiExists(wikiName: String): Boolean = { true }
   def config(key: String): Option[String] = {
     (config.as[Option[String]](key), defaultConf.as[Option[String]](key)) match {
@@ -297,7 +297,9 @@ class Wiki(setupfile: String = "setup.conf", initRequest: Request[AnyContent])
   }
   def farmIsEnable(): Boolean = { true }
   def freezePage(pageName: String): Unit = {}
-  def getAdminMenu(): Menu = { new Menu }
+  def getAdminMenu(): List[Menu] = {
+    List(new Menu("", "", ""))
+  }
   def getBackup(pageName: String, version: Int): Option[String] = {
     this.storage.getBackup(pageName, version)
   }
