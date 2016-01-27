@@ -79,7 +79,12 @@ class AdminConfigHandler(className: String, tpe: WikiPluginType, format: WikiFor
       ("accept_attach_delete", "0"),
       ("accept_attach_update", "1"),
       ("accept_edit", "1"),
-      ("accept_show", "0")
+      ("accept_show", "0"),
+      ("accept_user_register", "1"),
+      ("inside_same_window", "1"),
+      ("partlink", "0"),
+      ("redirect", "0"),
+      ("select", "1")
     )
 
     val config = WikiUtil.loadConfigHash(wiki, wiki.config("config_file").getOrElse("./config_file")) match {
@@ -134,48 +139,71 @@ class AdminConfigHandler(className: String, tpe: WikiPluginType, format: WikiFor
       SITE_WIKI_FORMAT,
       WIKINAME
     )
-    /**
-     * tmplParam(
-     * SITE_TITLE           = config("site_title"),
-     * ADMIN_NAME           = config("admin_name"),
-     * ADMIN_MAIL           = config("admin_mail"),
-     * ADMIN_MAIL_PUB       = config("admin_mail_pub"),
-     * MAIL_PREFIX          = config("mail_prefix"),
-     * MAIL_ID              = config("mail_id"),
-     * MAIL_REMOTE_ADDR     = config("mail_remote_addr"),
-     * MAIL_USER_AGENT      = config("mail_user_agent"),
-     * MAIL_DIFF            = config("mail_diff"),
-     * MAIL_BACKUP_SOURCE   = config("mail_backup_source"),
-     * MAIL_MODIFIED_SOURCE = config("mail_modified_source"),
-     * PAGELIST             = config("pagelist"),
-     * SITE_WIKI_FORMAT     = \@site_wiki_format,
-     * BR_MODE              = config("br_mode"),
-     * AUTO_KEYWORD_PAGE    = config("auto_keyword_page"),
-     * KEYWORD_SLASH_PAGE   = config("keyword_slash_page"),
-     * WIKINAME             = config("wikiname"),
-     * SESSION_LIMIT        = config("session_limit"),
-     * RSS_VERSION          = config("rss_version"),
-     * OPEN_NEW_WINDOW      = config("open_new_window"),
-     * INSIDE_SAME_WINDOW   = config("inside_same_window"),
-     * PART_EDIT            = config("partedit"),
-     * PART_LINK            = config("partlink"),
-     * REDIRECT             = config("redirect"),
-     * "ACCEPT_EDIT_config("accept_edit")" => 1,
-     * "ACCEPT_SHOW_config("accept_show")" => 1,
-     * "ACCEPT_ATTACH_DELETE_config("accept_attach_delete")" => 1,
-     * "ACCEPT_ATTACH_UPDATE_config("accept_attach_update")" => 1,
-     * "REFER_MODE_config("refer_level")" => 1,
-     * ACCEPT_USER_REGISTER => config("accept_user_register"),
-     * DISPLAY_IMAGE        => config("display_image")
-     * )
-     *
-     * "<form action=\"" + wiki.create_url() + "\" method=\"POST\">\n" +
-     * tmpl.output().
-     * "<input type=\"hidden\" name=\"action\" value=\"ADMINCONFIG\">\n" +
-     * "</form>\n"
-     */
 
-    ""
+    val accept = Accept(
+      config("accept_attach_delete"),
+      config("accept_attach_delete"),
+      config("accept_attach_delete"),
+      config("accept_attach_update"),
+      config("accept_attach_update"),
+      config("accept_attach_update"),
+      config("accept_edit"),
+      config("accept_edit"),
+      config("accept_edit"),
+      config("accept_show"),
+      config("accept_show"),
+      config("accept_show"),
+      config("accept_user_register")
+    )
+
+    val admin = Admin(
+      config("admin_mail"),
+      config("admin_mail_pub"),
+      config("admin_name")
+    )
+
+    val mail = Mail(
+      config("mail_remote_addr"),
+      config("mail_backup_source"),
+      config("mail_prefix"),
+      config("mail_diff"),
+      config("mail_user_agent"),
+      config("mail_id"),
+      config("mail_modified_source")
+    )
+
+    val refer = Refer(
+      config("refer_level"),
+      config("refer_level"),
+      config("refer_level")
+    )
+
+    // テンプレートの出力結果を返す
+    "<form action=\"" + wiki.createUrl + "\" method=\"POST\">\n" +
+      tmplParam(
+        accept, // ACCEPT: Accept,
+        admin, // ADMIN: Admin,
+        config("auto_keyword_page"), // AUTO_KEYWORD_PAGE: String,
+        config("br_mode"), // BR_MODE: String,
+        config("display_image"), // DISPLAY_IMAGE: String,
+        config("inside_same_window"), // INSIDE_SAME_WINDOW: String,
+        config("keyword_slash_page"), // KEYWORD_SLASH_PAGE: String,
+        mail, // MAIL: Mail,
+        config("open_new_window"), // OPEN_NEW_WINDOW: String,
+        config("pagelist"), // PAGELIST: String,
+        config("partedit"), // PART_EDIT: String,
+        config("partlink"), // PART_LINK: String,
+        config("redirect"), // REDIRECT: String,
+        refer, // REFER: Refer,
+        config("rss_version"), // RSS_VERSION: String,
+        config("select"), // SELECT: String,
+        config("session_limit"), // SESSION_LIMIT: String,
+        config("site_title"), // SITE_TITLE: String,
+        Nil, // SITE_WIKI_FORMAT: List[SiteWikiFormat],
+        config("wikiname") // WIKINAME: String
+      ).body +
+        "<input type=\"hidden\" name=\"action\" value=\"ADMINCONFIG\">\n" +
+        "</form>\n"
   }
 
   //==============================================================================
@@ -224,17 +252,15 @@ class AdminConfigHandler(className: String, tpe: WikiPluginType, format: WikiFor
       updateWithValues(updates)(newConfig)
     )
 
-    /**
-     * // config 情報ハッシュ内の全てのキーについて、
-     * foreach val config_key (sort keys %new_config) {
-     * val old = oldCconfig.{config_key}
-     * val new = newConfig.{config_key}
-     * // 値が更新されていたら、フック「change_config_キー名」を発行。
-     * if (new != old) {
-     * wiki.doHook("change_config_" . config_key, new, old)
-     * }
-     * }
-     */
+    // config 情報ハッシュ内の全てのキーについて
+    newConfig.foreach {
+      case (key, newValue) =>
+        val oldValue = oldConfig(key)
+        if (newValue != oldValue) {
+          // 値が更新されていたら、フック「change_config_キー名」を発行。
+          wiki.doHook(s"change_config_${key}", newValue, oldValue)
+        }
+    }
 
     wiki.createUrl(HashMap("action" -> "ADMINCONFIG"))
   }
